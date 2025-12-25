@@ -4,8 +4,8 @@ import { Container, Row, Col, Button, Badge, Form, Breadcrumb, Tab, Tabs } from 
 import { FaStar, FaShoppingCart, FaArrowLeft, FaBook, FaCalendar, FaLanguage, FaBuilding, FaBarcode, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { productsAPI } from '../api/products.api';
 import type { Product } from '../api/products.api';
-import { cartAPI } from '../api/cart.api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import ProductCard from '../components/products/ProductCard';
@@ -14,12 +14,15 @@ const ProductDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const { isInCart, addToCart } = useCart();
     const [product, setProduct] = useState<Product | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [adding, setAdding] = useState(false);
+
+    const inCart = product ? isInCart(product._id) : false;
 
     useEffect(() => {
         if (id) {
@@ -64,23 +67,15 @@ const ProductDetailPage: React.FC = () => {
             return;
         }
 
+        if (inCart) {
+            return; // Already in cart, do nothing
+        }
+
         setAdding(true);
         try {
-            await cartAPI.addToCart(product!._id, quantity);
-            // Show success message
-            const notification = document.createElement('div');
-            notification.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
-            notification.style.zIndex = '9999';
-            notification.textContent = '✓ Product added to cart!';
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+            await addToCart(product!._id, quantity);
         } catch (err: any) {
-            const notification = document.createElement('div');
-            notification.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3';
-            notification.style.zIndex = '9999';
-            notification.textContent = err.response?.data?.message || 'Failed to add to cart';
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+            // Error handling is done in CartContext
         } finally {
             setAdding(false);
         }
@@ -200,6 +195,7 @@ const ProductDetailPage: React.FC = () => {
                                         size="sm"
                                         value={quantity}
                                         onChange={(e) => setQuantity(Number(e.target.value))}
+                                        disabled={inCart}
                                     >
                                         {[...Array(Math.min(product.stock, 10))].map((_, i) => (
                                             <option key={i + 1} value={i + 1}>
@@ -211,13 +207,13 @@ const ProductDetailPage: React.FC = () => {
                                 <Col xs={8} sm={9}>
                                     <Form.Label className="small mb-1">&nbsp;</Form.Label>
                                     <Button
-                                        variant="primary"
+                                        variant={inCart ? "secondary" : "primary"}
                                         className="w-100"
                                         onClick={handleAddToCart}
-                                        disabled={adding}
+                                        disabled={adding || inCart}
                                     >
                                         <FaShoppingCart className="me-2" />
-                                        {adding ? 'Adding...' : 'Add to Cart'}
+                                        {inCart ? '✓ In Cart' : adding ? 'Adding...' : 'Add to Cart'}
                                     </Button>
                                 </Col>
                             </Row>

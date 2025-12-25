@@ -3,13 +3,21 @@ import { Card, Button, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaStar } from 'react-icons/fa';
 import type { Product } from '../../api/products.api';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
     product: Product;
     onAddToCart?: (productId: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    const { isInCart, addToCart } = useCart();
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const inCart = isInCart(product._id);
+
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -26,6 +34,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             return product.images[0];
         }
         return 'https://via.placeholder.com/300x400?text=No+Cover';
+    };
+
+    const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+
+        if (!inCart) {
+            try {
+                await addToCart(product._id, 1);
+            } catch (error) {
+                // Error handling is done in CartContext
+            }
+        }
     };
 
     return (
@@ -71,16 +94,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
                         <h5 className="mb-0 text-primary">{formatPrice(product.price)}</h5>
                         <small className="text-muted">{product.stock} in stock</small>
                     </div>
-                    {onAddToCart && (
-                        <Button
-                            variant="primary"
-                            className="w-100"
-                            onClick={() => onAddToCart(product._id)}
-                            disabled={product.stock === 0}
-                        >
-                            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                        </Button>
-                    )}
+                    <Button
+                        variant={inCart ? "secondary" : "primary"}
+                        className="w-100"
+                        onClick={handleAddToCart}
+                        disabled={product.stock === 0 || inCart}
+                    >
+                        {product.stock === 0 ? 'Out of Stock' : inCart ? '✓ In Cart' : 'Add to Cart'}
+                    </Button>
                 </div>
             </Card.Body>
         </Card>

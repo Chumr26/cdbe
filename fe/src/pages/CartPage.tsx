@@ -137,6 +137,7 @@ const CartPage: React.FC = () => {
                                                 <td className="align-middle">
                                                     <div className="d-flex align-items-center">
                                                         <Button
+                                                            className="d-flex align-items-center justify-content-center p-2"
                                                             variant="outline-secondary"
                                                             size="sm"
                                                             onClick={() => updateQuantity(item.productId._id, item.quantity - 1)}
@@ -146,6 +147,7 @@ const CartPage: React.FC = () => {
                                                         </Button>
                                                         <span className="mx-3">{item.quantity}</span>
                                                         <Button
+                                                            className="d-flex align-items-center justify-content-center p-2"
                                                             variant="outline-secondary"
                                                             size="sm"
                                                             onClick={() => updateQuantity(item.productId._id, item.quantity + 1)}
