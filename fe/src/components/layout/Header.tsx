@@ -84,14 +84,11 @@ const Header: React.FC = () => {
                                 <Nav.Link as={Link} to="/cart" className="position-relative">
                                     <FaShoppingCart size={18} />
                                     {cartItemCount > 0 && (
-                                        <Badge
-                                            bg="danger"
-                                            pill
-                                            className="position-absolute"
-                                            style={{ top: '5px', right: '-5px', fontSize: '0.65rem' }}
+                                        <h6
+                                            className="position-absolute text-primary" style={{ top: 0, right: '30%' }}
                                         >
                                             {cartItemCount}
-                                        </Badge>
+                                        </h6>
                                     )}
                                 </Nav.Link>
                                 <NavDropdown
