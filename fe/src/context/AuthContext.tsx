@@ -42,7 +42,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             if (storedToken && storedUser) {
                 setToken(storedToken);
-                setUser(JSON.parse(storedUser));
+
+                try {
+                    // Handle potential invalid JSON or "undefined" string in localStorage
+                    if (storedUser === "undefined") throw new Error("Invalid stored user");
+                    setUser(JSON.parse(storedUser));
+                } catch (parseError) {
+                    console.error("Error parsing stored user:", parseError);
+                    localStorage.removeItem('user');
+                    // We can still try to fetch profile if token exists
+                }
 
                 // Verify token is still valid by fetching profile
                 try {

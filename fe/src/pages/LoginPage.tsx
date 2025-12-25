@@ -72,6 +72,33 @@ const LoginPage: React.FC = () => {
                             <p className="text-center mb-0">
                                 Don't have an account? <Link to="/register">Sign up</Link>
                             </p>
+
+                            {/* Development Helper */}
+                            <div className="mt-4 p-3 bg-light rounded text-center">
+                                <small className="text-muted d-block mb-2">Development Credentials</small>
+                                <div className="d-flex gap-2 justify-content-center">
+                                    <Button
+                                        variant="outline-secondary"
+                                        size="sm"
+                                        onClick={() => {
+                                            setEmail('admin@bookstore.com');
+                                            setPassword('admin123');
+                                        }}
+                                    >
+                                        Auto-fill Admin
+                                    </Button>
+                                    <Button
+                                        variant="outline-secondary"
+                                        size="sm"
+                                        onClick={() => {
+                                            setEmail('john@test.com');
+                                            setPassword('password123');
+                                        }}
+                                    >
+                                        Auto-fill User
+                                    </Button>
+                                </div>
+                            </div>
                         </Card.Body>
                     </Card>
                 </Col>

@@ -21,6 +21,8 @@ export interface User {
   role: 'customer' | 'admin';
   phoneNumber?: string;
   addresses?: any[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -32,16 +34,29 @@ export interface AuthResponse {
 export const authAPI = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await api.post('/auth/login', credentials);
-    return response.data;
+    return {
+        success: response.data.success,
+        token: response.data.token,
+        data: response.data.user
+    };
   },
 
   register: async (data: RegisterData): Promise<AuthResponse> => {
     const response = await api.post('/auth/register', data);
-    return response.data;
+    return {
+        success: response.data.success,
+        token: response.data.token,
+        data: response.data.user
+    };
   },
 
   getProfile: async (): Promise<{ success: boolean; data: User }> => {
     const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  updateProfile: async (data: Partial<User>): Promise<{ success: boolean; data: User }> => {
+    const response = await api.put('/users/profile', data);
     return response.data;
   },
 

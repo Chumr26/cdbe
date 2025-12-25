@@ -13,7 +13,11 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
+import ProfilePage from './pages/ProfilePage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminUsers from './pages/admin/AdminUsers';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -56,6 +60,14 @@ function App() {
                                 </ProtectedRoute>
                             }
                         />
+                        <Route
+                            path="/profile"
+                            element={
+                                <ProtectedRoute>
+                                    <ProfilePage />
+                                </ProtectedRoute>
+                            }
+                        />
 
                         {/* Admin Routes */}
                         <Route
@@ -63,6 +75,30 @@ function App() {
                             element={
                                 <ProtectedRoute adminOnly>
                                     <AdminDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/products"
+                            element={
+                                <ProtectedRoute adminOnly>
+                                    <AdminProducts />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/orders"
+                            element={
+                                <ProtectedRoute adminOnly>
+                                    <AdminOrders />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/users"
+                            element={
+                                <ProtectedRoute adminOnly>
+                                    <AdminUsers />
                                 </ProtectedRoute>
                             }
                         />

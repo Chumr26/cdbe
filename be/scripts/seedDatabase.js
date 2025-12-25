@@ -33,6 +33,23 @@ async function seedData() {
     });
     console.log(`✅ Admin user created: ${adminUser.insertedId}\n`);
 
+    // 1.1 Seed Sample Customer
+    console.log('👤 Creating sample customer...');
+    const userPassword = await bcrypt.hash('password123', 10);
+    const customerUser = await db.collection('users').insertOne({
+      email: 'john@test.com',
+      password: userPassword,
+      role: 'customer',
+      firstName: 'John',
+      lastName: 'Doe',
+      phoneNumber: '+0987654321',
+      addresses: [],
+      passwordResetToken: null,
+      isEmailVerified: true,
+      createdAt: new Date()
+    });
+    console.log(`✅ Customer user created: ${customerUser.insertedId}\n`);
+
     // 2. Seed Categories
     console.log('📚 Creating categories...');
     const categories = await db.collection('categories').insertMany([
@@ -207,6 +224,9 @@ async function seedData() {
     console.log('🔑 Admin credentials:');
     console.log(`   Email: ${process.env.ADMIN_EMAIL || 'admin@bookstore.com'}`);
     console.log(`   Password: ${process.env.ADMIN_PASSWORD || 'admin123'}\n`);
+    console.log('🔑 Customer credentials:');
+    console.log('   Email: john@test.com');
+    console.log('   Password: password123\n');
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);

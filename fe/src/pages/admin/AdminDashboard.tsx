@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { FaUsers, FaShoppingCart, FaDollarSign, FaBoxOpen } from 'react-icons/fa';
 import { adminAPI } from '../../api/admin.api';
 import type { DashboardStats } from '../../api/admin.api';
@@ -39,7 +39,28 @@ const AdminDashboard: React.FC = () => {
 
     return (
         <Container className="py-5">
-            <h1 className="mb-4">Admin Dashboard</h1>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h1>Admin Dashboard</h1>
+            </div>
+
+            {/* Quick Links */}
+            <Row className="mb-4">
+                <Col md={4}>
+                    <Button variant="outline-primary" className="w-100 py-3" onClick={() => window.location.href = '/admin/products'}>
+                        <FaBoxOpen className="me-2" /> Manage Products
+                    </Button>
+                </Col>
+                <Col md={4}>
+                    <Button variant="outline-success" className="w-100 py-3" onClick={() => window.location.href = '/admin/orders'}>
+                        <FaShoppingCart className="me-2" /> Manage Orders
+                    </Button>
+                </Col>
+                <Col md={4}>
+                    <Button variant="outline-info" className="w-100 py-3" onClick={() => window.location.href = '/admin/users'}>
+                        <FaUsers className="me-2" /> Manage Users
+                    </Button>
+                </Col>
+            </Row>
 
             <Row className="g-4 mb-4">
                 <Col md={3}>
