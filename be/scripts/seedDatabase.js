@@ -178,7 +178,7 @@ async function seedData() {
             { title: 'Becoming', isbn: '9781524763138', author: 'Michelle Obama', category: 'Biography', publisher: 'Crown', publicationYear: 2018, pageCount: 448, description: 'Memoir of the former First Lady of the United States.' },
             { title: 'Elon Musk', isbn: '9780062301239', author: 'Ashlee Vance', category: 'Biography', publisher: 'Ecco', publicationYear: 2015, pageCount: 400, description: 'Tesla, SpaceX, and the Quest for a Fantastic Future.' },
             { title: 'Born a Crime', isbn: '9780399588174', author: 'Trevor Noah', category: 'Biography', publisher: 'Spiegel & Grau', publicationYear: 2016, pageCount: 304, description: 'Stories from a South African Childhood.' },
-            { title: 'The Diary of a Young Girl', isbn: '9780553296983', author: 'Anne Frank', category: 'Biography', publisher: 'Bantam', publicationYear: 1993, pageCount: 283, description: 'Writings from the Dutch language diary.' },
+            { title: 'Long Walk to Freedom', isbn: '9780316548182', author: 'Nelson Mandela', category: 'Biography', publisher: 'Little, Brown and Company', publicationYear: 1995, pageCount: 656, description: 'The autobiography of Nelson Mandela.' },
 
             // Children
             { title: 'Harry Potter and the Sorcerer\'s Stone', isbn: '9780590353427', author: 'J.K. Rowling', category: 'Children', publisher: 'Scholastic', publicationYear: 1998, pageCount: 309, description: 'The first novel in the Harry Potter series.' },
@@ -190,42 +190,24 @@ async function seedData() {
 
         const allProducts = [];
 
-        // Process real books (fetch covers)
+        // Process real books (fetch covers concurrently)
         console.log(`   Processing ${realBooksList.length} real books...`);
 
-        // We want to create around 100 products. 
-        // We have ~45 real books. We will duplicate the list twice to reach ~90+ or iterate.
-        // Actually, duplicating them might be confusing if ISBNs must be unique in some systems, 
-        // but our schema doesn't strictly enforce unique ISBN on DB level (it might, let's check).
-        // The Schema has 'isbn' but I don't recall if I set unique: true.
-        // The View of Product.model.js showed: isbn: { type: String, unique: true, sparse: true } ?
-        // Let's assume unique ISBNs are better.
-        // If we only have ~45 real ISBNs, we can't fake "real" ISBNs easily that work with the API.
-        // The user said "seed real book so that the backend can use isbn number to fetch cover".
-        // So valid ISBNs are required.
-        // I will stick to the curated list. 45-50 items is plenty for "real" data. 
-        // If I need 100, I should probably just stick to the 45 high quality ones rather than faking 55 more that won't have covers.
-        // Or I can add more to the list... but 50 is a good start. I will use the list as is.
-
-        for (const book of realBooksList) {
+        // Fetch all covers concurrently using Promise.all
+        const bookProcessingPromises = realBooksList.map(async (book) => {
             let cover = { source: 'placeholder', url: null };
             try {
                 console.log(`   Fetching cover for: ${book.title}`);
                 const url = await getBookCover({ isbn: book.isbn, title: book.title, author: book.author });
-                // Delay to be nice to the API (avoid 429)
-                await new Promise(r => setTimeout(r, 1000));
 
                 if (url) {
                     cover = { source: 'api', url: url };
-                } else {
-                    // If API fails, try to use a placeholder that looks like a book?
-                    // Or just keep it null/placeholder
                 }
             } catch (e) {
                 console.log(`   Failed to fetch cover for ${book.title}:`, e.message);
             }
 
-            allProducts.push({
+            return {
                 ...book,
                 price: parseFloat(faker.commerce.price({ min: 10, max: 60 })),
                 stock: faker.number.int({ min: 5, max: 100 }),
@@ -238,8 +220,12 @@ async function seedData() {
                 images: [], // Legacy field
                 createdAt: faker.date.past(),
                 updatedAt: new Date()
-            });
-        }
+            };
+        });
+
+        // Wait for all books to be processed
+        const processedBooks = await Promise.all(bookProcessingPromises);
+        allProducts.push(...processedBooks);
 
         const insertedProducts = await db.collection('products').insertMany(allProducts);
         const productIdList = Object.values(insertedProducts.insertedIds);
