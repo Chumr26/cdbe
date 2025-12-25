@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
                     variant="top"
                     src={getImageSource()}
                     alt={product.title}
-                    style={{ height: '300px', objectFit: 'cover' }}
+                    style={{ height: '400px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
                 />
                 {product.featured && (
                     <Badge bg="warning" className="position-absolute top-0 end-0 m-2">

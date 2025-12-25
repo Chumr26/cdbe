@@ -115,9 +115,13 @@ const CartPage: React.FC = () => {
                                                 <td>
                                                     <div className="d-flex align-items-center">
                                                         <img
-                                                            src={item.productId.images?.[0] || 'https://via.placeholder.com/60'}
+                                                            src={
+                                                                item.productId.coverImage?.url ||
+                                                                item.productId.images?.[0] ||
+                                                                'https://via.placeholder.com/60x80?text=No+Cover'
+                                                            }
                                                             alt={item.productId.title}
-                                                            style={{ width: '60px', height: '80px', objectFit: 'cover' }}
+                                                            style={{ width: '60px', height: '80px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
                                                             className="me-3 rounded"
                                                         />
                                                         <div>
