@@ -39,8 +39,14 @@ const Header: React.FC = () => {
                     }
                 `}
             </style>
-            <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="shadow-sm py-2">
-                <Container fluid className="px-4">
+            <Navbar
+                bg="dark"
+                variant="dark"
+                expand="lg"
+                fixed="top"
+                className="shadow-sm py-2"
+            >
+                <Container className="px-4">
                     {/* Brand Section - Left */}
                     <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
                         <FaBook className="me-2" />

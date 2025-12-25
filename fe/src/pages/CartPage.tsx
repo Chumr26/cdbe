@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Table, Modal } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaMinus, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
 import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -11,6 +11,9 @@ const CartPage: React.FC = () => {
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showClearModal, setShowClearModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string } | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,23 +42,33 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const removeItem = async (productId: string) => {
-        if (!confirm('Remove this item from cart?')) return;
+    const handleRemoveClick = (productId: string, productTitle: string) => {
+        setItemToDelete({ id: productId, title: productTitle });
+        setShowDeleteModal(true);
+    };
+
+    const confirmRemoveItem = async () => {
+        if (!itemToDelete) return;
 
         try {
-            const response = await cartAPI.removeFromCart(productId);
+            const response = await cartAPI.removeFromCart(itemToDelete.id);
             setCart(response.data);
+            setShowDeleteModal(false);
+            setItemToDelete(null);
         } catch (err: any) {
             alert(err.response?.data?.message || 'Failed to remove item');
         }
     };
 
-    const clearCart = async () => {
-        if (!confirm('Clear all items from cart?')) return;
+    const handleClearClick = () => {
+        setShowClearModal(true);
+    };
 
+    const confirmClearCart = async () => {
         try {
             await cartAPI.clearCart();
             setCart(null);
+            setShowClearModal(false);
         } catch (err: any) {
             alert(err.response?.data?.message || 'Failed to clear cart');
         }
@@ -94,7 +107,7 @@ const CartPage: React.FC = () => {
                             <Card.Body>
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <h5>Cart Items ({cart.items.length})</h5>
-                                    <Button variant="outline-danger" size="sm" onClick={clearCart}>
+                                    <Button variant="outline-danger" size="sm" onClick={handleClearClick}>
                                         Clear Cart
                                     </Button>
                                 </div>
@@ -164,7 +177,7 @@ const CartPage: React.FC = () => {
                                                     <Button
                                                         variant="outline-danger"
                                                         size="sm"
-                                                        onClick={() => removeItem(item.productId._id)}
+                                                        onClick={() => handleRemoveClick(item.productId._id, item.productId.title)}
                                                     >
                                                         <FaTrash />
                                                     </Button>
@@ -211,6 +224,49 @@ const CartPage: React.FC = () => {
                     </Col>
                 </Row>
             )}
+
+            {/* Delete Item Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title className="d-flex align-items-center">
+                        <FaExclamationTriangle className="text-warning me-2" />
+                        Remove Item
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to remove <strong>{itemToDelete?.title}</strong> from your cart?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmRemoveItem}>
+                        Remove
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Clear Cart Modal */}
+            <Modal show={showClearModal} onHide={() => setShowClearModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title className="d-flex align-items-center">
+                        <FaExclamationTriangle className="text-warning me-2" />
+                        Clear Cart
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to clear all items from your cart?</p>
+                    <p className="text-muted mb-0">This action cannot be undone.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowClearModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmClearCart}>
+                        Clear Cart
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };

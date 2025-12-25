@@ -1,12 +1,5 @@
 /* Custom styles for the bookstore app */
 
-/* Prevent horizontal overflow */
-html,
-body,
-#root {
-    overflow-x: hidden;
-    max-width: 100%;
-}
 
 .hover-shadow {
     transition: box-shadow 0.3s ease-in-out;
@@ -107,9 +100,9 @@ body,
     backdrop-filter: blur(10px);
 }
 
-.navbar.fixed-top {
+/* .navbar.fixed-top {
     z-index: 1030;
-}
+} */
 
 /* Footer styling */
 footer a {
