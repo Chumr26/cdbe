@@ -33,6 +33,7 @@ const AdminProducts: React.FC = () => {
     });
     const [modalError, setModalError] = useState('');
     const [saving, setSaving] = useState(false);
+    const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
     // Delete Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -98,6 +99,7 @@ const AdminProducts: React.FC = () => {
             });
         }
         setModalError('');
+        setCoverImageFile(null);
         setShowModal(true);
     };
 
@@ -121,16 +123,25 @@ const AdminProducts: React.FC = () => {
         setModalError('');
 
         try {
-            const productPayload = {
-                ...modalData,
-                price: parseFloat(modalData.price),
-                stock: parseInt(modalData.stock),
-            };
+            // Use FormData for file upload
+            const formData = new FormData();
+            formData.append('title', modalData.title);
+            formData.append('author', modalData.author);
+            formData.append('category', modalData.category);
+            formData.append('price', modalData.price);
+            formData.append('stock', modalData.stock);
+            formData.append('description', modalData.description);
+            formData.append('isbn', modalData.isbn);
+            formData.append('featured', modalData.featured.toString());
+
+            if (coverImageFile) {
+                formData.append('coverImage', coverImageFile);
+            }
 
             if (editingProduct) {
-                await productsAPI.updateProduct(editingProduct._id, productPayload);
+                await productsAPI.updateProduct(editingProduct._id, formData);
             } else {
-                await productsAPI.createProduct(productPayload);
+                await productsAPI.createProduct(formData);
             }
 
             fetchProducts(currentPage);
@@ -353,6 +364,22 @@ const AdminProducts: React.FC = () => {
                                 checked={modalData.featured}
                                 onChange={handleModalChange}
                             />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Cover Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const files = e.target.files;
+                                    if (files && files[0]) {
+                                        setCoverImageFile(files[0]);
+                                    }
+                                }}
+                            />
+                            <Form.Text className="text-muted">
+                                Upload a custom cover image, or leave empty to fetch from API using ISBN
+                            </Form.Text>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>

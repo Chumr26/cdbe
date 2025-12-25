@@ -10,6 +10,14 @@ export interface Product {
   price: number;
   stock: number;
   images?: string[];
+  coverImage?: {
+    source: 'api' | 'upload' | 'placeholder';
+    url: string | null;
+  };
+  publisher?: string;
+  publicationYear?: number;
+  pageCount?: number;
+  language?: string;
   rating: number;
   numReviews: number;
   featured: boolean;
@@ -67,13 +75,17 @@ export const productsAPI = {
     return response.data;
   },
 
-  createProduct: async (productData: Partial<Product>): Promise<ProductResponse> => {
-    const response = await api.post('/products', productData);
+  createProduct: async (productData: Partial<Product> | FormData): Promise<ProductResponse> => {
+    const response = await api.post('/products', productData, {
+      headers: productData instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
     return response.data;
   },
 
-  updateProduct: async (id: string, productData: Partial<Product>): Promise<ProductResponse> => {
-    const response = await api.put(`/products/${id}`, productData);
+  updateProduct: async (id: string, productData: Partial<Product> | FormData): Promise<ProductResponse> => {
+    const response = await api.put(`/products/${id}`, productData, {
+      headers: productData instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    });
     return response.data;
   },
 

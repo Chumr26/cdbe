@@ -26,6 +26,9 @@ app.use('/api', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 // Logging middleware
 if (process.env.NODE_ENV !== 'production') {
   // Custom Morgan format with status text

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../config/upload');
 const {
   getProducts,
   getProduct,
@@ -211,7 +212,7 @@ router.get('/:id', getProduct);
  *       403:
  *         description: Admin access required
  */
-router.post('/', protect, authorize('admin'), createProduct);
+router.post('/', protect, authorize('admin'), upload.single('coverImage'), createProduct);
 
 /**
  * @swagger
@@ -255,7 +256,7 @@ router.post('/', protect, authorize('admin'), createProduct);
  *       401:
  *         description: Not authorized
  */
-router.put('/:id', protect, authorize('admin'), updateProduct);
+router.put('/:id', protect, authorize('admin'), upload.single('coverImage'), updateProduct);
 
 /**
  * @swagger

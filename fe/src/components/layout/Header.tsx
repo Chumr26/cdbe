@@ -58,7 +58,7 @@ const Header: React.FC = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <Button variant="outline-light" type="submit">
+                        <Button variant="outline-light d-flex align-items-center" type="submit">
                             <FaSearch />
                         </Button>
                     </Form>
@@ -71,9 +71,12 @@ const Header: React.FC = () => {
                                 <Nav.Link as={Link} to="/cart" className="position-relative">
                                     <FaShoppingCart />
                                     {cartItemCount > 0 && (
-                                        <Badge bg="danger" pill className="position-absolute top-0 start-100 translate-middle">
+                                        <h6
+                                            className="position-absolute translate-middle text-danger"
+                                            style={{ top: '20%', left: '60%' }}
+                                        >
                                             {cartItemCount}
-                                        </Badge>
+                                        </h6>
                                     )}
                                 </Nav.Link>
                                 <NavDropdown title={<><FaUser /> {user?.firstName || 'Account'}</>} id="user-dropdown">

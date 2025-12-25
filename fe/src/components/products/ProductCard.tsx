@@ -17,12 +17,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         }).format(price);
     };
 
+    // Smart image source selection: API cover > uploaded cover > legacy images > placeholder
+    const getImageSource = () => {
+        if (product.coverImage?.url) {
+            return product.coverImage.url;
+        }
+        if (product.images && product.images.length > 0) {
+            return product.images[0];
+        }
+        return 'https://via.placeholder.com/300x400?text=No+Cover';
+    };
+
     return (
-        <Card className="h-100 shadow-sm hover-shadow transition">
+        <Card className="h-100 shadow-sm hover-shadow product-card">
             <div className="position-relative">
                 <Card.Img
                     variant="top"
-                    src={product.images?.[0] || 'https://via.placeholder.com/300x400?text=No+Image'}
+                    src={getImageSource()}
                     alt={product.title}
                     style={{ height: '300px', objectFit: 'cover' }}
                 />

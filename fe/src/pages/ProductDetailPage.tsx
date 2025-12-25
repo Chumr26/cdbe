@@ -70,7 +70,11 @@ const ProductDetailPage: React.FC = () => {
             <Row>
                 <Col md={5}>
                     <img
-                        src={product.images?.[0] || 'https://via.placeholder.com/400x600?text=No+Image'}
+                        src={
+                            product.coverImage?.url ||
+                            product.images?.[0] ||
+                            'https://via.placeholder.com/400x600?text=No+Cover'
+                        }
                         alt={product.title}
                         className="img-fluid rounded shadow"
                     />
@@ -145,6 +149,10 @@ const ProductDetailPage: React.FC = () => {
                             <li><strong>Category:</strong> {product.category}</li>
                             <li><strong>Author:</strong> {product.author}</li>
                             {product.isbn && <li><strong>ISBN:</strong> {product.isbn}</li>}
+                            {product.publisher && <li><strong>Publisher:</strong> {product.publisher}</li>}
+                            {product.publicationYear && <li><strong>Publication Year:</strong> {product.publicationYear}</li>}
+                            {product.pageCount && <li><strong>Pages:</strong> {product.pageCount}</li>}
+                            {product.language && <li><strong>Language:</strong> {product.language}</li>}
                             <li><strong>Rating:</strong> {product.rating.toFixed(1)} / 5.0</li>
                         </ul>
                     </div>

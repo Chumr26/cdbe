@@ -36,6 +36,34 @@ const productSchema = new mongoose.Schema({
     min: [0, 'Stock cannot be negative']
   },
   images: [String],
+  coverImage: {
+    source: {
+      type: String,
+      enum: ['api', 'upload', 'placeholder'],
+      default: 'api'
+    },
+    url: {
+      type: String,
+      default: null
+    }
+  },
+  publisher: {
+    type: String,
+    trim: true
+  },
+  publicationYear: {
+    type: Number,
+    min: 1000,
+    max: new Date().getFullYear() + 1
+  },
+  pageCount: {
+    type: Number,
+    min: 1
+  },
+  language: {
+    type: String,
+    default: 'English'
+  },
   rating: {
     type: Number,
     default: 0,

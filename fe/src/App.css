@@ -21,11 +21,11 @@ body,
 }
 
 /* Card hover effects */
-.card {
+.product-card {
     transition: transform 0.2s ease-in-out;
 }
 
-.card:hover {
+.product-card:hover {
     transform: translateY(-5px);
 }
 

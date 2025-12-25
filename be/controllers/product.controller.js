@@ -92,7 +92,23 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 exports.createProduct = asyncHandler(async (req, res) => {
-  const product = await Product.create(req.body);
+  const productData = req.body;
+  
+  // Handle uploaded cover image
+  if (req.file) {
+    productData.coverImage = {
+      source: 'upload',
+      url: `/uploads/covers/${req.file.filename}`
+    };
+  } else if (!productData.coverImage || !productData.coverImage.url) {
+    // Set to use API if no upload and no explicit coverImage provided
+    productData.coverImage = {
+      source: 'api',
+      url: null
+    };
+  }
+  
+  const product = await Product.create(productData);
 
   res.status(201).json({
     success: true,
@@ -104,9 +120,19 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 exports.updateProduct = asyncHandler(async (req, res) => {
+  const productData = req.body;
+  
+  // Handle uploaded cover image
+  if (req.file) {
+    productData.coverImage = {
+      source: 'upload',
+      url: `/uploads/covers/${req.file.filename}`
+    };
+  }
+  
   const product = await Product.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    productData,
     { new: true, runValidators: true }
   );
 
