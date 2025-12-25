@@ -103,6 +103,12 @@ body,
 /* Navbar styling */
 .navbar {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+    backdrop-filter: blur(10px);
+}
+
+.navbar.fixed-top {
+    z-index: 1030;
 }
 
 /* Footer styling */

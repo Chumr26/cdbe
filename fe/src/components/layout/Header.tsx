@@ -42,44 +42,68 @@ const Header: React.FC = () => {
     };
 
     return (
-        <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm">
-            <Container>
-                <Navbar.Brand as={Link} to="/" className="fw-bold">
+        <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="shadow-sm py-2">
+            <Container fluid className="px-4">
+                {/* Brand Section - Left */}
+                <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
                     <FaBook className="me-2" />
-                    Bookstore
+                    CDBE Bookstore
                 </Navbar.Brand>
+
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Form className="d-flex mx-auto my-2 my-lg-0" style={{ maxWidth: '400px', width: '100%' }} onSubmit={handleSearch}>
+                    {/* Left Navigation */}
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/products">Products</Nav.Link>
+                    </Nav>
+
+                    {/* Center Search Box */}
+                    <Form
+                        className="d-flex mx-auto my-2 my-lg-0"
+                        style={{ maxWidth: '500px', width: '100%' }}
+                        onSubmit={handleSearch}
+                    >
                         <Form.Control
                             type="search"
-                            placeholder="Search books..."
+                            placeholder="Search books by title, author, or ISBN..."
                             className="me-2"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <Button variant="outline-light d-flex align-items-center" type="submit">
+                        <Button variant="outline-light" type="submit" className="d-flex align-items-center px-3">
                             <FaSearch />
                         </Button>
                     </Form>
-                    <Nav className="ms-auto">
-                        <Nav.Link as={Link} to="/">Home</Nav.Link>
-                        <Nav.Link as={Link} to="/products">Products</Nav.Link>
 
+                    {/* Right Navigation */}
+                    <Nav className="ms-auto align-items-center">
                         {isAuthenticated ? (
                             <>
                                 <Nav.Link as={Link} to="/cart" className="position-relative">
-                                    <FaShoppingCart />
+                                    <FaShoppingCart size={18} />
                                     {cartItemCount > 0 && (
-                                        <h6
-                                            className="position-absolute translate-middle text-danger"
-                                            style={{ top: '20%', left: '60%' }}
+                                        <Badge
+                                            bg="danger"
+                                            pill
+                                            className="position-absolute"
+                                            style={{ top: '5px', right: '-5px', fontSize: '0.65rem' }}
                                         >
                                             {cartItemCount}
-                                        </h6>
+                                        </Badge>
                                     )}
                                 </Nav.Link>
-                                <NavDropdown title={<><FaUser /> {user?.firstName || 'Account'}</>} id="user-dropdown">
+                                <NavDropdown
+                                    title={
+                                        <>
+                                            <FaUser size={16} className="me-2" />
+                                            {user?.firstName || 'Account'}
+                                        </>
+                                    }
+                                    id="user-dropdown"
+                                    align="end"
+                                >
                                     <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/orders">My Orders</NavDropdown.Item>
                                     {isAdmin && (
