@@ -19,7 +19,6 @@ const ProductDetailPage: React.FC = () => {
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [quantity, setQuantity] = useState(1);
     const [adding, setAdding] = useState(false);
 
     const inCart = product ? isInCart(product._id) : false;
@@ -73,7 +72,7 @@ const ProductDetailPage: React.FC = () => {
 
         setAdding(true);
         try {
-            await addToCart(product!._id, quantity);
+            await addToCart(product!._id, 1);
         } catch (err: any) {
             // Error handling is done in CartContext
         } finally {
@@ -185,38 +184,18 @@ const ProductDetailPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Quantity and Add to Cart - Compact Inline */}
+                    {/* Add to Cart - Compact */}
                     {product.stock > 0 && (
                         <div className="mb-3">
-                            <Row className="g-2">
-                                <Col xs={4} sm={3}>
-                                    <Form.Label className="small mb-1">Quantity</Form.Label>
-                                    <Form.Select
-                                        size="sm"
-                                        value={quantity}
-                                        onChange={(e) => setQuantity(Number(e.target.value))}
-                                        disabled={inCart}
-                                    >
-                                        {[...Array(Math.min(product.stock, 10))].map((_, i) => (
-                                            <option key={i + 1} value={i + 1}>
-                                                {i + 1}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                </Col>
-                                <Col xs={8} sm={9}>
-                                    <Form.Label className="small mb-1">&nbsp;</Form.Label>
-                                    <Button
-                                        variant={inCart ? "secondary" : "primary"}
-                                        className="w-100"
-                                        onClick={handleAddToCart}
-                                        disabled={adding || inCart}
-                                    >
-                                        <FaShoppingCart className="me-2" />
-                                        {inCart ? '✓ In Cart' : adding ? 'Adding...' : 'Add to Cart'}
-                                    </Button>
-                                </Col>
-                            </Row>
+                            <Button
+                                variant={inCart ? "secondary" : "primary"}
+                                className="w-100"
+                                onClick={handleAddToCart}
+                                disabled={adding || inCart}
+                            >
+                                <FaShoppingCart className="me-2" />
+                                {inCart ? '✓ In Cart' : adding ? 'Adding...' : 'Add to Cart'}
+                            </Button>
                         </div>
                     )}
 

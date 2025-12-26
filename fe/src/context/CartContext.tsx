@@ -38,7 +38,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setCartItems(productIds);
 
             // Calculate total count
-            const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            // Calculate total count (distinct items)
+            const count = cart.items.length;
             setCartCount(count);
         } catch (error) {
             // Cart might be empty or error occurred
@@ -66,8 +67,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             // Show success toast
             const notification = document.createElement('div');
-            notification.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3';
+            notification.className = 'alert alert-success position-fixed start-50 translate-middle-x mt-3';
             notification.style.zIndex = '9999';
+            notification.style.top = '60px';
             notification.textContent = '✓ Product added to cart!';
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
