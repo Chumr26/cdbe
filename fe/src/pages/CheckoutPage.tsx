@@ -7,9 +7,11 @@ import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { useCart } from '../context/CartContext';
 
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
+    const { refreshCart } = useCart();
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -66,6 +68,7 @@ const CheckoutPage: React.FC = () => {
 
         try {
             const response = await ordersAPI.createOrder(shippingAddress);
+            await refreshCart();
             setOrderNumber(response.data.orderNumber);
             setShowModal(true);
         } catch (err: any) {
