@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ordersAPI } from '../api/orders.api';
 import type { ShippingAddress } from '../api/orders.api';
@@ -14,6 +14,8 @@ const CheckoutPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [orderNumber, setOrderNumber] = useState('');
 
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
         firstName: '',
@@ -52,6 +54,11 @@ const CheckoutPage: React.FC = () => {
         });
     };
 
+    const handleClose = () => {
+        setShowModal(false);
+        navigate('/orders');
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
@@ -59,8 +66,8 @@ const CheckoutPage: React.FC = () => {
 
         try {
             const response = await ordersAPI.createOrder(shippingAddress);
-            alert(`Order placed successfully! Order number: ${response.data.orderNumber}`);
-            navigate('/orders');
+            setOrderNumber(response.data.orderNumber);
+            setShowModal(true);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to place order');
         } finally {
@@ -231,6 +238,28 @@ const CheckoutPage: React.FC = () => {
                     </Card>
                 </Col>
             </Row>
+
+            <Modal show={showModal} onHide={handleClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Order Confirmed!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="text-center py-3">
+                        <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
+                        <h4 className="mt-3">Thank you for your order!</h4>
+                        <p className="text-muted">
+                            Your order has been placed successfully.
+                            <br />
+                            Order Number: <strong>{orderNumber}</strong>
+                        </p>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>
+                        View My Orders
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };
