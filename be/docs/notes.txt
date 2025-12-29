@@ -20,9 +20,9 @@ complete the authentication functionality:
 - send email when user register
 - use auto fill user info when they order
 - forgot password fucntionality
-
-
 - login fail
 - auth
+
+- make the  mail look better
 - remember me
 

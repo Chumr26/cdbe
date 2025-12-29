@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
@@ -17,7 +18,7 @@ const LoginPage: React.FC = () => {
         setLoading(true);
 
         try {
-            await login({ email, password });
+            await login({ email, password }, rememberMe);
             navigate('/');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to login. Please check your credentials.');
@@ -58,7 +59,12 @@ const LoginPage: React.FC = () => {
                                 </Form.Group>
 
                                 <div className="d-flex justify-content-between align-items-center mb-3">
-                                    <Form.Check type="checkbox" label="Remember me" />
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Remember me"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                    />
                                     {/* Original Forgot password link removed as per instruction to move it */}
                                 </div>
 

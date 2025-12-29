@@ -9,7 +9,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isAdmin: boolean;
     loading: boolean;
-    login: (credentials: LoginCredentials) => Promise<void>;
+    login: (credentials: LoginCredentials, rememberMe?: boolean) => Promise<void>;
     register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     updateUser: (user: User) => void;
@@ -37,8 +37,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Load user from localStorage on mount
     useEffect(() => {
         const loadUser = async () => {
-            const storedToken = localStorage.getItem('token');
-            const storedUser = localStorage.getItem('user');
+            // Check localStorage ("Remember Me") first, then sessionStorage
+            const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 
             if (storedToken && storedUser) {
                 setToken(storedToken);
@@ -62,6 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     // Token invalid, clear storage
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('user');
                     setToken(null);
                     setUser(null);
                 }
@@ -72,12 +75,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loadUser();
     }, []);
 
-    const login = async (credentials: LoginCredentials) => {
+    const login = async (credentials: LoginCredentials, rememberMe: boolean = false) => {
         const response = await authAPI.login(credentials);
         setToken(response.token);
         setUser(response.data);
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.data));
+
+        if (rememberMe) {
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response.data));
+        } else {
+            sessionStorage.setItem('token', response.token);
+            sessionStorage.setItem('user', JSON.stringify(response.data));
+        }
     };
 
     const register = async (data: RegisterData) => {
@@ -94,6 +103,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
     };
 
     const updateUser = (updatedUser: User) => {
