@@ -1,0 +1,28 @@
+- the @Header.tsx is fixed top and relayout it so that the search box is center
+- the seed script await to get each book cover one by one, i want it to fetch concurently all cover, is that possible
+- seed error
+- improve the book details page
+- increase the height of the book card, show the cover not being crop by the card
+- i don't want the header overlay the scroll bar
+- book cover not show in cart page
+- when add to card, the badge of the card have bounce animation, if the product aldready in cart then disable the add to cart button, change the lable to let user know
+- disable the rate limit when in development
+- don't use confirm box, use bootstrap modal, when delete item from cart
+- don't use dropdown selection for the product quanlity, in the book detail page
+- the toaster (product add to cart)
+- the cart badge number only account for different items in the cart, not one item with multiple quantity
+- in the first place why did you change from using bookcover.longitood.com api to using google book api
+- extent database documents
+- refactor the seed script so that the database, product document don't store the coverImage, but fecth directly when it is request using the isbn number
+- use bootstrap modal for order confirmation modal
+- after the order have been confirmed and the cart is clear, the badge number still not being reset to none, check why and fix
+complete the authentication functionality:
+- send email when user register
+- use auto fill user info when they order
+- forgot password fucntionality
+
+
+- login fail
+- auth
+- remember me
+

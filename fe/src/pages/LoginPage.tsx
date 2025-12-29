@@ -59,14 +59,18 @@ const LoginPage: React.FC = () => {
 
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <Form.Check type="checkbox" label="Remember me" />
+                                    {/* Original Forgot password link removed as per instruction to move it */}
+                                </div>
+
+                                <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
+                                    {loading ? 'Logging in...' : 'Login'}
+                                </Button>
+
+                                <div className="text-center mb-3">
                                     <Link to="/forgot-password" className="text-decoration-none">
                                         Forgot password?
                                     </Link>
                                 </div>
-
-                                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
-                                    {loading ? 'Logging in...' : 'Login'}
-                                </Button>
                             </Form>
                             <hr />
                             <p className="text-center mb-0">

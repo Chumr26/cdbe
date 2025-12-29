@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const {
-  register,
-  login,
-  getMe,
-  logout,
-  forgotPassword,
-  resetPassword,
-  changePassword
+    register,
+    login,
+    getMe,
+    logout,
+    forgotPassword,
+    resetPassword,
+    changePassword,
+    verifyEmail
 } = require('../controllers/auth.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -21,15 +22,15 @@ const { protect } = require('../middleware/auth.middleware');
 
 // Validation middleware
 const registerValidation = [
-  body('email').isEmail().withMessage('Please provide a valid email'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('firstName').notEmpty().withMessage('First name is required'),
-  body('lastName').notEmpty().withMessage('Last name is required')
+    body('email').isEmail().withMessage('Please provide a valid email'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('firstName').notEmpty().withMessage('First name is required'),
+    body('lastName').notEmpty().withMessage('Last name is required')
 ];
 
 const loginValidation = [
-  body('email').isEmail().withMessage('Please provide a valid email'),
-  body('password').notEmpty().withMessage('Password is required')
+    body('email').isEmail().withMessage('Please provide a valid email'),
+    body('password').notEmpty().withMessage('Password is required')
 ];
 
 /**
@@ -247,6 +248,27 @@ router.post('/forgot-password', forgotPassword);
  *         description: Invalid or expired token
  */
 router.put('/reset-password/:resetToken', resetPassword);
+
+/**
+ * @swagger
+ * /auth/verify-email/{token}:
+ *   put:
+ *     summary: Verify email address
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Verification token
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.put('/verify-email/:token', verifyEmail);
 
 /**
  * @swagger

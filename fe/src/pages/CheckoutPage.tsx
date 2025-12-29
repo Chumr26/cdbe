@@ -8,6 +8,7 @@ import type { Cart } from '../api/cart.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { useCart } from '../context/CartContext';
+import { authAPI } from '../api/auth.api';
 
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
@@ -32,7 +33,50 @@ const CheckoutPage: React.FC = () => {
 
     useEffect(() => {
         loadCart();
+        loadUserProfile();
     }, []);
+
+    const loadUserProfile = async () => {
+        try {
+            const response = await authAPI.getProfile();
+            const user = response.data;
+
+            // Start with personal info
+            let newAddress: ShippingAddress = {
+                firstName: user.firstName || '',
+                lastName: user.lastName || '',
+                street: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: 'USA',
+                phoneNumber: user.phoneNumber || '',
+            };
+
+            // Check for default address
+            if (user.addresses && user.addresses.length > 0) {
+                const defaultAddr = user.addresses.find((addr: any) => addr.isDefault);
+                const addrToUse = defaultAddr || user.addresses[0];
+
+                if (addrToUse) {
+                    newAddress = {
+                        ...newAddress,
+                        street: addrToUse.street || '',
+                        city: addrToUse.city || '',
+                        state: addrToUse.state || '',
+                        zipCode: addrToUse.zipCode || '',
+                        country: addrToUse.country || 'USA',
+                        // Keep user's phone/name if not in address object, or override if address object has them
+                        // Mongoose schema for address doesn't usually have phone/name inside the array item unless specified
+                    };
+                }
+            }
+
+            setShippingAddress(newAddress);
+        } catch (error) {
+            console.error('Failed to load user profile for checkout autofill', error);
+        }
+    };
 
     const loadCart = async () => {
         try {

@@ -81,11 +81,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const register = async (data: RegisterData) => {
-        const response = await authAPI.register(data);
-        setToken(response.token);
-        setUser(response.data);
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        await authAPI.register(data);
+        // Do not auto-login after registration anymore because of email verification
+        // The API now returns a message, handled by the caller
     };
 
     const logout = () => {
