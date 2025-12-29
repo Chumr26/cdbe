@@ -22,7 +22,7 @@ complete the authentication functionality:
 - forgot password fucntionality
 - login fail
 - auth
-
-- make the  mail look better
 - remember me
+
+- check wether all the email template that send to user have been designed to have a professional look, if not update it
 

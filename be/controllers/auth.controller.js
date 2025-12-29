@@ -160,20 +160,15 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
     // Assuming frontend is running on port 5173 or configured via env
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
 
-    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
-    const html = `
-    <h1>Password Reset Request</h1>
-    <p>You allowed a password reset request. Click the link below to reset your password:</p>
-    <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
-    <p>If you did not request this, please ignore this email.</p>
-  `;
+    const message = `You are receiving this email because you (or someone else) has requested the reset of a password.`;
 
     try {
         await sendEmail({
             email: user.email,
-            subject: 'Password Reset Token',
+            subject: 'Password Reset Request',
             message,
-            html
+            ctaUrl: resetUrl,
+            ctaText: 'Reset Password'
         });
 
         res.status(200).json({
