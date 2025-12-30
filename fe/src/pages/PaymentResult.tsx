@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Container, Card, Button } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const PaymentResult = () => {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+
     const [status, setStatus] = useState<'success' | 'cancelled' | 'failed' | null>(null);
     const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -13,9 +13,12 @@ const PaymentResult = () => {
         const statusParam = searchParams.get('status');
         const orderIdParam = searchParams.get('orderId');
 
-        if (statusParam === 'success') {
+        const code = searchParams.get('code');
+        const cancel = searchParams.get('cancel');
+
+        if (statusParam === 'success' || statusParam === 'PAID' || code === '00') {
             setStatus('success');
-        } else if (statusParam === 'cancelled') {
+        } else if (statusParam === 'cancelled' || cancel === 'true') {
             setStatus('cancelled');
         } else {
             setStatus('failed');

@@ -23,6 +23,7 @@ complete the authentication functionality:
 - login fail
 - auth
 - remember me
-
 - check wether all the email template that send to user have been designed to have a professional look, if not update it
 
+- payment
+- update the morgan log to include times

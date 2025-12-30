@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const swaggerDocs = require('./config/swagger'); // Import Swagger config
+const payOS = require('./utils/payos');
 
 const app = express();
 
@@ -126,8 +127,19 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📄 Swagger docs available at http://localhost:${PORT}/api-docs`);
+    // Add this to register the URL:
+    if (process.env.NODE_ENV === 'development') {
+        const PAYOS_WEBHOOK_URL = "https://newton-marked-aliya.ngrok-free.dev/api/payment/payos-webhook";
+
+        try {
+            await payOS.webhooks.confirm(PAYOS_WEBHOOK_URL);
+            console.log('✅ PayOS Webhook confirmed!');
+        } catch (error) {
+            console.error('❌ Webhook setup failed:', error.message);
+        }
+    }
 });
