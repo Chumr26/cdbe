@@ -20,6 +20,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
+import PaymentResult from './pages/PaymentResult';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -39,6 +40,7 @@ function App() {
                         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                         <Route path="/products" element={<ProductsPage />} />
                         <Route path="/products/:id" element={<ProductDetailPage />} />
+                        <Route path="/payment/result" element={<PaymentResult />} />
 
                         {/* Protected Routes */}
                         <Route

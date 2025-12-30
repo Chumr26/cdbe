@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import { ordersAPI } from '../api/orders.api';
 import type { ShippingAddress } from '../api/orders.api';
 import { cartAPI } from '../api/cart.api';
@@ -19,6 +20,7 @@ const CheckoutPage: React.FC = () => {
     const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'payos'>('cod');
 
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
         firstName: '',
@@ -113,7 +115,26 @@ const CheckoutPage: React.FC = () => {
         try {
             const response = await ordersAPI.createOrder(shippingAddress);
             await refreshCart();
-            setOrderNumber(response.data.orderNumber);
+            const createdOrder = response.data;
+            setOrderNumber(createdOrder.orderNumber);
+
+            if (paymentMethod === 'payos') {
+                try {
+                    const paymentRes = await api.post('/payment/create-payment-link', {
+                        orderId: createdOrder._id
+                    });
+                    if (paymentRes.data.checkoutUrl) {
+                        window.location.href = paymentRes.data.checkoutUrl;
+                        return; // Prevent modal showing
+                    }
+                } catch (payError: any) {
+                    console.error('Payment creation failed', payError);
+                    setError('Order created but payment initialization failed. Please try paying from Order Details.');
+                    // Still show modal as order exists? Or navigate to order details?
+                    // Let's show modal but with warning? defaulting to modal execution below
+                }
+            }
+
             setShowModal(true);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to place order');
@@ -141,6 +162,29 @@ const CheckoutPage: React.FC = () => {
                 <Col lg={8}>
                     <Card className="mb-4">
                         <Card.Body>
+                            <h5 className="mb-3">Payment Method</h5>
+                            <Form.Group className="mb-4">
+                                <div className="d-flex gap-3">
+                                    <Form.Check
+                                        type="radio"
+                                        id="cod"
+                                        label="Cash on Delivery (COD)"
+                                        name="paymentMethod"
+                                        value="cod"
+                                        checked={paymentMethod === 'cod'}
+                                        onChange={(e) => setPaymentMethod(e.target.value as any)}
+                                    />
+                                    <Form.Check
+                                        type="radio"
+                                        id="payos"
+                                        label="Pay with PayOS"
+                                        name="paymentMethod"
+                                        value="payos"
+                                        checked={paymentMethod === 'payos'}
+                                        onChange={(e) => setPaymentMethod(e.target.value as any)}
+                                    />
+                                </div>
+                            </Form.Group>
                             <h5 className="mb-3">Shipping Address</h5>
                             <Form onSubmit={handleSubmit}>
                                 <Row>

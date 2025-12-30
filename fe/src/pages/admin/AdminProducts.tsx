@@ -297,7 +297,6 @@ const AdminProducts: React.FC = () => {
                                         name="category"
                                         value={modalData.category}
                                         onChange={handleModalChange}
-                                        required
                                     >
                                         <option value="">Select Category</option>
                                         {categories.map(cat => (
