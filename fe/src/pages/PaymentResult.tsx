@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Container, Card, Button } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
@@ -41,10 +41,10 @@ const PaymentResult = () => {
                                 Cảm ơn bạn đã mua sắm. Đơn hàng của bạn {orderId ? `#${orderId.slice(-6)}` : ''} đã được thanh toán thành công.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link} to="/orders" variant="primary">
+                                <Button as={Link as any} to="/orders" variant="primary">
                                     Xem đơn hàng
                                 </Button>
-                                <Button as={Link} to="/" variant="outline-secondary">
+                                <Button as={Link as any} to="/" variant="outline-secondary">
                                     Tiếp tục mua sắm
                                 </Button>
                             </div>
@@ -57,10 +57,10 @@ const PaymentResult = () => {
                                 Bạn đã hủy giao dịch thanh toán.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link} to="/checkout" variant="primary">
+                                <Button as={Link as any} to="/checkout" variant="primary">
                                     Thử lại
                                 </Button>
-                                <Button as={Link} to="/" variant="outline-secondary">
+                                <Button as={Link as any} to="/" variant="outline-secondary">
                                     Quay về trang chủ
                                 </Button>
                             </div>
@@ -73,10 +73,10 @@ const PaymentResult = () => {
                                 Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link} to="/checkout" variant="primary">
+                                <Button as={Link as any} to="/checkout" variant="primary">
                                     Thử lại
                                 </Button>
-                                <Button as={Link} to="/" variant="outline-secondary">
+                                <Button as={Link as any} to="/" variant="outline-secondary">
                                     Liên hệ hỗ trợ
                                 </Button>
                             </div>
