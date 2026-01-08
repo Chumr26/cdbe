@@ -36,7 +36,7 @@ exports.register = asyncHandler(async (req, res) => {
     });
 
     // Create verification url
-    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
+    const verifyUrl = `${process.env.YOUR_DOMAIN || 'http://localhost:5173'}/verify-email/${verificationToken}`;
 
     // Send verification email
     try {
@@ -158,7 +158,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 
     // Create reset url
     // Assuming frontend is running on port 5173 or configured via env
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.YOUR_DOMAIN || 'http://localhost:5173'}/reset-password/${resetToken}`;
 
     const message = `You are receiving this email because you (or someone else) has requested the reset of a password.`;
 

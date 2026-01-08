@@ -51,21 +51,30 @@ const generateEmailTemplate = ({ title, message, ctaUrl, ctaText }) => {
 };
 
 const sendEmail = async (options) => {
-    const htmlContent = options.html || generateEmailTemplate({
-        title: options.subject,
-        message: options.message,
-        ctaUrl: options.ctaUrl,
-        ctaText: options.ctaText
-    });
+    try {
+        const htmlContent = options.html || generateEmailTemplate({
+            title: options.subject,
+            message: options.message,
+            ctaUrl: options.ctaUrl,
+            ctaText: options.ctaText
+        });
 
-    await resend.emails.send({
-        from: 'BookStore <bookstore.nguyenanhkhoa.me>',
-        to: options.email,
-        subject: options.subject,
-        html: htmlContent,
-    });
+        const emailData = {
+            from: 'BookStore <noreply@bookstore.nguyenanhkhoa.me>',
+            to: options.email,
+            subject: options.subject,
+            html: htmlContent,
+        };
 
-    console.log('Email sent to:', options.email);
+        const result = await resend.emails.send(emailData);
+        
+        console.log(`Email sent to: ${options.email}`);
+        
+        return result;
+    } catch (error) {
+        console.error('Email send failed:', error.message);
+        throw error;
+    }
 };
 
 module.exports = sendEmail;
