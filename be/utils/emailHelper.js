@@ -1,4 +1,5 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const generateEmailTemplate = ({ title, message, ctaUrl, ctaText }) => {
     return `
@@ -50,16 +51,6 @@ const generateEmailTemplate = ({ title, message, ctaUrl, ctaText }) => {
 };
 
 const sendEmail = async (options) => {
-    // Create transporter using Gmail
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
-
-    // Use provided HTML or generate from template
     const htmlContent = options.html || generateEmailTemplate({
         title: options.subject,
         message: options.message,
@@ -67,17 +58,14 @@ const sendEmail = async (options) => {
         ctaText: options.ctaText
     });
 
-    const message = {
-        from: `${process.env.FROM_NAME || 'BookStore'} <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+        from: 'BookStore <bookstore.nguyenanhkhoa.me>',
         to: options.email,
         subject: options.subject,
-        text: options.message, // Fallback plain text
         html: htmlContent,
-    };
+    });
 
-    const info = await transporter.sendMail(message);
-
-    console.log('Message sent: %s', info.messageId);
+    console.log('Email sent to:', options.email);
 };
 
 module.exports = sendEmail;
