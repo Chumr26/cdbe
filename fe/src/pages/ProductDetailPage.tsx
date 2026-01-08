@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Button, Badge, Form, Breadcrumb, Tab, Tabs } from 'react-bootstrap';
+import { Container, Row, Col, Button, Badge, Breadcrumb, Tab, Tabs } from 'react-bootstrap';
 import { FaStar, FaShoppingCart, FaArrowLeft, FaBook, FaCalendar, FaLanguage, FaBuilding, FaBarcode, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { productsAPI } from '../api/products.api';
 import type { Product } from '../api/products.api';
