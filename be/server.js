@@ -55,7 +55,7 @@ if (process.env.NODE_ENV !== 'production') {
         return statusTexts[status] || '';
     });
 
-    app.use(morgan(':method :url :status :status-text :response-time ms - :res[content-length]'));
+    app.use(morgan(':date[iso] :method :url :status :status-text :response-time ms - :res[content-length]'));
 }
 
 // MongoDB connection
