@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import api from '../api/axios';
 import { ordersAPI } from '../api/orders.api';
 import type { ShippingAddress } from '../api/orders.api';
@@ -20,7 +21,27 @@ const CheckoutPage: React.FC = () => {
     const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'payos'>('cod');
+
+    type PaymentMethod = 'cod' | 'payos';
+    type UserAddress = {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+        isDefault?: boolean;
+    };
+    type UserProfile = {
+        firstName?: string;
+        lastName?: string;
+        phoneNumber?: string;
+        addresses?: UserAddress[];
+    };
+    type ApiErrorResponse = {
+        message?: unknown;
+    };
+
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
 
     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
         firstName: '',
@@ -33,15 +54,10 @@ const CheckoutPage: React.FC = () => {
         phoneNumber: '',
     });
 
-    useEffect(() => {
-        loadCart();
-        loadUserProfile();
-    }, []);
-
-    const loadUserProfile = async () => {
+    const loadUserProfile = useCallback(async () => {
         try {
             const response = await authAPI.getProfile();
-            const user = response.data;
+            const user = response.data as UserProfile;
 
             // Start with personal info
             let newAddress: ShippingAddress = {
@@ -57,7 +73,7 @@ const CheckoutPage: React.FC = () => {
 
             // Check for default address
             if (user.addresses && user.addresses.length > 0) {
-                const defaultAddr = user.addresses.find((addr: any) => addr.isDefault);
+                const defaultAddr = user.addresses.find((addr) => addr.isDefault);
                 const addrToUse = defaultAddr || user.addresses[0];
 
                 if (addrToUse) {
@@ -78,9 +94,9 @@ const CheckoutPage: React.FC = () => {
         } catch (error) {
             console.error('Failed to load user profile for checkout autofill', error);
         }
-    };
+    }, []);
 
-    const loadCart = async () => {
+    const loadCart = useCallback(async () => {
         try {
             const response = await cartAPI.getCart();
             if (!response.data || response.data.items.length === 0) {
@@ -88,12 +104,17 @@ const CheckoutPage: React.FC = () => {
                 return;
             }
             setCart(response.data);
-        } catch (err: any) {
+        } catch {
             setError('Failed to load cart');
         } finally {
             setLoading(false);
         }
-    };
+    }, [navigate]);
+
+    useEffect(() => {
+        void loadCart();
+        void loadUserProfile();
+    }, [loadCart, loadUserProfile]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setShippingAddress({
@@ -105,6 +126,14 @@ const CheckoutPage: React.FC = () => {
     const handleClose = () => {
         setShowModal(false);
         navigate('/orders');
+    };
+
+    const getApiErrorMessage = (err: unknown): string | null => {
+        if (!axios.isAxiosError(err)) return null;
+        const data = err.response?.data as ApiErrorResponse | undefined;
+        if (typeof data?.message === 'string') return data.message;
+        if (typeof err.message === 'string' && err.message.length > 0) return err.message;
+        return null;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -127,7 +156,7 @@ const CheckoutPage: React.FC = () => {
                         window.location.href = paymentRes.data.checkoutUrl;
                         return; // Prevent modal showing
                     }
-                } catch (payError: any) {
+                } catch (payError: unknown) {
                     console.error('Payment creation failed', payError);
                     setError('Order created but payment initialization failed. Please try paying from Order Details.');
                     // Still show modal as order exists? Or navigate to order details?
@@ -136,8 +165,8 @@ const CheckoutPage: React.FC = () => {
             }
 
             setShowModal(true);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to place order');
+        } catch (err: unknown) {
+            setError(getApiErrorMessage(err) || 'Failed to place order');
         } finally {
             setSubmitting(false);
         }
@@ -176,7 +205,7 @@ const CheckoutPage: React.FC = () => {
                                         name="paymentMethod"
                                         value="cod"
                                         checked={paymentMethod === 'cod'}
-                                        onChange={(e) => setPaymentMethod(e.target.value as any)}
+                                        onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
                                     />
                                     <Form.Check
                                         type="radio"
@@ -185,7 +214,7 @@ const CheckoutPage: React.FC = () => {
                                         name="paymentMethod"
                                         value="payos"
                                         checked={paymentMethod === 'payos'}
-                                        onChange={(e) => setPaymentMethod(e.target.value as any)}
+                                        onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
                                     />
                                 </div>
                             </Form.Group>
@@ -302,37 +331,6 @@ const CheckoutPage: React.FC = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-
-                <Col lg={4}>
-                    <Card>
-                        <Card.Body>
-                            <h5 className="mb-3">Order Summary</h5>
-                            {cart.items.map((item) => (
-                                <div key={item.productId._id} className="d-flex justify-content-between mb-2">
-                                    <span>
-                                        {item.productId.title} x {item.quantity}
-                                    </span>
-                                    <span>{formatPrice(item.price * item.quantity)}</span>
-                                </div>
-                            ))}
-                            <hr />
-                            <div className="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <strong>{formatPrice(cart.total)}</strong>
-                            </div>
-                            <div className="d-flex justify-content-between mb-2">
-                                <span>Shipping:</span>
-                                <span className="text-success">FREE</span>
-                            </div>
-                            <hr />
-                            <div className="d-flex justify-content-between">
-                                <strong>Total:</strong>
-                                <strong className="text-primary">{formatPrice(cart.total)}</strong>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-
                 <Col lg={4}>
                     <Card className="mb-4">
                         <Card.Body>

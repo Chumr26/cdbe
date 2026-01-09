@@ -123,7 +123,9 @@ async function recalculateCartTotals(cart, userId) {
   cart.subtotal = subtotal;
   cart.discountTotal = discountTotal;
   cart.total = Math.max(0, subtotal - discountTotal);
-  cart.coupon = appliedCouponSnapshot;
+  // IMPORTANT: use `undefined` (not `null`) for optional subdocuments.
+  // Mongoose will throw "Cast to Object failed" if we persist `coupon: null`.
+  cart.coupon = appliedCouponSnapshot || undefined;
 
   return { cart, couponResult };
 }

@@ -44,16 +44,27 @@ exports.createOrder = asyncHandler(async (req, res) => {
   await recalculated.cart.save();
 
   // Create order (use new + save to trigger pre-save hook)
-  const order = new Order({
+  // IMPORTANT: omit `coupon` entirely when not present; setting `coupon: undefined`
+  // can still trigger Mongoose casting for embedded objects.
+  const orderPayload = {
     userId: req.user.id,
     items: orderItems,
     shippingAddress,
     paymentMethod: paymentMethod || 'payos',
     subtotal: cart.subtotal || 0,
     discountTotal: cart.discountTotal || 0,
-    coupon: cart.coupon || undefined,
     total: cart.total
-  });
+  };
+
+  if (
+    cart.coupon &&
+    typeof cart.coupon === 'object' &&
+    (cart.coupon.couponId || cart.coupon.code)
+  ) {
+    orderPayload.coupon = cart.coupon;
+  }
+
+  const order = new Order(orderPayload);
   
   await order.save();
 

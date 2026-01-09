@@ -1,5 +1,28 @@
 const mongoose = require('mongoose');
 
+const couponSnapshotSchema = new mongoose.Schema(
+    {
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Coupon'
+        },
+        code: {
+            type: String,
+            trim: true,
+            uppercase: true
+        },
+        type: {
+            type: String,
+            enum: ['percent', 'fixed']
+        },
+        value: {
+            type: Number,
+            min: 0
+        }
+    },
+    { _id: false }
+);
+
 const orderSchema = new mongoose.Schema({
     orderNumber: {
         type: String,
@@ -60,23 +83,8 @@ const orderSchema = new mongoose.Schema({
         default: 0
     },
     coupon: {
-        couponId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Coupon'
-        },
-        code: {
-            type: String,
-            trim: true,
-            uppercase: true
-        },
-        type: {
-            type: String,
-            enum: ['percent', 'fixed']
-        },
-        value: {
-            type: Number,
-            min: 0
-        }
+        type: couponSnapshotSchema,
+        default: undefined
     },
     total: {
         type: Number,
