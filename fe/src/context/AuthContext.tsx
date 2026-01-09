@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authAPI } from '../api/auth.api';
@@ -59,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     const response = await authAPI.getProfile();
                     setUser(response.data);
                     localStorage.setItem('user', JSON.stringify(response.data));
-                } catch (error) {
+                } catch {
                     // Token invalid, clear storage
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');

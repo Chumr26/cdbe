@@ -2,11 +2,21 @@ import React, { useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../api/auth.api';
+import axios from 'axios';
 
 const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'danger'; text: string } | null>(null);
+
+    const getErrorMessage = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err)) {
+            const message = (err.response?.data as { message?: string } | undefined)?.message;
+            return message || err.message || fallback;
+        }
+        if (err instanceof Error) return err.message;
+        return fallback;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,10 +27,10 @@ const ForgotPasswordPage: React.FC = () => {
             const response = await authAPI.forgotPassword(email);
             setMessage({ type: 'success', text: response.message || 'Check your email for a reset link' });
             setEmail('');
-        } catch (error: any) {
+        } catch (error: unknown) {
             setMessage({
                 type: 'danger',
-                text: error.response?.data?.message || 'Failed to request password reset'
+                text: getErrorMessage(error, 'Failed to request password reset')
             });
         } finally {
             setSubmitting(false);

@@ -45,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         if (!inCart) {
             try {
                 await addToCart(product._id, 1);
-            } catch (error) {
+            } catch {
                 // Error handling is done in CartContext
             }
         }

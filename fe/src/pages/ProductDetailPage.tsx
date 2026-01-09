@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Container, Row, Col, Button, Badge, Breadcrumb, Tab, Tabs, Form, Alert, Spinner } from 'react-bootstrap';
 import { FaStar, FaShoppingCart, FaArrowLeft, FaBook, FaCalendar, FaLanguage, FaBuilding, FaBarcode, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import axios from 'axios';
 import { productsAPI } from '../api/products.api';
 import type { Product, Review } from '../api/products.api';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +10,15 @@ import { useCart } from '../context/CartContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import ProductCard from '../components/products/ProductCard';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const ProductDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -51,7 +61,7 @@ const ProductDetailPage: React.FC = () => {
             if (response.data.category) {
                 loadRelatedProducts(response.data.category, id!);
             }
-        } catch (err: any) {
+        } catch {
             setError('Failed to load product details');
         } finally {
             setLoading(false);
@@ -75,8 +85,8 @@ const ProductDetailPage: React.FC = () => {
         try {
             const response = await productsAPI.getProductReviews(id, 1, 50);
             setReviews(response.data);
-        } catch (err: any) {
-            setReviewsError(err?.response?.data?.message || 'Failed to load reviews');
+        } catch (err: unknown) {
+            setReviewsError(getErrorMessage(err, 'Failed to load reviews'));
         } finally {
             setReviewsLoading(false);
         }
@@ -123,8 +133,8 @@ const ProductDetailPage: React.FC = () => {
 
             await refreshProduct();
             await loadReviews();
-        } catch (err: any) {
-            setReviewActionError(err?.response?.data?.message || 'Failed to submit review');
+        } catch (err: unknown) {
+            setReviewActionError(getErrorMessage(err, 'Failed to submit review'));
         } finally {
             setReviewSubmitting(false);
         }
@@ -143,8 +153,8 @@ const ProductDetailPage: React.FC = () => {
             setReviewActionSuccess('Review deleted successfully');
             await refreshProduct();
             await loadReviews();
-        } catch (err: any) {
-            setReviewActionError(err?.response?.data?.message || 'Failed to delete review');
+        } catch (err: unknown) {
+            setReviewActionError(getErrorMessage(err, 'Failed to delete review'));
         } finally {
             setReviewSubmitting(false);
         }
@@ -178,7 +188,7 @@ const ProductDetailPage: React.FC = () => {
         setAdding(true);
         try {
             await addToCart(product!._id, 1);
-        } catch (err: any) {
+        } catch {
             // Error handling is done in CartContext
         } finally {
             setAdding(false);

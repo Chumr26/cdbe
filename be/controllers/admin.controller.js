@@ -189,7 +189,9 @@ exports.getDashboardStats = asyncHandler(async (req, res) => {
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
 
   const pendingOrders = await Order.countDocuments({ orderStatus: 'pending' });
-  const lowStockProducts = await Product.countDocuments({ stock: { $lt: 10 } });
+  const lowStockProducts = await Product.find({ stock: { $lt: 10 } })
+    .sort({ stock: 1, updatedAt: -1 })
+    .limit(20);
 
   res.status(200).json({
     success: true,
@@ -200,6 +202,150 @@ exports.getDashboardStats = asyncHandler(async (req, res) => {
       totalRevenue,
       pendingOrders,
       lowStockProducts
+    }
+  });
+});
+
+// @desc    Get advanced analytics (time-series + top products)
+// @route   GET /api/admin/analytics
+// @access  Private/Admin
+exports.getAdvancedAnalytics = asyncHandler(async (req, res) => {
+  const requestedDays = Number.parseInt(req.query.days, 10);
+  const rangeDays = Number.isFinite(requestedDays) ? requestedDays : 30;
+  const safeRangeDays = Math.min(Math.max(rangeDays, 1), 365);
+
+  const to = new Date();
+  const from = new Date(to);
+  from.setDate(from.getDate() - (safeRangeDays - 1));
+  from.setHours(0, 0, 0, 0);
+
+  const orderRangeMatch = { createdAt: { $gte: from, $lte: to } };
+  const userRangeMatch = { createdAt: { $gte: from, $lte: to } };
+
+  const [
+    totals,
+    dailyOrdersRevenue,
+    dailyUsers,
+    orderStatusDistribution,
+    paymentStatusDistribution,
+    topProducts
+  ] = await Promise.all([
+    (async () => {
+      const [totalOrdersInRange, newUsersInRange, completedAgg, completedOrdersCount] = await Promise.all([
+        Order.countDocuments(orderRangeMatch),
+        User.countDocuments(userRangeMatch),
+        Order.aggregate([
+          { $match: { ...orderRangeMatch, paymentStatus: 'completed' } },
+          { $group: { _id: null, revenue: { $sum: '$total' } } }
+        ]),
+        Order.countDocuments({ ...orderRangeMatch, paymentStatus: 'completed' })
+      ]);
+
+      const revenue = completedAgg?.[0]?.revenue || 0;
+      const avgOrderValue = completedOrdersCount > 0 ? revenue / completedOrdersCount : 0;
+
+      return {
+        totalOrders: totalOrdersInRange,
+        revenue,
+        newUsers: newUsersInRange,
+        completedOrders: completedOrdersCount,
+        avgOrderValue
+      };
+    })(),
+    Order.aggregate([
+      { $match: orderRangeMatch },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' }
+          },
+          orders: { $sum: 1 },
+          revenue: {
+            $sum: {
+              $cond: [{ $eq: ['$paymentStatus', 'completed'] }, '$total', 0]
+            }
+          }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]),
+    User.aggregate([
+      { $match: userRangeMatch },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' }
+          },
+          users: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]),
+    Order.aggregate([
+      { $match: orderRangeMatch },
+      { $group: { _id: '$orderStatus', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]),
+    Order.aggregate([
+      { $match: orderRangeMatch },
+      { $group: { _id: '$paymentStatus', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]),
+    Order.aggregate([
+      { $match: { ...orderRangeMatch, paymentStatus: 'completed' } },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.productId',
+          title: { $first: '$items.title' },
+          isbn: { $first: '$items.isbn' },
+          quantitySold: { $sum: '$items.quantity' },
+          revenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
+        }
+      },
+      { $sort: { revenue: -1 } },
+      { $limit: 10 }
+    ])
+  ]);
+
+  // Fill missing days so the frontend can render a consistent table
+  const dayKeys = [];
+  const cursor = new Date(from);
+  while (cursor <= to) {
+    const iso = cursor.toISOString().slice(0, 10);
+    dayKeys.push(iso);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const byDayMap = new Map(dailyOrdersRevenue.map((d) => [d._id, { orders: d.orders, revenue: d.revenue }]));
+  const usersByDayMap = new Map(dailyUsers.map((d) => [d._id, d.users]));
+
+  const timeSeries = dayKeys.map((day) => ({
+    date: day,
+    orders: byDayMap.get(day)?.orders || 0,
+    revenue: byDayMap.get(day)?.revenue || 0,
+    newUsers: usersByDayMap.get(day) || 0
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: {
+      rangeDays: safeRangeDays,
+      from: from.toISOString(),
+      to: to.toISOString(),
+      totals,
+      timeSeries,
+      distributions: {
+        orderStatus: orderStatusDistribution.map((d) => ({ key: d._id || 'unknown', count: d.count })),
+        paymentStatus: paymentStatusDistribution.map((d) => ({ key: d._id || 'unknown', count: d.count }))
+      },
+      topProducts: topProducts.map((p) => ({
+        productId: p._id,
+        title: p.title,
+        isbn: p.isbn,
+        quantitySold: p.quantitySold,
+        revenue: p.revenue
+      }))
     }
   });
 });

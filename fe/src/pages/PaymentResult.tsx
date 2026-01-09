@@ -1,33 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Container, Card, Button } from 'react-bootstrap';
+import { Container, Card } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const PaymentResult = () => {
     const [searchParams] = useSearchParams();
 
-    const [status, setStatus] = useState<'success' | 'cancelled' | 'failed' | null>(null);
-    const [orderId, setOrderId] = useState<string | null>(null);
-
-    useEffect(() => {
+    const status = useMemo(() => {
         const statusParam = searchParams.get('status');
-        const orderIdParam = searchParams.get('orderId');
-
         const code = searchParams.get('code');
         const cancel = searchParams.get('cancel');
 
-        if (statusParam === 'success' || statusParam === 'PAID' || code === '00') {
-            setStatus('success');
-        } else if (statusParam === 'cancelled' || cancel === 'true') {
-            setStatus('cancelled');
-        } else {
-            setStatus('failed');
-        }
-
-        if (orderIdParam) {
-            setOrderId(orderIdParam);
-        }
+        if (statusParam === 'success' || statusParam === 'PAID' || code === '00') return 'success';
+        if (statusParam === 'cancelled' || cancel === 'true') return 'cancelled';
+        return 'failed';
     }, [searchParams]);
+
+    const orderId = useMemo(() => searchParams.get('orderId'), [searchParams]);
 
     return (
         <Container className="py-5 d-flex justify-content-center">
@@ -41,12 +30,12 @@ const PaymentResult = () => {
                                 Cảm ơn bạn đã mua sắm. Đơn hàng của bạn {orderId ? `#${orderId.slice(-6)}` : ''} đã được thanh toán thành công.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link as any} to="/orders" variant="primary">
+                                <Link to="/orders" className="btn btn-primary">
                                     Xem đơn hàng
-                                </Button>
-                                <Button as={Link as any} to="/" variant="outline-secondary">
+                                </Link>
+                                <Link to="/" className="btn btn-outline-secondary">
                                     Tiếp tục mua sắm
-                                </Button>
+                                </Link>
                             </div>
                         </>
                     ) : status === 'cancelled' ? (
@@ -57,12 +46,12 @@ const PaymentResult = () => {
                                 Bạn đã hủy giao dịch thanh toán.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link as any} to="/checkout" variant="primary">
+                                <Link to="/checkout" className="btn btn-primary">
                                     Thử lại
-                                </Button>
-                                <Button as={Link as any} to="/" variant="outline-secondary">
+                                </Link>
+                                <Link to="/" className="btn btn-outline-secondary">
                                     Quay về trang chủ
-                                </Button>
+                                </Link>
                             </div>
                         </>
                     ) : (
@@ -73,12 +62,12 @@ const PaymentResult = () => {
                                 Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.
                             </p>
                             <div className="d-grid gap-2">
-                                <Button as={Link as any} to="/checkout" variant="primary">
+                                <Link to="/checkout" className="btn btn-primary">
                                     Thử lại
-                                </Button>
-                                <Button as={Link as any} to="/" variant="outline-secondary">
+                                </Link>
+                                <Link to="/" className="btn btn-outline-secondary">
                                     Liên hệ hỗ trợ
-                                </Button>
+                                </Link>
                             </div>
                         </>
                     )}

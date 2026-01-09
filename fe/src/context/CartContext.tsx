@@ -1,4 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
 import { useAuth } from './AuthContext';
@@ -41,7 +44,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Calculate total count (distinct items)
             const count = cart.items.length;
             setCartCount(count);
-        } catch (error) {
+        } catch {
             // Cart might be empty or error occurred
             setCartItems([]);
             setCartCount(0);
@@ -50,6 +53,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Load cart on mount and when auth changes
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         refreshCart();
     }, [refreshCart]);
 
@@ -57,6 +61,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isInCart = useCallback((productId: string): boolean => {
         return cartItems.includes(productId);
     }, [cartItems]);
+
+    // Trigger bounce animation
+    const triggerBounce = useCallback(() => {
+        setIsBouncing(true);
+        setTimeout(() => setIsBouncing(false), 500);
+    }, []);
 
     // Add item to cart with bounce animation
     const addToCart = useCallback(async (productId: string, quantity: number = 1) => {
@@ -73,23 +83,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             notification.textContent = '✓ Product added to cart!';
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
-        } catch (error: any) {
+        } catch (error: unknown) {
             // Show error toast
             const notification = document.createElement('div');
             notification.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3';
             notification.style.zIndex = '9999';
-            notification.textContent = error.response?.data?.message || 'Failed to add to cart';
+            const message = axios.isAxiosError(error)
+                ? (error.response?.data as { message?: string } | undefined)?.message || error.message
+                : error instanceof Error
+                    ? error.message
+                    : 'Failed to add to cart';
+            notification.textContent = message;
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
             throw error;
         }
-    }, [refreshCart]);
-
-    // Trigger bounce animation
-    const triggerBounce = useCallback(() => {
-        setIsBouncing(true);
-        setTimeout(() => setIsBouncing(false), 500);
-    }, []);
+    }, [refreshCart, triggerBounce]);
 
     const value: CartContextType = {
         cartItems,

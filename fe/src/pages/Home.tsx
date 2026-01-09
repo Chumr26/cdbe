@@ -8,12 +8,22 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { cartAPI } from '../api/cart.api';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const Home: React.FC = () => {
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { isAuthenticated } = useAuth();
+
+    const getErrorMessage = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err)) {
+            const message = (err.response?.data as { message?: string } | undefined)?.message;
+            return message || err.message || fallback;
+        }
+        if (err instanceof Error) return err.message;
+        return fallback;
+    };
 
     useEffect(() => {
         loadFeaturedProducts();
@@ -23,7 +33,7 @@ const Home: React.FC = () => {
         try {
             const response = await productsAPI.getFeaturedProducts();
             setFeaturedProducts(response.data);
-        } catch (err: any) {
+        } catch {
             setError('Failed to load featured products');
         } finally {
             setLoading(false);
@@ -39,8 +49,8 @@ const Home: React.FC = () => {
         try {
             await cartAPI.addToCart(productId, 1);
             alert('Product added to cart!');
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to add to cart');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to add to cart'));
         }
     };
 

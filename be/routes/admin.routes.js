@@ -9,6 +9,7 @@ const {
   updateOrderStatus,
   updateCodPaymentStatus,
   getDashboardStats,
+  getAdvancedAnalytics,
   createCoupon,
   getAllCoupons,
   getCoupon,
@@ -315,5 +316,26 @@ router.patch('/orders/:id/payment-status', updateCodPaymentStatus);
  *                       example: 25
  */
 router.get('/dashboard', getDashboardStats);
+
+/**
+ * @swagger
+ * /admin/analytics:
+ *   get:
+ *     summary: Get advanced analytics (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: days
+ *         schema:
+ *           type: integer
+ *           example: 30
+ *         description: Number of days in range (1-365)
+ *     responses:
+ *       200:
+ *         description: Advanced analytics retrieved successfully
+ */
+router.get('/analytics', getAdvancedAnalytics);
 
 module.exports = router;

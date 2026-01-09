@@ -76,7 +76,7 @@ const VerifyEmailPage: React.FC = () => {
                     navigate('/login');
                 }, 3000);
 
-            } catch (error: any) {
+            } catch {
                 // If the error is "Invalid or expired token" and the user is verified, it might be a double invocation or reload.
                 // We can check if we just verified this token successfully? No, we just added it.
 

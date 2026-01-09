@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -12,6 +13,15 @@ const LoginPage: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    const getErrorMessage = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err)) {
+            const message = (err.response?.data as { message?: string } | undefined)?.message;
+            return message || err.message || fallback;
+        }
+        if (err instanceof Error) return err.message;
+        return fallback;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -20,8 +30,8 @@ const LoginPage: React.FC = () => {
         try {
             await login({ email, password }, rememberMe);
             navigate('/');
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to login. Please check your credentials.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to login. Please check your credentials.'));
         } finally {
             setLoading(false);
         }

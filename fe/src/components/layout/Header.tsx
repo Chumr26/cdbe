@@ -110,7 +110,7 @@ const Header: React.FC = () => {
                                         {isAdmin && (
                                             <>
                                                 <NavDropdown.Divider />
-                                                <NavDropdown.Item as={Link} to="/admin">Admin Dashboard</NavDropdown.Item>
+                                                <NavDropdown.Item as={Link} to="/admin">Advanced Analytics Dashboard</NavDropdown.Item>
                                                 <NavDropdown.Item as={Link} to="/admin/coupons">Manage Coupons</NavDropdown.Item>
                                             </>
                                         )}

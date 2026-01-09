@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Table, Modal, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
+import axios from 'axios';
 import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
 import { couponsAPI } from '../api/coupons.api';
@@ -23,6 +24,15 @@ const CartPage: React.FC = () => {
     const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string } | null>(null);
     const navigate = useNavigate();
 
+    const getErrorMessage = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err)) {
+            const message = (err.response?.data as { message?: string } | undefined)?.message;
+            return message || err.message || fallback;
+        }
+        if (err instanceof Error) return err.message;
+        return fallback;
+    };
+
     useEffect(() => {
         loadCart();
     }, []);
@@ -37,12 +47,12 @@ const CartPage: React.FC = () => {
             try {
                 const couponsResp = await couponsAPI.getAvailableCoupons();
                 setAvailableCoupons(couponsResp.data || []);
-            } catch (e) {
+            } catch {
                 setAvailableCoupons([]);
             } finally {
                 setLoadingCoupons(false);
             }
-        } catch (err: any) {
+        } catch {
             setError('Failed to load cart');
         } finally {
             setLoading(false);
@@ -58,8 +68,8 @@ const CartPage: React.FC = () => {
             const response = await cartAPI.applyCoupon(couponCode.trim());
             setCart(response.data);
             setCouponCode(response.data.coupon?.code || couponCode.trim().toUpperCase());
-        } catch (err: any) {
-            setCouponError(err.response?.data?.message || 'Failed to apply coupon');
+        } catch (err: unknown) {
+            setCouponError(getErrorMessage(err, 'Failed to apply coupon'));
         } finally {
             setApplyingCoupon(false);
         }
@@ -73,8 +83,8 @@ const CartPage: React.FC = () => {
             const response = await cartAPI.removeCoupon();
             setCart(response.data);
             setCouponCode('');
-        } catch (err: any) {
-            setCouponError(err.response?.data?.message || 'Failed to remove coupon');
+        } catch (err: unknown) {
+            setCouponError(getErrorMessage(err, 'Failed to remove coupon'));
         } finally {
             setApplyingCoupon(false);
         }
@@ -86,8 +96,8 @@ const CartPage: React.FC = () => {
         try {
             const response = await cartAPI.updateCartItem(productId, newQuantity);
             setCart(response.data);
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to update quantity');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to update quantity'));
         }
     };
 
@@ -104,8 +114,8 @@ const CartPage: React.FC = () => {
             setCart(response.data);
             setShowDeleteModal(false);
             setItemToDelete(null);
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to remove item');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to remove item'));
         }
     };
 
@@ -118,8 +128,8 @@ const CartPage: React.FC = () => {
             await cartAPI.clearCart();
             setCart(null);
             setShowClearModal(false);
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to clear cart');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to clear cart'));
         }
     };
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Pagination } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import { productsAPI } from '../api/products.api';
 import type { Product, ProductFilters } from '../api/products.api';
 import { categoriesAPI } from '../api/categories.api';
@@ -10,6 +11,15 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { cartAPI } from '../api/cart.api';
 import { useAuth } from '../context/AuthContext';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const ProductsPage: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -44,7 +54,7 @@ const ProductsPage: React.FC = () => {
         try {
             const response = await categoriesAPI.getCategories();
             setCategories(response.data);
-        } catch (err) {
+        } catch {
             console.error('Failed to load categories');
         }
     };
@@ -57,15 +67,15 @@ const ProductsPage: React.FC = () => {
             setProducts(response.data);
             setTotalPages(response.pages);
             setCurrentPage(response.page);
-        } catch (err: any) {
-            setError('Failed to load products');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to load products'));
         } finally {
             setLoading(false);
         }
     };
 
-    const handleFilterChange = (key: keyof ProductFilters, value: any) => {
-        setFilters({ ...filters, [key]: value, page: 1 });
+    const handleFilterChange = <K extends keyof ProductFilters>(key: K, value: ProductFilters[K]) => {
+        setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
     };
 
     const handlePageChange = (page: number) => {
@@ -82,8 +92,8 @@ const ProductsPage: React.FC = () => {
         try {
             await cartAPI.addToCart(productId, 1);
             alert('Product added to cart!');
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to add to cart');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to add to cart'));
         }
     };
 

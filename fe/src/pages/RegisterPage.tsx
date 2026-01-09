@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -59,8 +69,8 @@ const RegisterPage: React.FC = () => {
                 lastName: '',
                 phoneNumber: '',
             });
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to register. Please try again.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to register. Please try again.'));
         } finally {
             setLoading(false);
         }

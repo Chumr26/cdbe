@@ -20,7 +20,7 @@ export interface User {
   lastName: string;
   role: 'customer' | 'admin';
   phoneNumber?: string;
-  addresses?: any[];
+  addresses?: unknown[];
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Modal, Form, Pagination, Alert } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import axios from 'axios';
 import { productsAPI } from '../../api/products.api';
 import type { Product } from '../../api/products.api';
 import { categoriesAPI } from '../../api/categories.api';
 import type { Category } from '../../api/categories.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const AdminProducts: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -47,7 +57,7 @@ const AdminProducts: React.FC = () => {
             setTotalPages(response.pages);
             setTotalItems(response.total);
             setCurrentPage(response.page);
-        } catch (err) {
+        } catch {
             setError('Failed to load products');
         } finally {
             setLoading(false);
@@ -58,7 +68,7 @@ const AdminProducts: React.FC = () => {
         try {
             const response = await categoriesAPI.getCategories();
             setCategories(response.data);
-        } catch (err) {
+        } catch {
             console.error('Failed to load categories');
         }
     };
@@ -146,8 +156,8 @@ const AdminProducts: React.FC = () => {
 
             fetchProducts(currentPage);
             handleCloseModal();
-        } catch (err: any) {
-            setModalError(err.response?.data?.message || err.message || 'Failed to save product');
+        } catch (err: unknown) {
+            setModalError(getErrorMessage(err, 'Failed to save product'));
         } finally {
             setSaving(false);
         }
@@ -167,7 +177,7 @@ const AdminProducts: React.FC = () => {
             fetchProducts(currentPage);
             setShowDeleteModal(false);
             setProductToDelete(null);
-        } catch (err) {
+        } catch {
             setError('Failed to delete product');
         }
     };

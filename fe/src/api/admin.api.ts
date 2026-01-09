@@ -36,6 +36,52 @@ export interface DashboardResponse {
   data: DashboardStats;
 }
 
+export interface AnalyticsTotals {
+  totalOrders: number;
+  revenue: number;
+  newUsers: number;
+  completedOrders: number;
+  avgOrderValue: number;
+}
+
+export interface AnalyticsTimeSeriesPoint {
+  date: string; // YYYY-MM-DD
+  orders: number;
+  revenue: number;
+  newUsers: number;
+}
+
+export interface AnalyticsDistributionPoint {
+  key: string;
+  count: number;
+}
+
+export interface TopProductAnalytics {
+  productId: string;
+  title?: string;
+  isbn?: string;
+  quantitySold: number;
+  revenue: number;
+}
+
+export interface AdvancedAnalytics {
+  rangeDays: number;
+  from: string;
+  to: string;
+  totals: AnalyticsTotals;
+  timeSeries: AnalyticsTimeSeriesPoint[];
+  distributions: {
+    orderStatus: AnalyticsDistributionPoint[];
+    paymentStatus: AnalyticsDistributionPoint[];
+  };
+  topProducts: TopProductAnalytics[];
+}
+
+export interface AdvancedAnalyticsResponse {
+  success: boolean;
+  data: AdvancedAnalytics;
+}
+
 export interface UsersResponse {
   success: boolean;
   count: number;
@@ -76,6 +122,11 @@ export interface CouponResponse {
 export const adminAPI = {
   getDashboard: async (): Promise<DashboardResponse> => {
     const response = await api.get('/admin/dashboard');
+    return response.data;
+  },
+
+  getAdvancedAnalytics: async (days = 30): Promise<AdvancedAnalyticsResponse> => {
+    const response = await api.get(`/admin/analytics?days=${days}`);
     return response.data;
   },
 

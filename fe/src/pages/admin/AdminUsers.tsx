@@ -27,7 +27,7 @@ const AdminUsers: React.FC = () => {
             setTotalPages(response.pages);
             setTotalItems(response.total);
             setCurrentPage(response.page);
-        } catch (err) {
+        } catch {
             setError('Failed to load users');
         } finally {
             setLoading(false);
@@ -52,7 +52,7 @@ const AdminUsers: React.FC = () => {
             fetchUsers(currentPage);
             setShowDeleteModal(false);
             setUserToDelete(null);
-        } catch (err) {
+        } catch {
             setError('Failed to delete user');
         }
     };

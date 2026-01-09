@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../api/auth.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const ProfilePage: React.FC = () => {
     const { user, updateUser } = useAuth();
@@ -53,8 +63,8 @@ const ProfilePage: React.FC = () => {
                 updateUser(response.data);
                 setSuccess('Profile updated successfully!');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || err.message || 'Failed to update profile');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to update profile'));
         } finally {
             setLoading(false);
         }

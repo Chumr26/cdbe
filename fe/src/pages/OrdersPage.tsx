@@ -5,11 +5,21 @@ import { ordersAPI } from '../api/orders.api';
 import type { Order } from '../api/orders.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import axios from 'axios';
 
 const OrdersPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const getErrorMessage = (err: unknown, fallback: string) => {
+        if (axios.isAxiosError(err)) {
+            const message = (err.response?.data as { message?: string } | undefined)?.message;
+            return message || err.message || fallback;
+        }
+        if (err instanceof Error) return err.message;
+        return fallback;
+    };
 
     useEffect(() => {
         loadOrders();
@@ -19,7 +29,7 @@ const OrdersPage: React.FC = () => {
         try {
             const response = await ordersAPI.getOrders();
             setOrders(response.data);
-        } catch (err: any) {
+        } catch {
             setError('Failed to load orders');
         } finally {
             setLoading(false);
@@ -33,8 +43,8 @@ const OrdersPage: React.FC = () => {
             await ordersAPI.cancelOrder(orderId);
             loadOrders();
             alert('Order cancelled successfully');
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Failed to cancel order');
+        } catch (err: unknown) {
+            alert(getErrorMessage(err, 'Failed to cancel order'));
         }
     };
 

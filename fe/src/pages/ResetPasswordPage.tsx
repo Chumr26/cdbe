@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import { authAPI } from '../api/auth.api';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const ResetPasswordPage: React.FC = () => {
     const { token } = useParams<{ token: string }>();
@@ -40,8 +50,8 @@ const ResetPasswordPage: React.FC = () => {
             setTimeout(() => {
                 navigate('/login');
             }, 3000);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to reset password');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to reset password'));
         } finally {
             setSubmitting(false);
         }

@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Table, Button, Modal, Form, Pagination, Alert, Badge, Row, Col } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
+import axios from 'axios';
 import { adminAPI } from '../../api/admin.api';
 import type { Order } from '../../api/orders.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+    if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+};
 
 const AdminOrders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -35,7 +45,7 @@ const AdminOrders: React.FC = () => {
             setTotalPages(response.pages);
             setTotalItems(response.total);
             setCurrentPage(response.page);
-        } catch (err) {
+        } catch {
             setError('Failed to load orders');
         } finally {
             setLoading(false);
@@ -68,8 +78,8 @@ const AdminOrders: React.FC = () => {
             fetchOrders(currentPage, statusFilter);
             setShowModal(false);
             setSelectedOrder(null);
-        } catch (err: any) {
-            setModalError(err.response?.data?.message || err.message || 'Failed to update status');
+        } catch (err: unknown) {
+            setModalError(getErrorMessage(err, 'Failed to update status'));
         } finally {
             setUpdating(false);
         }
@@ -88,8 +98,8 @@ const AdminOrders: React.FC = () => {
 
             setSelectedOrder(response.data);
             fetchOrders(currentPage, statusFilter);
-        } catch (err: any) {
-            setModalError(err.response?.data?.message || err.message || 'Failed to update payment status');
+        } catch (err: unknown) {
+            setModalError(getErrorMessage(err, 'Failed to update payment status'));
         } finally {
             setUpdatingPaymentStatus(false);
         }
