@@ -81,4 +81,12 @@ export const adminAPI = {
     const response = await api.patch(`/admin/orders/${id}/status`, { orderStatus });
     return response.data;
   },
+
+  updateCodPaymentStatus: async (
+    id: string,
+    paymentStatus: 'pending' | 'completed' | 'failed'
+  ): Promise<{ success: boolean; data: Order }> => {
+    const response = await api.patch(`/admin/orders/${id}/payment-status`, { paymentStatus });
+    return response.data;
+  },
 };

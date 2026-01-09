@@ -7,7 +7,7 @@ const Product = require('../models/Product.model');
 // @route   POST /api/orders
 // @access  Private
 exports.createOrder = asyncHandler(async (req, res) => {
-  const { shippingAddress } = req.body;
+  const { shippingAddress, paymentMethod } = req.body;
 
   const cart = await Cart.findOne({ userId: req.user.id }).populate('items.productId');
 
@@ -42,6 +42,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
     userId: req.user.id,
     items: orderItems,
     shippingAddress,
+    paymentMethod: paymentMethod || 'payos',
     total: cart.total
   });
   

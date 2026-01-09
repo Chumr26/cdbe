@@ -36,6 +36,11 @@ const orderSchema = new mongoose.Schema({
         country: String,
         phoneNumber: String
     },
+    paymentMethod: {
+        type: String,
+        enum: ['payos', 'cod'],
+        default: 'payos'
+    },
     paymentStatus: {
         type: String,
         enum: ['pending', 'completed', 'failed'],

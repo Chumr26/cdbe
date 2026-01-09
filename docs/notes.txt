@@ -1,7 +1,5 @@
 Review & Rating System ⭐
 
-Wishlist/Favorites ❤️
-
 Coupon/Discount System 🎫
 
 Email Notification System 📧

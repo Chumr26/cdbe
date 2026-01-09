@@ -113,7 +113,7 @@ const CheckoutPage: React.FC = () => {
         setError('');
 
         try {
-            const response = await ordersAPI.createOrder(shippingAddress);
+            const response = await ordersAPI.createOrder(shippingAddress, paymentMethod);
             await refreshCart();
             const createdOrder = response.data;
             setOrderNumber(createdOrder.orderNumber);

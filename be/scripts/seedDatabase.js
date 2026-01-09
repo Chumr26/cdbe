@@ -17,6 +17,7 @@ async function seedData() {
         await db.collection('products').deleteMany({});
         await db.collection('carts').deleteMany({});
         await db.collection('orders').deleteMany({});
+        await db.collection('reviews').deleteMany({});
         console.log('✅ Cleared existing data\n');
 
         // ---------------------------------------------------------
@@ -796,7 +797,7 @@ async function seedData() {
         console.log('📦 Creating orders...');
         const ordersToSeed = [];
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 160; i++) {
             const userIndex = faker.number.int({
                 min: 1,
                 max: customers.length - 1,
@@ -804,13 +805,26 @@ async function seedData() {
             const userId = userIdList[userIndex];
 
             const orderItems = [];
-            const numItems = faker.number.int({ min: 1, max: 4 });
+            const numItems = faker.number.int({ min: 1, max: 5 });
+            const usedProductIndexes = new Set();
 
             for (let j = 0; j < numItems; j++) {
-                const pIndex = faker.number.int({
+                let pIndex = faker.number.int({
                     min: 0,
                     max: allProducts.length - 1,
                 });
+
+                // Avoid duplicates within a single order
+                let guard = 0;
+                while (usedProductIndexes.has(pIndex) && guard < 10) {
+                    pIndex = faker.number.int({
+                        min: 0,
+                        max: allProducts.length - 1,
+                    });
+                    guard++;
+                }
+                usedProductIndexes.add(pIndex);
+
                 const pId = productIdList[pIndex];
                 const pData = allProducts[pIndex];
 
@@ -832,6 +846,13 @@ async function seedData() {
                 .toString()
                 .padStart(3, '0');
 
+            const paymentMethod = faker.helpers.arrayElement(['payos', 'cod']);
+
+            // 80% completed so we have enough eligible purchases for reviews
+            const paymentStatus = faker.number.float({ min: 0, max: 1, precision: 0.01 }) < 0.8
+                ? 'completed'
+                : 'pending';
+
             ordersToSeed.push({
                 orderNumber: `ORD-${timestamp}-${random}-${i}`,
                 userId: userId,
@@ -846,16 +867,11 @@ async function seedData() {
                     country: faker.location.country(),
                     phoneNumber: faker.phone.number(),
                 },
-                paymentStatus: faker.helpers.arrayElement([
-                    'completed',
-                    'pending',
-                ]),
-                orderStatus: faker.helpers.arrayElement([
-                    'processing',
-                    'shipped',
-                    'delivered',
-                    'pending',
-                ]),
+                paymentMethod,
+                paymentStatus,
+                orderStatus: paymentStatus === 'completed'
+                    ? faker.helpers.arrayElement(['processing', 'shipped', 'delivered'])
+                    : 'pending',
                 total: parseFloat((totalAmount * 1.1 + 5.0).toFixed(2)), // + Tax & Ship
                 createdAt: faker.date.past(),
                 updatedAt: new Date(),
@@ -864,6 +880,89 @@ async function seedData() {
 
         await db.collection('orders').insertMany(ordersToSeed);
         console.log(`✅ Created ${ordersToSeed.length} orders\n`);
+
+        // ---------------------------------------------------------
+        // 6. Seed Reviews (Completed purchasers only)
+        // ---------------------------------------------------------
+        console.log('⭐ Creating reviews...');
+
+        const completedOrders = ordersToSeed.filter((o) => o.paymentStatus === 'completed');
+
+        const reviewsToSeed = [];
+        const reviewKeySet = new Set();
+        const maxReviews = 250;
+
+        for (const order of completedOrders) {
+            if (reviewsToSeed.length >= maxReviews) break;
+
+            for (const item of order.items) {
+                if (reviewsToSeed.length >= maxReviews) break;
+
+                const key = `${order.userId.toString()}_${item.productId.toString()}`;
+                if (reviewKeySet.has(key)) continue;
+                reviewKeySet.add(key);
+
+                // Evenly distributed ratings from 1..5
+                const rating = (reviewsToSeed.length % 5) + 1;
+                const commentByRating = {
+                    1: ['Disappointing.', 'Not for me.', 'Would not recommend.', ''],
+                    2: ['Could be better.', 'Some parts were okay.', 'Average at best.', ''],
+                    3: ['Decent read.', 'Pretty good overall.', 'Met my expectations.', ''],
+                    4: ['Really enjoyed it!', 'Recommended.', 'Great quality.', ''],
+                    5: ['Amazing!', 'Loved it.', 'Highly recommended!', 'Excellent read!']
+                };
+                const comment = faker.helpers.arrayElement(commentByRating[rating]);
+
+                // Keep review timestamps somewhat realistic relative to the order
+                const createdAt = faker.date.between({
+                    from: order.createdAt || faker.date.past(),
+                    to: new Date()
+                });
+
+                reviewsToSeed.push({
+                    productId: item.productId,
+                    userId: order.userId,
+                    rating,
+                    comment,
+                    createdAt,
+                    updatedAt: createdAt
+                });
+            }
+        }
+
+        if (reviewsToSeed.length > 0) {
+            await db.collection('reviews').insertMany(reviewsToSeed);
+
+            // Update product aggregates for products that received reviews
+            const reviewStats = await db
+                .collection('reviews')
+                .aggregate([
+                    {
+                        $group: {
+                            _id: '$productId',
+                            avgRating: { $avg: '$rating' },
+                            numReviews: { $sum: 1 }
+                        }
+                    }
+                ])
+                .toArray();
+
+            for (const stat of reviewStats) {
+                const roundedRating = Math.round(stat.avgRating * 10) / 10;
+                await db.collection('products').updateOne(
+                    { _id: stat._id },
+                    {
+                        $set: {
+                            rating: roundedRating,
+                            numReviews: stat.numReviews,
+                            updatedAt: new Date()
+                        }
+                    }
+                );
+            }
+        }
+
+        console.log(`✅ Created ${reviewsToSeed.length} reviews\n`);
 
         // ---------------------------------------------------------
         // Summary
@@ -885,6 +984,9 @@ async function seedData() {
         );
         console.log(
             `   Orders: ${await db.collection('orders').countDocuments()}`
+        );
+        console.log(
+            `   Reviews: ${await db.collection('reviews').countDocuments()}`
         );
 
         console.log('\n🎉 Database seeded successfully!\n');

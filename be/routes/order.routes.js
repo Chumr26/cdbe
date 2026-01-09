@@ -37,6 +37,11 @@ router.use(protect);
  *             properties:
  *               shippingAddress:
  *                 $ref: '#/components/schemas/Address'
+ *               paymentMethod:
+ *                 type: string
+ *                 enum: [payos, cod]
+ *                 description: Payment method for the order
+ *                 example: cod
  *     responses:
  *       201:
  *         description: Order created successfully

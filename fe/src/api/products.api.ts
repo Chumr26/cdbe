@@ -40,6 +40,36 @@ export interface ProductResponse {
   data: Product;
 }
 
+export interface ReviewUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface Review {
+  _id: string;
+  productId: string;
+  userId: string | ReviewUser;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewsResponse {
+  success: boolean;
+  count: number;
+  total: number;
+  page: number;
+  pages: number;
+  data: Review[];
+}
+
+export interface ReviewResponse {
+  success: boolean;
+  data: Review;
+}
+
 export interface ProductFilters {
   page?: number;
   limit?: number;
@@ -49,6 +79,11 @@ export interface ProductFilters {
   search?: string;
   sort?: string;
   order?: 'asc' | 'desc';
+}
+
+export interface ReviewPayload {
+  rating: number;
+  comment?: string;
 }
 
 export const productsAPI = {
@@ -91,6 +126,29 @@ export const productsAPI = {
 
   deleteProduct: async (id: string): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete(`/products/${id}`);
+    return response.data;
+  },
+
+  getProductReviews: async (productId: string, page: number = 1, limit: number = 10): Promise<ReviewsResponse> => {
+    const params = new URLSearchParams();
+    params.append('page', page.toString());
+    params.append('limit', limit.toString());
+    const response = await api.get(`/products/${productId}/reviews?${params.toString()}`);
+    return response.data;
+  },
+
+  createProductReview: async (productId: string, payload: ReviewPayload): Promise<ReviewResponse> => {
+    const response = await api.post(`/products/${productId}/reviews`, payload);
+    return response.data;
+  },
+
+  updateMyProductReview: async (productId: string, payload: Partial<ReviewPayload>): Promise<ReviewResponse> => {
+    const response = await api.put(`/products/${productId}/reviews/me`, payload);
+    return response.data;
+  },
+
+  deleteMyProductReview: async (productId: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.delete(`/products/${productId}/reviews/me`);
     return response.data;
   },
 };

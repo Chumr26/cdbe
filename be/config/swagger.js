@@ -121,6 +121,7 @@ const options = {
             userId: { type: 'string', example: '507f1f77bcf86cd799439011' },
             items: { type: 'array', items: { $ref: '#/components/schemas/OrderItem' } },
             shippingAddress: { $ref: '#/components/schemas/Address' },
+            paymentMethod: { type: 'string', enum: ['payos', 'cod'], example: 'payos' },
             paymentStatus: { type: 'string', enum: ['pending', 'completed', 'failed'], example: 'pending' },
             orderStatus: { type: 'string', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], example: 'pending' },
             total: { type: 'number', example: 99.99 },
@@ -135,6 +136,30 @@ const options = {
             price: { type: 'number', example: 39.99 },
             quantity: { type: 'number', example: 2 },
           },
+        },
+        Review: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: '507f1f77bcf86cd799439011' },
+            productId: { type: 'string', example: '507f1f77bcf86cd799439012' },
+            userId: {
+              oneOf: [
+                { type: 'string', example: '507f1f77bcf86cd799439013' },
+                {
+                  type: 'object',
+                  properties: {
+                    _id: { type: 'string', example: '507f1f77bcf86cd799439013' },
+                    firstName: { type: 'string', example: 'John' },
+                    lastName: { type: 'string', example: 'Doe' }
+                  }
+                }
+              ]
+            },
+            rating: { type: 'number', minimum: 1, maximum: 5, example: 5 },
+            comment: { type: 'string', example: 'Great book!' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
         },
       },
     },

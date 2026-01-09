@@ -26,6 +26,11 @@ const createPaymentLink = asyncHandler(async (req, res) => {
         throw new Error('Order already paid');
     }
 
+    if (order.paymentMethod === 'cod') {
+        res.status(400);
+        throw new Error('Cannot create PayOS payment link for COD orders');
+    }
+
     // Generate a unique numeric order code for PayOS if not exists
     // PayOS uses Javascript Number.MAX_SAFE_INTEGER (9007199254740991)
     // We can use a combination of timestamp and random number, but simplified for now
@@ -37,6 +42,9 @@ const createPaymentLink = asyncHandler(async (req, res) => {
     if (!order.payosOrderCode) {
         // Simple generation: slightly risky on high concurrency but okay for low volume
         order.payosOrderCode = Number(String(Date.now()).slice(-6) + Math.floor(Math.random() * 1000));
+        if (!order.paymentMethod) {
+            order.paymentMethod = 'payos';
+        }
         await order.save();
     }
 

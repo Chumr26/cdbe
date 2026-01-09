@@ -132,6 +132,50 @@ exports.updateOrderStatus = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Update payment status for COD order
+// @route   PATCH /api/admin/orders/:id/payment-status
+// @access  Private/Admin
+exports.updateCodPaymentStatus = asyncHandler(async (req, res) => {
+  const { paymentStatus } = req.body;
+
+  if (!['pending', 'completed', 'failed'].includes(paymentStatus)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid paymentStatus'
+    });
+  }
+
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    return res.status(404).json({
+      success: false,
+      message: 'Order not found'
+    });
+  }
+
+  if (order.paymentMethod !== 'cod') {
+    return res.status(400).json({
+      success: false,
+      message: 'Payment status can only be updated for COD orders'
+    });
+  }
+
+  order.paymentStatus = paymentStatus;
+
+  // If admin marks COD payment as completed, move order into fulfillment unless already cancelled
+  if (paymentStatus === 'completed' && order.orderStatus === 'pending') {
+    order.orderStatus = 'processing';
+  }
+
+  await order.save();
+
+  res.status(200).json({
+    success: true,
+    data: order
+  });
+});
+
 // @desc    Get dashboard statistics
 // @route   GET /api/admin/dashboard
 // @access  Private/Admin

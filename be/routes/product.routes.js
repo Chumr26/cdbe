@@ -9,6 +9,12 @@ const {
   updateProduct,
   deleteProduct
 } = require('../controllers/product.controller');
+const {
+  getProductReviews,
+  createProductReview,
+  updateMyProductReview,
+  deleteMyProductReview
+} = require('../controllers/review.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 
 /**
@@ -153,6 +159,173 @@ router.get('/featured', getFeaturedProducts);
  *         description: Product not found
  */
 router.get('/:id', getProduct);
+
+/**
+ * @swagger
+ * /products/{id}/reviews:
+ *   get:
+ *     summary: Get reviews for a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Items per page
+ *     responses:
+ *       200:
+ *         description: Reviews retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 total:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *                 pages:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Review'
+ *       404:
+ *         description: Product not found
+ */
+router.get('/:id/reviews', getProductReviews);
+
+/**
+ * @swagger
+ * /products/{id}/reviews:
+ *   post:
+ *     summary: Create a review for a product (Completed purchasers only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - rating
+ *             properties:
+ *               rating:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
+ *                 example: 5
+ *               comment:
+ *                 type: string
+ *                 example: Great book!
+ *     responses:
+ *       201:
+ *         description: Review created successfully
+ *       400:
+ *         description: Validation error or already reviewed
+ *       401:
+ *         description: Not authorized
+ *       403:
+ *         description: Only completed purchasers can review
+ *       404:
+ *         description: Product not found
+ */
+router.post('/:id/reviews', protect, createProductReview);
+
+/**
+ * @swagger
+ * /products/{id}/reviews/me:
+ *   put:
+ *     summary: Update my review for a product (Completed purchasers only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rating:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
+ *                 example: 4
+ *               comment:
+ *                 type: string
+ *                 example: Updated comment
+ *     responses:
+ *       200:
+ *         description: Review updated successfully
+ *       401:
+ *         description: Not authorized
+ *       403:
+ *         description: Only completed purchasers can review
+ *       404:
+ *         description: Product or review not found
+ */
+router.put('/:id/reviews/me', protect, updateMyProductReview);
+
+/**
+ * @swagger
+ * /products/{id}/reviews/me:
+ *   delete:
+ *     summary: Delete my review for a product (Completed purchasers only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Review deleted successfully
+ *       401:
+ *         description: Not authorized
+ *       403:
+ *         description: Only completed purchasers can review
+ *       404:
+ *         description: Product or review not found
+ */
+router.delete('/:id/reviews/me', protect, deleteMyProductReview);
 
 /**
  * @swagger

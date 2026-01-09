@@ -25,6 +25,7 @@ export interface Order {
   userId: string;
   items: OrderItem[];
   shippingAddress: ShippingAddress;
+  paymentMethod?: 'payos' | 'cod';
   paymentStatus: 'pending' | 'completed' | 'failed';
   orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   total: number;
@@ -46,8 +47,11 @@ export interface OrderResponse {
 }
 
 export const ordersAPI = {
-  createOrder: async (shippingAddress: ShippingAddress): Promise<OrderResponse> => {
-    const response = await api.post('/orders', { shippingAddress });
+  createOrder: async (
+    shippingAddress: ShippingAddress,
+    paymentMethod?: 'payos' | 'cod'
+  ): Promise<OrderResponse> => {
+    const response = await api.post('/orders', { shippingAddress, paymentMethod });
     return response.data;
   },
 

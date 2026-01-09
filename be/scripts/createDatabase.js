@@ -13,6 +13,7 @@ async function createCollections() {
       'categories',
       'carts',
       'orders',
+      'reviews',
       'transactions',
       'email_logs'
     ];
@@ -65,6 +66,15 @@ async function createCollections() {
 
     await db.collection('email_logs').createIndex({ userId: 1 });
     console.log('✅ Created index: email_logs.userId');
+
+    await db.collection('reviews').createIndex({ productId: 1, userId: 1 }, { unique: true });
+    console.log('✅ Created unique index: reviews.productId + reviews.userId');
+
+    await db.collection('reviews').createIndex({ productId: 1, createdAt: -1 });
+    console.log('✅ Created index: reviews.productId + createdAt');
+
+    await db.collection('reviews').createIndex({ userId: 1, createdAt: -1 });
+    console.log('✅ Created index: reviews.userId + createdAt');
 
     console.log('\n🎉 Database setup completed successfully!\n');
 

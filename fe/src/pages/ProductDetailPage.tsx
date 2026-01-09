@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Button, Badge, Breadcrumb, Tab, Tabs } from 'react-bootstrap';
+import { Container, Row, Col, Button, Badge, Breadcrumb, Tab, Tabs, Form, Alert, Spinner } from 'react-bootstrap';
 import { FaStar, FaShoppingCart, FaArrowLeft, FaBook, FaCalendar, FaLanguage, FaBuilding, FaBarcode, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { productsAPI } from '../api/products.api';
-import type { Product } from '../api/products.api';
+import type { Product, Review } from '../api/products.api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -13,7 +13,7 @@ import ProductCard from '../components/products/ProductCard';
 const ProductDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const { isInCart, addToCart } = useCart();
     const [product, setProduct] = useState<Product | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -21,11 +21,24 @@ const ProductDetailPage: React.FC = () => {
     const [error, setError] = useState('');
     const [adding, setAdding] = useState(false);
 
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewsError, setReviewsError] = useState('');
+
+    const [reviewRating, setReviewRating] = useState<number>(5);
+    const [reviewComment, setReviewComment] = useState('');
+    const [reviewSubmitting, setReviewSubmitting] = useState(false);
+    const [reviewActionError, setReviewActionError] = useState('');
+    const [reviewActionSuccess, setReviewActionSuccess] = useState('');
+
     const inCart = product ? isInCart(product._id) : false;
 
     useEffect(() => {
         if (id) {
+            setLoading(true);
+            setError('');
             loadProduct();
+            loadReviews();
         }
     }, [id]);
 
@@ -42,6 +55,98 @@ const ProductDetailPage: React.FC = () => {
             setError('Failed to load product details');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const refreshProduct = async () => {
+        if (!id) return;
+        try {
+            const response = await productsAPI.getProduct(id);
+            setProduct(response.data);
+        } catch {
+            // Ignore refresh errors; main loader handles user-facing errors
+        }
+    };
+
+    const loadReviews = async () => {
+        if (!id) return;
+        setReviewsLoading(true);
+        setReviewsError('');
+        try {
+            const response = await productsAPI.getProductReviews(id, 1, 50);
+            setReviews(response.data);
+        } catch (err: any) {
+            setReviewsError(err?.response?.data?.message || 'Failed to load reviews');
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
+
+    const getReviewUserId = (review: Review) => {
+        return typeof review.userId === 'string' ? review.userId : review.userId._id;
+    };
+
+    const myReview = user ? reviews.find((r) => getReviewUserId(r) === user._id) : undefined;
+
+    useEffect(() => {
+        if (myReview) {
+            setReviewRating(myReview.rating);
+            setReviewComment(myReview.comment || '');
+        } else {
+            setReviewRating(5);
+            setReviewComment('');
+        }
+    }, [user?._id, myReview?._id]);
+
+    const handleSubmitReview = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!id) return;
+
+        setReviewSubmitting(true);
+        setReviewActionError('');
+        setReviewActionSuccess('');
+
+        try {
+            if (myReview) {
+                await productsAPI.updateMyProductReview(id, {
+                    rating: reviewRating,
+                    comment: reviewComment
+                });
+                setReviewActionSuccess('Review updated successfully');
+            } else {
+                await productsAPI.createProductReview(id, {
+                    rating: reviewRating,
+                    comment: reviewComment
+                });
+                setReviewActionSuccess('Review submitted successfully');
+            }
+
+            await refreshProduct();
+            await loadReviews();
+        } catch (err: any) {
+            setReviewActionError(err?.response?.data?.message || 'Failed to submit review');
+        } finally {
+            setReviewSubmitting(false);
+        }
+    };
+
+    const handleDeleteReview = async () => {
+        if (!id) return;
+        if (!window.confirm('Delete your review?')) return;
+
+        setReviewSubmitting(true);
+        setReviewActionError('');
+        setReviewActionSuccess('');
+
+        try {
+            await productsAPI.deleteMyProductReview(id);
+            setReviewActionSuccess('Review deleted successfully');
+            await refreshProduct();
+            await loadReviews();
+        } catch (err: any) {
+            setReviewActionError(err?.response?.data?.message || 'Failed to delete review');
+        } finally {
+            setReviewSubmitting(false);
         }
     };
 
@@ -279,17 +384,132 @@ const ProductDetailPage: React.FC = () => {
 
                         {/* Reviews Tab */}
                         <Tab eventKey="reviews" title="Reviews">
-                            <div className="text-center py-3">
-                                <h6>Customer Reviews</h6>
-                                <p className="text-muted small mb-2">
-                                    Review feature coming soon!
-                                </p>
-                                <div className="mb-1">
-                                    {renderStars(product.rating)}
+                            <div className="py-2">
+                                <div className="text-center py-2">
+                                    <h6 className="mb-2">Customer Reviews</h6>
+                                    <div className="mb-1">{renderStars(product.rating)}</div>
+                                    <p className="text-muted small mb-0">
+                                        {product.rating.toFixed(1)} out of 5 ({product.numReviews} reviews)
+                                    </p>
                                 </div>
-                                <p className="text-muted small mb-0">
-                                    {product.rating.toFixed(1)} out of 5 ({product.numReviews} reviews)
-                                </p>
+
+                                {reviewActionSuccess && (
+                                    <Alert variant="success" className="py-2">
+                                        {reviewActionSuccess}
+                                    </Alert>
+                                )}
+                                {reviewActionError && (
+                                    <Alert variant="danger" className="py-2">
+                                        {reviewActionError}
+                                    </Alert>
+                                )}
+
+                                {isAuthenticated ? (
+                                    <div className="mb-3">
+                                        <h6 className="mb-2">{myReview ? 'Edit Your Review' : 'Write a Review'}</h6>
+                                        <Form onSubmit={handleSubmitReview}>
+                                            <Row className="g-2 align-items-end">
+                                                <Col xs={12} md={4}>
+                                                    <Form.Group controlId="reviewRating">
+                                                        <Form.Label className="small text-muted">Rating</Form.Label>
+                                                        <Form.Select
+                                                            value={reviewRating}
+                                                            onChange={(e) => setReviewRating(Number(e.target.value))}
+                                                            disabled={reviewSubmitting}
+                                                        >
+                                                            {[5, 4, 3, 2, 1].map((val) => (
+                                                                <option key={val} value={val}>
+                                                                    {val}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </Form.Group>
+                                                </Col>
+                                                <Col xs={12} md={8}>
+                                                    <Form.Group controlId="reviewComment">
+                                                        <Form.Label className="small text-muted">Comment (optional)</Form.Label>
+                                                        <Form.Control
+                                                            as="textarea"
+                                                            rows={2}
+                                                            value={reviewComment}
+                                                            onChange={(e) => setReviewComment(e.target.value)}
+                                                            disabled={reviewSubmitting}
+                                                            placeholder="Share your thoughts..."
+                                                        />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Row>
+
+                                            <div className="d-flex gap-2 mt-2">
+                                                <Button type="submit" variant="primary" disabled={reviewSubmitting}>
+                                                    {reviewSubmitting ? 'Saving...' : myReview ? 'Update Review' : 'Submit Review'}
+                                                </Button>
+
+                                                {myReview && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline-danger"
+                                                        disabled={reviewSubmitting}
+                                                        onClick={handleDeleteReview}
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            <p className="text-muted small mt-2 mb-0">
+                                                Only customers with a completed purchase can review.
+                                            </p>
+                                        </Form>
+                                    </div>
+                                ) : (
+                                    <Alert variant="info" className="py-2">
+                                        <Link to="/login">Login</Link> to write a review.
+                                    </Alert>
+                                )}
+
+                                <hr className="my-3" />
+
+                                <h6 className="mb-2">All Reviews</h6>
+                                {reviewsLoading ? (
+                                    <div className="text-center py-3">
+                                        <Spinner animation="border" size="sm" className="me-2" />
+                                        <span className="text-muted small">Loading reviews...</span>
+                                    </div>
+                                ) : reviewsError ? (
+                                    <ErrorMessage message={reviewsError} />
+                                ) : reviews.length === 0 ? (
+                                    <p className="text-muted small mb-0">No reviews yet.</p>
+                                ) : (
+                                    <div className="d-flex flex-column gap-2">
+                                        {reviews.map((review) => {
+                                            const reviewerName =
+                                                typeof review.userId === 'string'
+                                                    ? 'Customer'
+                                                    : `${review.userId.firstName} ${review.userId.lastName}`;
+                                            const isMine = user ? getReviewUserId(review) === user._id : false;
+
+                                            return (
+                                                <div key={review._id} className="border rounded p-2">
+                                                    <div className="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <div className="fw-semibold small">
+                                                                {reviewerName} {isMine ? '(You)' : ''}
+                                                            </div>
+                                                            <div className="small">{renderStars(review.rating)}</div>
+                                                        </div>
+                                                        <div className="text-muted small">
+                                                            {new Date(review.createdAt).toLocaleDateString()}
+                                                        </div>
+                                                    </div>
+                                                    {review.comment && (
+                                                        <p className="small mb-0 mt-1">{review.comment}</p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         </Tab>
                     </Tabs>

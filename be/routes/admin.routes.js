@@ -7,6 +7,7 @@ const {
   deleteUser,
   getAllOrders,
   updateOrderStatus,
+  updateCodPaymentStatus,
   getDashboardStats
 } = require('../controllers/admin.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
@@ -202,6 +203,44 @@ router.get('/orders', getAllOrders);
  *         description: Order not found
  */
 router.patch('/orders/:id/status', updateOrderStatus);
+
+/**
+ * @swagger
+ * /admin/orders/{id}/payment-status:
+ *   patch:
+ *     summary: Update payment status for COD orders (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - paymentStatus
+ *             properties:
+ *               paymentStatus:
+ *                 type: string
+ *                 enum: [pending, completed, failed]
+ *                 example: completed
+ *     responses:
+ *       200:
+ *         description: Payment status updated successfully
+ *       400:
+ *         description: Invalid paymentStatus or order is not COD
+ *       404:
+ *         description: Order not found
+ */
+router.patch('/orders/:id/payment-status', updateCodPaymentStatus);
 
 /**
  * @swagger

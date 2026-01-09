@@ -23,6 +23,8 @@ const AdminOrders: React.FC = () => {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [statusToUpdate, setStatusToUpdate] = useState('');
     const [updating, setUpdating] = useState(false);
+    const [paymentStatusToUpdate, setPaymentStatusToUpdate] = useState('');
+    const [updatingPaymentStatus, setUpdatingPaymentStatus] = useState(false);
     const [modalError, setModalError] = useState('');
 
     const fetchOrders = async (page = 1, status = '') => {
@@ -52,6 +54,7 @@ const AdminOrders: React.FC = () => {
     const handleShowModal = (order: Order) => {
         setSelectedOrder(order);
         setStatusToUpdate(order.orderStatus);
+        setPaymentStatusToUpdate(order.paymentStatus);
         setModalError('');
         setShowModal(true);
     };
@@ -69,6 +72,26 @@ const AdminOrders: React.FC = () => {
             setModalError(err.response?.data?.message || err.message || 'Failed to update status');
         } finally {
             setUpdating(false);
+        }
+    };
+
+    const handleUpdatePaymentStatus = async () => {
+        if (!selectedOrder) return;
+        if ((selectedOrder.paymentMethod ?? 'payos') !== 'cod') return;
+
+        setUpdatingPaymentStatus(true);
+        try {
+            const response = await adminAPI.updateCodPaymentStatus(
+                selectedOrder._id,
+                paymentStatusToUpdate as 'pending' | 'completed' | 'failed'
+            );
+
+            setSelectedOrder(response.data);
+            fetchOrders(currentPage, statusFilter);
+        } catch (err: any) {
+            setModalError(err.response?.data?.message || err.message || 'Failed to update payment status');
+        } finally {
+            setUpdatingPaymentStatus(false);
         }
     };
 
@@ -190,6 +213,7 @@ const AdminOrders: React.FC = () => {
                                     <p>
                                         <strong>ID:</strong> {selectedOrder._id}<br />
                                         <strong>Date:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}<br />
+                                        <strong>Payment Method:</strong> {(selectedOrder.paymentMethod ?? 'payos').toUpperCase()}<br />
                                         <strong>Payment Status:</strong> {selectedOrder.paymentStatus}
                                     </p>
                                 </Col>
@@ -248,6 +272,29 @@ const AdminOrders: React.FC = () => {
                                     </Button>
                                 </div>
                             </Form.Group>
+
+                            {(selectedOrder.paymentMethod ?? 'payos') === 'cod' && (
+                                <Form.Group className="mt-3">
+                                    <Form.Label className="fw-bold">Update COD Payment Status</Form.Label>
+                                    <div className="d-flex gap-2">
+                                        <Form.Select
+                                            value={paymentStatusToUpdate}
+                                            onChange={(e) => setPaymentStatusToUpdate(e.target.value)}
+                                        >
+                                            <option value="pending">Pending</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="failed">Failed</option>
+                                        </Form.Select>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleUpdatePaymentStatus}
+                                            disabled={updatingPaymentStatus}
+                                        >
+                                            {updatingPaymentStatus ? 'Updating...' : 'Update Payment'}
+                                        </Button>
+                                    </div>
+                                </Form.Group>
+                            )}
                         </>
                     )}
                 </Modal.Body>
