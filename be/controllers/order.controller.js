@@ -4,6 +4,61 @@ const Cart = require('../models/Cart.model');
 const Product = require('../models/Product.model');
 const CouponRedemption = require('../models/CouponRedemption.model');
 const { recalculateCartTotals } = require('../utils/couponPricing');
+const sendEmail = require('../utils/emailHelper');
+
+const formatMoney = (amount) => {
+  const numeric = Number(amount || 0);
+  try {
+    return `${numeric.toLocaleString('vi-VN')} ₫`;
+  } catch {
+    return `${numeric} ₫`;
+  }
+};
+
+const buildOrderConfirmationMessage = ({ user, order, shippingAddress }) => {
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'there';
+  const itemsText = (order.items || [])
+    .map((item) => `- ${item.title} (x${item.quantity})`) 
+    .join('\n');
+
+  const addressLine = [
+    shippingAddress?.street,
+    shippingAddress?.city,
+    shippingAddress?.state,
+    shippingAddress?.zipCode,
+    shippingAddress?.country
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+  const paymentNote = order.paymentMethod === 'payos'
+    ? 'Your order is created. Please complete payment to process your order.'
+    : 'Your order is confirmed as Cash on Delivery (COD).';
+
+  return [
+    `Hi ${fullName},`,
+    '',
+    `Thanks for your order! We have received your order ${order.orderNumber}.`,
+    '',
+    'Order summary:',
+    itemsText || '- (no items)',
+    '',
+    `Subtotal: ${formatMoney(order.subtotal)}`,
+    `Discount: ${formatMoney(order.discountTotal)}`,
+    `Total: ${formatMoney(order.total)}`,
+    '',
+    `Payment method: ${String(order.paymentMethod || '').toUpperCase()}`,
+    `Payment status: ${String(order.paymentStatus || '').toUpperCase()}`,
+    '',
+    'Shipping address:',
+    addressLine || '- (not provided)',
+    shippingAddress?.phoneNumber ? `Phone: ${shippingAddress.phoneNumber}` : null,
+    '',
+    paymentNote,
+    '',
+    'You can view your orders in your account.'
+  ].filter((line) => line !== null).join('\n');
+};
 
 // @desc    Create order from cart
 // @route   POST /api/orders
@@ -100,6 +155,26 @@ exports.createOrder = asyncHandler(async (req, res) => {
   cart.discountTotal = 0;
   cart.total = 0;
   await cart.save();
+
+  // Send order confirmation email (do not fail checkout if email fails)
+  if (req.user?.email) {
+    const yourDomain = process.env.YOUR_DOMAIN || 'http://localhost:5173';
+    const message = buildOrderConfirmationMessage({
+      user: req.user,
+      order,
+      shippingAddress
+    });
+
+    sendEmail({
+      email: req.user.email,
+      subject: `Order confirmation - ${order.orderNumber}`,
+      message,
+      ctaUrl: `${yourDomain}/orders`,
+      ctaText: 'View my orders'
+    }).catch((error) => {
+      console.error('Order confirmation email failed:', error?.message || error);
+    });
+  }
 
   res.status(201).json({
     success: true,

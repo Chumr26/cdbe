@@ -20,6 +20,14 @@ A complete REST API for an e-commerce bookstore built with Node.js, Express, Mon
 - MongoDB (v4.4 or higher)
 - npm or yarn
 
+## ✉️ Email (Resend)
+
+This API uses Resend to send transactional emails (verify email, reset password, and order confirmation).
+
+Required environment variables:
+- `RESEND_API_KEY` - Your Resend API key
+- `YOUR_DOMAIN` - Frontend base URL used in email links (default: `http://localhost:5173`)
+
 ## ⚡ Quick Start
 
 ### 1. Install Dependencies
