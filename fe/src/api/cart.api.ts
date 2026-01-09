@@ -11,6 +11,14 @@ export interface Cart {
   _id: string;
   userId: string;
   items: CartItem[];
+  subtotal?: number;
+  discountTotal?: number;
+  coupon?: {
+    couponId?: string;
+    code?: string;
+    type?: 'percent' | 'fixed';
+    value?: number;
+  } | null;
   total: number;
   createdAt: string;
   updatedAt: string;
@@ -44,6 +52,16 @@ export const cartAPI = {
 
   clearCart: async (): Promise<{ success: boolean; message: string }> => {
     const response = await api.delete('/cart');
+    return response.data;
+  },
+
+  applyCoupon: async (code: string): Promise<CartResponse> => {
+    const response = await api.post('/cart/coupon', { code });
+    return response.data;
+  },
+
+  removeCoupon: async (): Promise<CartResponse> => {
+    const response = await api.delete('/cart/coupon');
     return response.data;
   },
 };

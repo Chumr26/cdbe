@@ -5,7 +5,9 @@ const {
   addToCart,
   updateCartItem,
   removeFromCart,
-  clearCart
+  clearCart,
+  applyCoupon,
+  removeCoupon
 } = require('../controllers/cart.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -152,5 +154,47 @@ router.delete('/items/:productId', removeFromCart);
  *         description: Cart cleared successfully
  */
 router.delete('/', clearCart);
+
+/**
+ * @swagger
+ * /cart/coupon:
+ *   post:
+ *     summary: Apply coupon code to cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 example: WELCOME10
+ *     responses:
+ *       200:
+ *         description: Coupon applied
+ *       400:
+ *         description: Coupon invalid
+ */
+router.post('/coupon', applyCoupon);
+
+/**
+ * @swagger
+ * /cart/coupon:
+ *   delete:
+ *     summary: Remove coupon code from cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Coupon removed
+ */
+router.delete('/coupon', removeCoupon);
 
 module.exports = router;

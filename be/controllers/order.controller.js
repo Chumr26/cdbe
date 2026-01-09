@@ -2,6 +2,8 @@ const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order.model');
 const Cart = require('../models/Cart.model');
 const Product = require('../models/Product.model');
+const CouponRedemption = require('../models/CouponRedemption.model');
+const { recalculateCartTotals } = require('../utils/couponPricing');
 
 // @desc    Create order from cart
 // @route   POST /api/orders
@@ -37,16 +39,41 @@ exports.createOrder = asyncHandler(async (req, res) => {
     price: item.price
   }));
 
+  // Recalculate totals right before order creation (coupon-safe)
+  const recalculated = await recalculateCartTotals(cart, req.user.id);
+  await recalculated.cart.save();
+
   // Create order (use new + save to trigger pre-save hook)
   const order = new Order({
     userId: req.user.id,
     items: orderItems,
     shippingAddress,
     paymentMethod: paymentMethod || 'payos',
+    subtotal: cart.subtotal || 0,
+    discountTotal: cart.discountTotal || 0,
+    coupon: cart.coupon || undefined,
     total: cart.total
   });
   
   await order.save();
+
+  // Coupon redemption:
+  // - COD: redeem immediately on order creation
+  // - PayOS: redeem on payment success webhook
+  if (order.paymentMethod === 'cod' && order.coupon && order.coupon.couponId) {
+    await CouponRedemption.findOneAndUpdate(
+      { orderId: order._id, couponId: order.coupon.couponId },
+      {
+        couponId: order.coupon.couponId,
+        userId: order.userId,
+        orderId: order._id,
+        code: order.coupon.code,
+        discountAmount: order.discountTotal,
+        redeemedAt: new Date()
+      },
+      { upsert: true, new: true }
+    );
+  }
 
   // Update product stock
   for (const item of cart.items) {
@@ -57,6 +84,10 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
   // Clear cart
   cart.items = [];
+  cart.coupon = undefined;
+  cart.subtotal = 0;
+  cart.discountTotal = 0;
+  cart.total = 0;
   await cart.save();
 
   res.status(201).json({

@@ -7,6 +7,33 @@ const cartSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  subtotal: {
+    type: Number,
+    default: 0
+  },
+  discountTotal: {
+    type: Number,
+    default: 0
+  },
+  coupon: {
+    couponId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Coupon'
+    },
+    code: {
+      type: String,
+      trim: true,
+      uppercase: true
+    },
+    type: {
+      type: String,
+      enum: ['percent', 'fixed']
+    },
+    value: {
+      type: Number,
+      min: 0
+    }
+  },
   items: [{
     productId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -35,12 +62,6 @@ const cartSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
-
-// Calculate total before saving
-cartSchema.pre('save', function(next) {
-  this.total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  next();
 });
 
 module.exports = mongoose.model('Cart', cartSchema);

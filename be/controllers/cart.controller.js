@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Cart = require('../models/Cart.model');
 const Product = require('../models/Product.model');
+const { normalizeCouponCode, recalculateCartTotals } = require('../utils/couponPricing');
 
 // @desc    Get user cart
 // @route   GET /api/cart
@@ -11,6 +12,10 @@ exports.getCart = asyncHandler(async (req, res) => {
   if (!cart) {
     cart = await Cart.create({ userId: req.user.id, items: [] });
   }
+
+  ({ cart } = await recalculateCartTotals(cart, req.user.id));
+  await cart.save();
+  await cart.populate('items.productId');
 
   res.status(200).json({
     success: true,
@@ -60,8 +65,12 @@ exports.addToCart = asyncHandler(async (req, res) => {
       cart.items.push({ productId, quantity, price: product.price });
     }
 
+    ({ cart } = await recalculateCartTotals(cart, req.user.id));
     await cart.save();
   }
+
+  ({ cart } = await recalculateCartTotals(cart, req.user.id));
+  await cart.save();
 
   cart = await cart.populate('items.productId');
 
@@ -97,7 +106,7 @@ exports.updateCartItem = asyncHandler(async (req, res) => {
   }
 
   item.quantity = quantity;
-  await cart.save();
+  await recalculateCartTotals(cart, req.user.id).then(({ cart: updated }) => updated.save());
 
   await cart.populate('items.productId');
 
@@ -124,7 +133,7 @@ exports.removeFromCart = asyncHandler(async (req, res) => {
     item => item.productId.toString() !== req.params.productId
   );
 
-  await cart.save();
+  await recalculateCartTotals(cart, req.user.id).then(({ cart: updated }) => updated.save());
   await cart.populate('items.productId');
 
   res.status(200).json({
@@ -147,10 +156,69 @@ exports.clearCart = asyncHandler(async (req, res) => {
   }
 
   cart.items = [];
-  await cart.save();
+  cart.coupon = undefined;
+  await recalculateCartTotals(cart, req.user.id).then(({ cart: updated }) => updated.save());
 
   res.status(200).json({
     success: true,
     message: 'Cart cleared successfully'
+  });
+});
+
+// @desc    Apply coupon to cart
+// @route   POST /api/cart/coupon
+// @access  Private
+exports.applyCoupon = asyncHandler(async (req, res) => {
+  const code = normalizeCouponCode(req.body.code);
+
+  if (!code) {
+    return res.status(400).json({
+      success: false,
+      message: 'Coupon code is required'
+    });
+  }
+
+  let cart = await Cart.findOne({ userId: req.user.id }).populate('items.productId');
+  if (!cart) {
+    cart = await Cart.create({ userId: req.user.id, items: [] });
+  }
+
+  cart.coupon = { code };
+  const result = await recalculateCartTotals(cart, req.user.id);
+  cart = result.cart;
+  await cart.save();
+  await cart.populate('items.productId');
+
+  if (result.couponResult && result.couponResult.applied === false) {
+    return res.status(400).json({
+      success: false,
+      message: result.couponResult.reason || 'Coupon is not valid'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: cart
+  });
+});
+
+// @desc    Remove coupon from cart
+// @route   DELETE /api/cart/coupon
+// @access  Private
+exports.removeCoupon = asyncHandler(async (req, res) => {
+  let cart = await Cart.findOne({ userId: req.user.id }).populate('items.productId');
+
+  if (!cart) {
+    cart = await Cart.create({ userId: req.user.id, items: [] });
+  }
+
+  cart.coupon = undefined;
+  ({ cart } = await recalculateCartTotals(cart, req.user.id));
+  await cart.save();
+  await cart.populate('items.productId');
+
+  res.status(200).json({
+    success: true,
+    data: cart
   });
 });

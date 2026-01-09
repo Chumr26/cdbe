@@ -1,6 +1,7 @@
 const payOS = require('../utils/payos');
 const Order = require('../models/Order.model');
 const Transaction = require('../models/Transaction.model');
+const CouponRedemption = require('../models/CouponRedemption.model');
 const asyncHandler = require('express-async-handler');
 
 /**
@@ -135,6 +136,21 @@ const receiveWebhook = asyncHandler(async (req, res) => {
         order.paymentStatus = 'completed';
         order.orderStatus = 'processing'; // Or whatever next step is
         await order.save();
+
+        if (order.coupon && order.coupon.couponId) {
+            await CouponRedemption.findOneAndUpdate(
+                { orderId: order._id, couponId: order.coupon.couponId },
+                {
+                    couponId: order.coupon.couponId,
+                    userId: order.userId,
+                    orderId: order._id,
+                    code: order.coupon.code,
+                    discountAmount: order.discountTotal || 0,
+                    redeemedAt: new Date()
+                },
+                { upsert: true, new: true }
+            );
+        }
 
         await Transaction.findOneAndUpdate(
             { orderId: order._id, gateway: 'payos' },

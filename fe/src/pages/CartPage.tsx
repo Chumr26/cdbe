@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Table, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Table, Modal, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
 import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
+import { couponsAPI } from '../api/coupons.api';
+import type { AvailableCoupon } from '../api/coupons.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 
@@ -11,6 +13,11 @@ const CartPage: React.FC = () => {
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [couponCode, setCouponCode] = useState('');
+    const [couponError, setCouponError] = useState('');
+    const [applyingCoupon, setApplyingCoupon] = useState(false);
+    const [availableCoupons, setAvailableCoupons] = useState<AvailableCoupon[]>([]);
+    const [loadingCoupons, setLoadingCoupons] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showClearModal, setShowClearModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string } | null>(null);
@@ -24,10 +31,52 @@ const CartPage: React.FC = () => {
         try {
             const response = await cartAPI.getCart();
             setCart(response.data);
+            setCouponCode(response.data.coupon?.code || '');
+
+            setLoadingCoupons(true);
+            try {
+                const couponsResp = await couponsAPI.getAvailableCoupons();
+                setAvailableCoupons(couponsResp.data || []);
+            } catch (e) {
+                setAvailableCoupons([]);
+            } finally {
+                setLoadingCoupons(false);
+            }
         } catch (err: any) {
             setError('Failed to load cart');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const applyCoupon = async () => {
+        if (!couponCode.trim()) return;
+        setApplyingCoupon(true);
+        setCouponError('');
+
+        try {
+            const response = await cartAPI.applyCoupon(couponCode.trim());
+            setCart(response.data);
+            setCouponCode(response.data.coupon?.code || couponCode.trim().toUpperCase());
+        } catch (err: any) {
+            setCouponError(err.response?.data?.message || 'Failed to apply coupon');
+        } finally {
+            setApplyingCoupon(false);
+        }
+    };
+
+    const removeCoupon = async () => {
+        setApplyingCoupon(true);
+        setCouponError('');
+
+        try {
+            const response = await cartAPI.removeCoupon();
+            setCart(response.data);
+            setCouponCode('');
+        } catch (err: any) {
+            setCouponError(err.response?.data?.message || 'Failed to remove coupon');
+        } finally {
+            setApplyingCoupon(false);
         }
     };
 
@@ -85,6 +134,9 @@ const CartPage: React.FC = () => {
     if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
 
     const isEmpty = !cart || cart.items.length === 0;
+    const subtotal = cart?.subtotal ?? cart?.total ?? 0;
+    const discountTotal = cart?.discountTotal ?? 0;
+    const total = cart?.total ?? 0;
 
     return (
         <Container className="py-5">
@@ -194,10 +246,73 @@ const CartPage: React.FC = () => {
                         <Card>
                             <Card.Body>
                                 <h5 className="mb-3">Order Summary</h5>
+
+                                <div className="mb-3">
+                                    <Form.Label className="mb-2">Coupon</Form.Label>
+                                    <div className="d-flex flex-column gap-2">
+                                        <Form.Select
+                                            value={couponCode}
+                                            disabled={applyingCoupon || loadingCoupons || availableCoupons.length === 0}
+                                            onChange={(e) => setCouponCode(e.target.value)}
+                                        >
+                                            <option value="">{loadingCoupons ? 'Loading coupons...' : 'Select a coupon'}</option>
+                                            {availableCoupons.map((c) => (
+                                                <option key={c._id} value={c.code}>
+                                                    {c.code}
+                                                    {c.type === 'percent' ? ` - ${c.value}% off` : ` - $${c.value} off`}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+
+                                        <div className="d-flex gap-2">
+                                            <Form.Control
+                                                type="text"
+                                                placeholder={availableCoupons.length > 0 ? 'Or enter code manually' : 'Enter code'}
+                                                value={couponCode}
+                                                onChange={(e) => setCouponCode(e.target.value)}
+                                                disabled={applyingCoupon}
+                                            />
+                                            {cart?.coupon?.code ? (
+                                                <Button
+                                                    variant="outline-secondary"
+                                                    onClick={removeCoupon}
+                                                    disabled={applyingCoupon}
+                                                >
+                                                    Remove
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="outline-primary"
+                                                    onClick={applyCoupon}
+                                                    disabled={applyingCoupon || !couponCode.trim()}
+                                                >
+                                                    Apply
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {couponError && (
+                                        <div className="text-danger mt-2" style={{ fontSize: '0.9rem' }}>
+                                            {couponError}
+                                        </div>
+                                    )}
+                                    {cart?.coupon?.code && !couponError && (
+                                        <div className="text-success mt-2" style={{ fontSize: '0.9rem' }}>
+                                            Applied: <strong>{cart.coupon.code}</strong>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <div className="d-flex justify-content-between mb-2">
                                     <span>Subtotal:</span>
-                                    <strong>{formatPrice(cart.total)}</strong>
+                                    <strong>{formatPrice(subtotal)}</strong>
                                 </div>
+                                {discountTotal > 0 && (
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <span>Discount:</span>
+                                        <strong className="text-success">-{formatPrice(discountTotal)}</strong>
+                                    </div>
+                                )}
                                 <div className="d-flex justify-content-between mb-2">
                                     <span>Shipping:</span>
                                     <span className="text-success">FREE</span>
@@ -205,7 +320,7 @@ const CartPage: React.FC = () => {
                                 <hr />
                                 <div className="d-flex justify-content-between mb-3">
                                     <strong>Total:</strong>
-                                    <strong className="text-primary">{formatPrice(cart.total)}</strong>
+                                    <strong className="text-primary">{formatPrice(total)}</strong>
                                 </div>
                                 <Button
                                     variant="primary"

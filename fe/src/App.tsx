@@ -21,6 +21,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminCoupons from './pages/admin/AdminCoupons';
 import PaymentResult from './pages/PaymentResult';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -108,6 +109,14 @@ function App() {
                             element={
                                 <ProtectedRoute adminOnly>
                                     <AdminUsers />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/coupons"
+                            element={
+                                <ProtectedRoute adminOnly>
+                                    <AdminCoupons />
                                 </ProtectedRoute>
                             }
                         />

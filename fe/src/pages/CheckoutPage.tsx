@@ -153,6 +153,10 @@ const CheckoutPage: React.FC = () => {
     if (loading) return <LoadingSpinner fullPage />;
     if (!cart) return null;
 
+    const subtotal = cart.subtotal ?? cart.total;
+    const discountTotal = cart.discountTotal ?? 0;
+    const total = cart.total;
+
     return (
         <Container className="py-5">
             <h1 className="mb-4">Checkout</h1>
@@ -324,6 +328,33 @@ const CheckoutPage: React.FC = () => {
                             <div className="d-flex justify-content-between">
                                 <strong>Total:</strong>
                                 <strong className="text-primary">{formatPrice(cart.total)}</strong>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col lg={4}>
+                    <Card className="mb-4">
+                        <Card.Body>
+                            <h5 className="mb-3">Order Summary</h5>
+                            <div className="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <strong>{formatPrice(subtotal)}</strong>
+                            </div>
+                            {discountTotal > 0 && (
+                                <div className="d-flex justify-content-between mb-2">
+                                    <span>Discount{cart.coupon?.code ? ` (${cart.coupon.code})` : ''}:</span>
+                                    <strong className="text-success">-{formatPrice(discountTotal)}</strong>
+                                </div>
+                            )}
+                            <div className="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span className="text-success">FREE</span>
+                            </div>
+                            <hr />
+                            <div className="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong className="text-primary">{formatPrice(total)}</strong>
                             </div>
                         </Card.Body>
                     </Card>

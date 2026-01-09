@@ -3,6 +3,26 @@ import type { User } from './auth.api';
 import type { Order } from './orders.api';
 import type { Product } from './products.api';
 
+export type CouponType = 'percent' | 'fixed';
+
+export interface Coupon {
+  _id: string;
+  code: string;
+  name?: string;
+  description?: string;
+  type: CouponType;
+  value: number;
+  maxDiscountAmount?: number;
+  minSubtotal?: number;
+  startsAt?: string;
+  endsAt?: string;
+  isActive: boolean;
+  usageLimitTotal?: number;
+  usageLimitPerUser?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface DashboardStats {
   totalUsers: number;
   totalOrders: number;
@@ -37,6 +57,20 @@ export interface OrdersResponse {
   page: number;
   pages: number;
   data: Order[];
+}
+
+export interface CouponsResponse {
+  success: boolean;
+  count: number;
+  total: number;
+  page: number;
+  pages: number;
+  data: Coupon[];
+}
+
+export interface CouponResponse {
+  success: boolean;
+  data: Coupon;
 }
 
 export const adminAPI = {
@@ -87,6 +121,27 @@ export const adminAPI = {
     paymentStatus: 'pending' | 'completed' | 'failed'
   ): Promise<{ success: boolean; data: Order }> => {
     const response = await api.patch(`/admin/orders/${id}/payment-status`, { paymentStatus });
+    return response.data;
+  },
+
+  // Coupon Management
+  getCoupons: async (page = 1, limit = 20): Promise<CouponsResponse> => {
+    const response = await api.get(`/admin/coupons?page=${page}&limit=${limit}`);
+    return response.data;
+  },
+
+  createCoupon: async (couponData: Partial<Coupon>): Promise<CouponResponse> => {
+    const response = await api.post('/admin/coupons', couponData);
+    return response.data;
+  },
+
+  updateCoupon: async (id: string, couponData: Partial<Coupon>): Promise<CouponResponse> => {
+    const response = await api.put(`/admin/coupons/${id}`, couponData);
+    return response.data;
+  },
+
+  disableCoupon: async (id: string): Promise<{ success: boolean; message: string }> => {
+    const response = await api.delete(`/admin/coupons/${id}`);
     return response.data;
   },
 };

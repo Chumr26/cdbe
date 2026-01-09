@@ -8,7 +8,12 @@ const {
   getAllOrders,
   updateOrderStatus,
   updateCodPaymentStatus,
-  getDashboardStats
+  getDashboardStats,
+  createCoupon,
+  getAllCoupons,
+  getCoupon,
+  updateCoupon,
+  deleteCoupon
 } = require('../controllers/admin.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 
@@ -167,6 +172,38 @@ router.delete('/users/:id', deleteUser);
  *                     $ref: '#/components/schemas/Order'
  */
 router.get('/orders', getAllOrders);
+
+/**
+ * @swagger
+ * /admin/coupons:
+ *   post:
+ *     summary: Create coupon (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Coupon created
+ */
+router.post('/coupons', createCoupon);
+
+/**
+ * @swagger
+ * /admin/coupons:
+ *   get:
+ *     summary: List coupons (Admin only)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Coupons retrieved
+ */
+router.get('/coupons', getAllCoupons);
+
+router.get('/coupons/:id', getCoupon);
+router.put('/coupons/:id', updateCoupon);
+router.delete('/coupons/:id', deleteCoupon);
 
 /**
  * @swagger

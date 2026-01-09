@@ -18,6 +18,8 @@ async function seedData() {
         await db.collection('carts').deleteMany({});
         await db.collection('orders').deleteMany({});
         await db.collection('reviews').deleteMany({});
+        await db.collection('coupons').deleteMany({});
+        await db.collection('couponredemptions').deleteMany({});
         console.log('✅ Cleared existing data\n');
 
         // ---------------------------------------------------------
@@ -169,6 +171,66 @@ async function seedData() {
             .insertMany(usersToSeed);
         const userIdList = Object.values(insertedUsers.insertedIds);
         console.log(`✅ Created ${insertedUsers.insertedCount} users\n`);
+
+        // ---------------------------------------------------------
+        // 2.4 Seed Coupons
+        // ---------------------------------------------------------
+        console.log('🎫 Creating coupons...');
+
+        const now = new Date();
+        const couponsToSeed = [
+            {
+                code: 'WELCOME10',
+                name: 'Welcome 10% Off',
+                description: '10% off your first order (max $20, min $30)',
+                type: 'percent',
+                value: 10,
+                maxDiscountAmount: 20,
+                minSubtotal: 30,
+                isActive: true,
+                startsAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+                endsAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
+                usageLimitTotal: 10000,
+                usageLimitPerUser: 1,
+                createdAt: now,
+                updatedAt: now
+            },
+            {
+                code: 'FIVEOFF',
+                name: '$5 Off',
+                description: '$5 off orders over $25',
+                type: 'fixed',
+                value: 5,
+                minSubtotal: 25,
+                isActive: true,
+                startsAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+                endsAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
+                usageLimitTotal: 10000,
+                usageLimitPerUser: 5,
+                createdAt: now,
+                updatedAt: now
+            },
+            {
+                code: 'SHIPFREE',
+                name: 'Free Shipping',
+                description: 'Placeholder: shipping is already FREE in UI',
+                type: 'fixed',
+                value: 0,
+                isActive: false,
+                createdAt: now,
+                updatedAt: now
+            }
+        ];
+
+        const adminUserId = insertedUsers.insertedIds[0] || userIdList[0];
+        const couponsWithAudit = couponsToSeed.map((c) => ({
+            ...c,
+            createdBy: adminUserId,
+            updatedBy: adminUserId
+        }));
+
+        await db.collection('coupons').insertMany(couponsWithAudit);
+        console.log(`✅ Created ${couponsWithAudit.length} coupons\n`);
 
         // ---------------------------------------------------------
         // 3. Seed Real Products

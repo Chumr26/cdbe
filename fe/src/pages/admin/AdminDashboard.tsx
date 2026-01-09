@@ -45,19 +45,24 @@ const AdminDashboard: React.FC = () => {
 
             {/* Quick Links */}
             <Row className="mb-4">
-                <Col md={4}>
+                <Col md={3}>
                     <Button variant="outline-primary" className="w-100 py-3" onClick={() => window.location.href = '/admin/products'}>
                         <FaBoxOpen className="me-2" /> Manage Products
                     </Button>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                     <Button variant="outline-success" className="w-100 py-3" onClick={() => window.location.href = '/admin/orders'}>
                         <FaShoppingCart className="me-2" /> Manage Orders
                     </Button>
                 </Col>
-                <Col md={4}>
+                <Col md={3}>
                     <Button variant="outline-info" className="w-100 py-3" onClick={() => window.location.href = '/admin/users'}>
                         <FaUsers className="me-2" /> Manage Users
+                    </Button>
+                </Col>
+                <Col md={3}>
+                    <Button variant="outline-warning" className="w-100 py-3" onClick={() => window.location.href = '/admin/coupons'}>
+                        <FaDollarSign className="me-2" /> Manage Coupons
                     </Button>
                 </Col>
             </Row>
