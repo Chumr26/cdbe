@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import ScrollRestoration from './components/common/ScrollRestoration';
 
 // Pages
 import Home from './pages/Home';
@@ -29,6 +30,7 @@ function App() {
     return (
         <Router>
             <AuthProvider>
+                <ScrollRestoration />
                 <Layout>
                     <Routes>
                         {/* Public Routes */}
