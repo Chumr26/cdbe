@@ -10,6 +10,8 @@ import { useCart } from '../context/CartContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import ProductCard from '../components/products/ProductCard';
+import { useTranslation } from 'react-i18next';
+import { formatVnd, usdToVnd } from '../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -21,6 +23,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const ProductDetailPage: React.FC = () => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
@@ -62,7 +65,7 @@ const ProductDetailPage: React.FC = () => {
                 loadRelatedProducts(response.data.category, id!);
             }
         } catch {
-            setError('Failed to load product details');
+            setError(t('productDetail.loadError'));
         } finally {
             setLoading(false);
         }
@@ -86,7 +89,7 @@ const ProductDetailPage: React.FC = () => {
             const response = await productsAPI.getProductReviews(id, 1, 50);
             setReviews(response.data);
         } catch (err: unknown) {
-            setReviewsError(getErrorMessage(err, 'Failed to load reviews'));
+            setReviewsError(getErrorMessage(err, t('productDetail.loadReviewsError')));
         } finally {
             setReviewsLoading(false);
         }
@@ -122,19 +125,19 @@ const ProductDetailPage: React.FC = () => {
                     rating: reviewRating,
                     comment: reviewComment
                 });
-                setReviewActionSuccess('Review updated successfully');
+                setReviewActionSuccess(t('productDetail.reviewUpdated'));
             } else {
                 await productsAPI.createProductReview(id, {
                     rating: reviewRating,
                     comment: reviewComment
                 });
-                setReviewActionSuccess('Review submitted successfully');
+                setReviewActionSuccess(t('productDetail.reviewSubmitted'));
             }
 
             await refreshProduct();
             await loadReviews();
         } catch (err: unknown) {
-            setReviewActionError(getErrorMessage(err, 'Failed to submit review'));
+            setReviewActionError(getErrorMessage(err, t('productDetail.submitReviewError')));
         } finally {
             setReviewSubmitting(false);
         }
@@ -142,7 +145,7 @@ const ProductDetailPage: React.FC = () => {
 
     const handleDeleteReview = async () => {
         if (!id) return;
-        if (!window.confirm('Delete your review?')) return;
+        if (!window.confirm(t('productDetail.deleteConfirm'))) return;
 
         setReviewSubmitting(true);
         setReviewActionError('');
@@ -150,11 +153,11 @@ const ProductDetailPage: React.FC = () => {
 
         try {
             await productsAPI.deleteMyProductReview(id);
-            setReviewActionSuccess('Review deleted successfully');
+            setReviewActionSuccess(t('productDetail.reviewDeleted'));
             await refreshProduct();
             await loadReviews();
         } catch (err: unknown) {
-            setReviewActionError(getErrorMessage(err, 'Failed to delete review'));
+            setReviewActionError(getErrorMessage(err, t('productDetail.deleteReviewError')));
         } finally {
             setReviewSubmitting(false);
         }
@@ -195,11 +198,9 @@ const ProductDetailPage: React.FC = () => {
         }
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(price);
+    const formatPrice = (p: Product) => {
+        const vnd = typeof p.priceVnd === 'number' ? p.priceVnd : usdToVnd(p.price);
+        return formatVnd(vnd);
     };
 
     const renderStars = (rating: number) => {
@@ -222,14 +223,14 @@ const ProductDetailPage: React.FC = () => {
 
     if (loading) return <LoadingSpinner fullPage />;
     if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
-    if (!product) return <Container className="py-5"><ErrorMessage message="Product not found" /></Container>;
+    if (!product) return <Container className="py-5"><ErrorMessage message={t('productDetail.productNotFound')} /></Container>;
 
     return (
         <Container className="py-3">
             {/* Breadcrumb Navigation */}
             <Breadcrumb className="mb-2" style={{ fontSize: '0.9rem' }}>
-                <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>Home</Breadcrumb.Item>
-                <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/products' }}>Products</Breadcrumb.Item>
+                <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>{t('nav.home')}</Breadcrumb.Item>
+                <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/products' }}>{t('nav.products')}</Breadcrumb.Item>
                 <Breadcrumb.Item active>{product.title}</Breadcrumb.Item>
             </Breadcrumb>
 
@@ -241,7 +242,7 @@ const ProductDetailPage: React.FC = () => {
                 onClick={() => navigate('/products')}
             >
                 <FaArrowLeft className="me-1" />
-                Back to Products
+                {t('productDetail.backToProducts')}
             </Button>
 
             <Row>
@@ -266,12 +267,12 @@ const ProductDetailPage: React.FC = () => {
                     {/* Category and Featured Badges */}
                     <div className="mb-2">
                         <Badge bg="secondary" className="me-2">{product.category}</Badge>
-                        {product.featured && <Badge bg="warning" text="dark">Featured</Badge>}
+                        {product.featured && <Badge bg="warning" text="dark">{t('productDetail.featured')}</Badge>}
                     </div>
 
                     {/* Title and Author */}
                     <h2 className="mb-1">{product.title}</h2>
-                    <p className="text-muted mb-2">by {product.author}</p>
+                    <p className="text-muted mb-2">{t('productDetail.by', { author: product.author })}</p>
 
                     {/* Rating - Compact */}
                     <div className="mb-2 d-flex align-items-center">
@@ -279,22 +280,22 @@ const ProductDetailPage: React.FC = () => {
                             {renderStars(product.rating)}
                         </div>
                         <small className="text-muted">
-                            {product.rating.toFixed(1)} ({product.numReviews} reviews)
+                            {t('productDetail.ratingSummary', { rating: product.rating.toFixed(1), count: product.numReviews })}
                         </small>
                     </div>
 
                     {/* Price and Stock - Inline and Compact */}
                     <div className="d-flex align-items-center justify-content-between mb-3 py-2 px-3 bg-light rounded">
                         <div>
-                            <h3 className="text-primary mb-0">{formatPrice(product.price)}</h3>
+                            <h3 className="text-primary mb-0">{formatPrice(product)}</h3>
                         </div>
                         <div>
                             {product.stock > 0 ? (
                                 <Badge bg="success" className="py-2 px-3">
-                                    In Stock ({product.stock} available)
+                                    {t('productDetail.inStock', { count: product.stock })}
                                 </Badge>
                             ) : (
-                                <Badge bg="danger" className="py-2 px-3">Out of Stock</Badge>
+                                <Badge bg="danger" className="py-2 px-3">{t('productDetail.outOfStock')}</Badge>
                             )}
                         </div>
                     </div>
@@ -309,7 +310,7 @@ const ProductDetailPage: React.FC = () => {
                                 disabled={adding || inCart}
                             >
                                 <FaShoppingCart className="me-2" />
-                                {inCart ? '✓ In Cart' : adding ? 'Adding...' : 'Add to Cart'}
+                                {inCart ? t('productDetail.inCart') : adding ? t('productDetail.adding') : t('productDetail.addToCart')}
                             </Button>
                         </div>
                     )}
@@ -317,38 +318,38 @@ const ProductDetailPage: React.FC = () => {
                     {/* Tabbed Interface - Compact */}
                     <Tabs defaultActiveKey="description" className="mb-3">
                         {/* Description Tab */}
-                        <Tab eventKey="description" title="Description">
+                        <Tab eventKey="description" title={t('productDetail.descriptionTab')}>
                             <div className="py-2">
                                 {product.description ? (
                                     <p className="mb-0">{product.description}</p>
                                 ) : (
-                                    <p className="text-muted mb-0">No description available.</p>
+                                    <p className="text-muted mb-0">{t('productDetail.noDescription')}</p>
                                 )}
                             </div>
                         </Tab>
 
                         {/* Details Tab */}
-                        <Tab eventKey="details" title="Details">
+                        <Tab eventKey="details" title={t('productDetail.detailsTab')}>
                             <div className="py-2">
                                 <dl className="row mb-0 small">
                                     {product.isbn && (
                                         <>
                                             <dt className="col-sm-4 text-muted mb-1">
                                                 <FaBarcode className="me-1" />
-                                                ISBN
+                                                {t('productDetail.details.isbn')}
                                             </dt>
                                             <dd className="col-sm-8 mb-1">{product.isbn}</dd>
                                         </>
                                     )}
 
-                                    <dt className="col-sm-4 text-muted mb-1">Author</dt>
+                                    <dt className="col-sm-4 text-muted mb-1">{t('productDetail.details.author')}</dt>
                                     <dd className="col-sm-8 mb-1">{product.author}</dd>
 
                                     {product.publisher && (
                                         <>
                                             <dt className="col-sm-4 text-muted mb-1">
                                                 <FaBuilding className="me-1" />
-                                                Publisher
+                                                {t('productDetail.details.publisher')}
                                             </dt>
                                             <dd className="col-sm-8 mb-1">{product.publisher}</dd>
                                         </>
@@ -358,7 +359,7 @@ const ProductDetailPage: React.FC = () => {
                                         <>
                                             <dt className="col-sm-4 text-muted mb-1">
                                                 <FaCalendar className="me-1" />
-                                                Publication Year
+                                                {t('productDetail.details.publicationYear')}
                                             </dt>
                                             <dd className="col-sm-8 mb-1">{product.publicationYear}</dd>
                                         </>
@@ -368,7 +369,7 @@ const ProductDetailPage: React.FC = () => {
                                         <>
                                             <dt className="col-sm-4 text-muted mb-1">
                                                 <FaBook className="me-1" />
-                                                Pages
+                                                {t('productDetail.details.pages')}
                                             </dt>
                                             <dd className="col-sm-8 mb-1">{product.pageCount}</dd>
                                         </>
@@ -378,13 +379,13 @@ const ProductDetailPage: React.FC = () => {
                                         <>
                                             <dt className="col-sm-4 text-muted mb-1">
                                                 <FaLanguage className="me-1" />
-                                                Language
+                                                {t('productDetail.details.language')}
                                             </dt>
                                             <dd className="col-sm-8 mb-1">{product.language}</dd>
                                         </>
                                     )}
 
-                                    <dt className="col-sm-4 text-muted mb-1">Category</dt>
+                                    <dt className="col-sm-4 text-muted mb-1">{t('productDetail.details.category')}</dt>
                                     <dd className="col-sm-8 mb-1">
                                         <Badge bg="secondary">{product.category}</Badge>
                                     </dd>
@@ -393,13 +394,13 @@ const ProductDetailPage: React.FC = () => {
                         </Tab>
 
                         {/* Reviews Tab */}
-                        <Tab eventKey="reviews" title="Reviews">
+                        <Tab eventKey="reviews" title={t('productDetail.reviewsTab')}>
                             <div className="py-2">
                                 <div className="text-center py-2">
-                                    <h6 className="mb-2">Customer Reviews</h6>
+                                    <h6 className="mb-2">{t('productDetail.customerReviews')}</h6>
                                     <div className="mb-1">{renderStars(product.rating)}</div>
                                     <p className="text-muted small mb-0">
-                                        {product.rating.toFixed(1)} out of 5 ({product.numReviews} reviews)
+                                        {t('productDetail.outOfFive', { rating: product.rating.toFixed(1), count: product.numReviews })}
                                     </p>
                                 </div>
 
@@ -416,12 +417,12 @@ const ProductDetailPage: React.FC = () => {
 
                                 {isAuthenticated ? (
                                     <div className="mb-3">
-                                        <h6 className="mb-2">{myReview ? 'Edit Your Review' : 'Write a Review'}</h6>
+                                        <h6 className="mb-2">{myReview ? t('productDetail.editYourReview') : t('productDetail.writeReview')}</h6>
                                         <Form onSubmit={handleSubmitReview}>
                                             <Row className="g-2 align-items-end">
                                                 <Col xs={12} md={4}>
                                                     <Form.Group controlId="reviewRating">
-                                                        <Form.Label className="small text-muted">Rating</Form.Label>
+                                                        <Form.Label className="small text-muted">{t('productDetail.ratingLabel')}</Form.Label>
                                                         <Form.Select
                                                             value={reviewRating}
                                                             onChange={(e) => setReviewRating(Number(e.target.value))}
@@ -437,14 +438,14 @@ const ProductDetailPage: React.FC = () => {
                                                 </Col>
                                                 <Col xs={12} md={8}>
                                                     <Form.Group controlId="reviewComment">
-                                                        <Form.Label className="small text-muted">Comment (optional)</Form.Label>
+                                                        <Form.Label className="small text-muted">{t('productDetail.commentOptional')}</Form.Label>
                                                         <Form.Control
                                                             as="textarea"
                                                             rows={2}
                                                             value={reviewComment}
                                                             onChange={(e) => setReviewComment(e.target.value)}
                                                             disabled={reviewSubmitting}
-                                                            placeholder="Share your thoughts..."
+                                                            placeholder={t('productDetail.commentPlaceholder')}
                                                         />
                                                     </Form.Group>
                                                 </Col>
@@ -452,7 +453,7 @@ const ProductDetailPage: React.FC = () => {
 
                                             <div className="d-flex gap-2 mt-2">
                                                 <Button type="submit" variant="primary" disabled={reviewSubmitting}>
-                                                    {reviewSubmitting ? 'Saving...' : myReview ? 'Update Review' : 'Submit Review'}
+                                                    {reviewSubmitting ? t('productDetail.reviewSaving') : myReview ? t('productDetail.updateReview') : t('productDetail.submitReview')}
                                                 </Button>
 
                                                 {myReview && (
@@ -462,40 +463,40 @@ const ProductDetailPage: React.FC = () => {
                                                         disabled={reviewSubmitting}
                                                         onClick={handleDeleteReview}
                                                     >
-                                                        Delete
+                                                        {t('productDetail.delete')}
                                                     </Button>
                                                 )}
                                             </div>
 
                                             <p className="text-muted small mt-2 mb-0">
-                                                Only customers with a completed purchase can review.
+                                                {t('productDetail.reviewNote')}
                                             </p>
                                         </Form>
                                     </div>
                                 ) : (
                                     <Alert variant="info" className="py-2">
-                                        <Link to="/login">Login</Link> to write a review.
+                                        <Link to="/login">{t('nav.login')}</Link> {t('productDetail.loginToWriteReviewSuffix')}
                                     </Alert>
                                 )}
 
                                 <hr className="my-3" />
 
-                                <h6 className="mb-2">All Reviews</h6>
+                                <h6 className="mb-2">{t('productDetail.allReviews')}</h6>
                                 {reviewsLoading ? (
                                     <div className="text-center py-3">
                                         <Spinner animation="border" size="sm" className="me-2" />
-                                        <span className="text-muted small">Loading reviews...</span>
+                                        <span className="text-muted small">{t('productDetail.loadingReviews')}</span>
                                     </div>
                                 ) : reviewsError ? (
                                     <ErrorMessage message={reviewsError} />
                                 ) : reviews.length === 0 ? (
-                                    <p className="text-muted small mb-0">No reviews yet.</p>
+                                    <p className="text-muted small mb-0">{t('productDetail.noReviews')}</p>
                                 ) : (
                                     <div className="d-flex flex-column gap-2">
                                         {reviews.map((review) => {
                                             const reviewerName =
                                                 typeof review.userId === 'string'
-                                                    ? 'Customer'
+                                                    ? t('productDetail.reviewerCustomer')
                                                     : `${review.userId.firstName} ${review.userId.lastName}`;
                                             const isMine = user ? getReviewUserId(review) === user._id : false;
 
@@ -504,7 +505,7 @@ const ProductDetailPage: React.FC = () => {
                                                     <div className="d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <div className="fw-semibold small">
-                                                                {reviewerName} {isMine ? '(You)' : ''}
+                                                                {reviewerName} {isMine ? t('productDetail.you') : ''}
                                                             </div>
                                                             <div className="small">{renderStars(review.rating)}</div>
                                                         </div>
@@ -529,7 +530,7 @@ const ProductDetailPage: React.FC = () => {
             {/* Related Books Section */}
             {relatedProducts.length > 0 && (
                 <div className="mt-4">
-                    <h4 className="mb-3">Related Books in {product.category}</h4>
+                    <h4 className="mb-3">{t('productDetail.relatedTitle', { category: product.category })}</h4>
                     <Row>
                         {relatedProducts.map((relatedProduct) => (
                             <Col key={relatedProduct._id} xs={12} sm={6} md={4} lg={3} className="mb-3">

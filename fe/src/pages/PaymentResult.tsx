@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Container, Card } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const PaymentResult = () => {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
 
     const status = useMemo(() => {
@@ -17,6 +19,7 @@ const PaymentResult = () => {
     }, [searchParams]);
 
     const orderId = useMemo(() => searchParams.get('orderId'), [searchParams]);
+    const orderLabel = useMemo(() => (orderId ? `#${orderId.slice(-6)}` : ''), [orderId]);
 
     return (
         <Container className="py-5 d-flex justify-content-center">
@@ -25,48 +28,48 @@ const PaymentResult = () => {
                     {status === 'success' ? (
                         <>
                             <FaCheckCircle className="text-success mb-3" size={60} />
-                            <h2 className="mb-3">Thanh toán thành công!</h2>
+                            <h2 className="mb-3">{t('paymentResult.successTitle')}</h2>
                             <p className="text-muted mb-4">
-                                Cảm ơn bạn đã mua sắm. Đơn hàng của bạn {orderId ? `#${orderId.slice(-6)}` : ''} đã được thanh toán thành công.
+                                {t('paymentResult.successMessage', { order: orderLabel })}
                             </p>
                             <div className="d-grid gap-2">
                                 <Link to="/orders" className="btn btn-primary">
-                                    Xem đơn hàng
+                                    {t('paymentResult.viewOrders')}
                                 </Link>
                                 <Link to="/" className="btn btn-outline-secondary">
-                                    Tiếp tục mua sắm
+                                    {t('paymentResult.continueShopping')}
                                 </Link>
                             </div>
                         </>
                     ) : status === 'cancelled' ? (
                         <>
                             <FaTimesCircle className="text-warning mb-3" size={60} />
-                            <h2 className="mb-3">Thanh toán đã bị hủy</h2>
+                            <h2 className="mb-3">{t('paymentResult.cancelledTitle')}</h2>
                             <p className="text-muted mb-4">
-                                Bạn đã hủy giao dịch thanh toán.
+                                {t('paymentResult.cancelledMessage')}
                             </p>
                             <div className="d-grid gap-2">
                                 <Link to="/checkout" className="btn btn-primary">
-                                    Thử lại
+                                    {t('paymentResult.retry')}
                                 </Link>
                                 <Link to="/" className="btn btn-outline-secondary">
-                                    Quay về trang chủ
+                                    {t('paymentResult.backHome')}
                                 </Link>
                             </div>
                         </>
                     ) : (
                         <>
                             <FaTimesCircle className="text-danger mb-3" size={60} />
-                            <h2 className="mb-3">Thanh toán thất bại</h2>
+                            <h2 className="mb-3">{t('paymentResult.failedTitle')}</h2>
                             <p className="text-muted mb-4">
-                                Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.
+                                {t('paymentResult.failedMessage')}
                             </p>
                             <div className="d-grid gap-2">
                                 <Link to="/checkout" className="btn btn-primary">
-                                    Thử lại
+                                    {t('paymentResult.retry')}
                                 </Link>
                                 <Link to="/" className="btn btn-outline-secondary">
-                                    Liên hệ hỗ trợ
+                                    {t('paymentResult.contactSupport')}
                                 </Link>
                             </div>
                         </>

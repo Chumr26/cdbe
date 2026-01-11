@@ -6,8 +6,11 @@ import type { Order } from '../api/orders.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { formatVnd } from '../utils/currency';
 
 const OrdersPage: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -30,33 +33,31 @@ const OrdersPage: React.FC = () => {
             const response = await ordersAPI.getOrders();
             setOrders(response.data);
         } catch {
-            setError('Failed to load orders');
+            setError(t('orders.loadError'));
         } finally {
             setLoading(false);
         }
     };
 
     const handleCancelOrder = async (orderId: string) => {
-        if (!confirm('Are you sure you want to cancel this order?')) return;
+        if (!confirm(t('orders.cancelConfirm'))) return;
 
         try {
             await ordersAPI.cancelOrder(orderId);
             loadOrders();
-            alert('Order cancelled successfully');
+            alert(t('orders.cancelSuccess'));
         } catch (err: unknown) {
-            alert(getErrorMessage(err, 'Failed to cancel order'));
+            alert(getErrorMessage(err, t('orders.cancelError')));
         }
     };
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(price);
+        return formatVnd(Number(price) || 0);
     };
 
     const formatDate = (date: string) => {
-        return new Date(date).toLocaleDateString('en-US', {
+        const locale = i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US';
+        return new Date(date).toLocaleDateString(locale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -79,15 +80,15 @@ const OrdersPage: React.FC = () => {
 
     return (
         <Container className="py-5">
-            <h1 className="mb-4">My Orders</h1>
+            <h1 className="mb-4">{t('orders.title')}</h1>
 
             {orders.length === 0 ? (
                 <Card className="text-center py-5">
                     <Card.Body>
-                        <h3>No orders yet</h3>
-                        <p className="text-muted">Start shopping to see your orders here!</p>
+                        <h3>{t('orders.emptyTitle')}</h3>
+                        <p className="text-muted">{t('orders.emptySubtitle')}</p>
                         <Link to="/products">
-                            <Button variant="primary">Browse Products</Button>
+                            <Button variant="primary">{t('orders.browseProducts')}</Button>
                         </Link>
                     </Card.Body>
                 </Card>
@@ -99,14 +100,14 @@ const OrdersPage: React.FC = () => {
                                 <div>
                                     <strong>Order #{order.orderNumber}</strong>
                                     <br />
-                                    <small className="text-muted">Placed on {formatDate(order.createdAt)}</small>
+                                    <small className="text-muted">{t('orders.placedOn', { date: formatDate(order.createdAt) })}</small>
                                 </div>
                                 <div className="text-end">
                                     <Badge bg={getStatusVariant(order.orderStatus)} className="me-2">
                                         {order.orderStatus.toUpperCase()}
                                     </Badge>
                                     <Badge bg={order.paymentStatus === 'completed' ? 'success' : 'warning'}>
-                                        Payment: {order.paymentStatus}
+                                        {t('orders.payment', { status: order.paymentStatus })}
                                     </Badge>
                                 </div>
                             </div>
@@ -115,10 +116,10 @@ const OrdersPage: React.FC = () => {
                             <Table responsive className="mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Total</th>
+                                        <th>{t('orders.table.product')}</th>
+                                        <th>{t('orders.table.quantity')}</th>
+                                        <th>{t('orders.table.price')}</th>
+                                        <th>{t('orders.table.total')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,10 +135,10 @@ const OrdersPage: React.FC = () => {
                             </Table>
                             <div className="d-flex justify-content-between align-items-center mt-3">
                                 <div>
-                                    <strong>Total: {formatPrice(order.total)}</strong>
+                                    <strong>{t('orders.total', { amount: formatPrice(order.total) })}</strong>
                                     <br />
                                     <small className="text-muted">
-                                        Ship to: {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.state}
+                                        {t('orders.shipTo', { address: `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state}` })}
                                     </small>
                                 </div>
                                 {order.orderStatus === 'pending' && (
@@ -146,7 +147,7 @@ const OrdersPage: React.FC = () => {
                                         size="sm"
                                         onClick={() => handleCancelOrder(order._id)}
                                     >
-                                        Cancel Order
+                                        {t('orders.cancel')}
                                     </Button>
                                 )}
                             </div>

@@ -3,8 +3,10 @@ import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage: React.FC = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
@@ -31,7 +33,7 @@ const LoginPage: React.FC = () => {
             await login({ email, password }, rememberMe);
             navigate('/');
         } catch (err: unknown) {
-            setError(getErrorMessage(err, 'Failed to login. Please check your credentials.'));
+            setError(getErrorMessage(err, t('auth.login.errorFallback')));
         } finally {
             setLoading(false);
         }
@@ -43,14 +45,14 @@ const LoginPage: React.FC = () => {
                 <Col md={6} lg={5}>
                     <Card className="shadow">
                         <Card.Body className="p-4">
-                            <h2 className="text-center mb-4">Login</h2>
+                            <h2 className="text-center mb-4">{t('auth.login.title')}</h2>
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3" controlId="email">
-                                    <Form.Label>Email Address</Form.Label>
+                                    <Form.Label>{t('auth.login.emailLabel')}</Form.Label>
                                     <Form.Control
                                         type="email"
-                                        placeholder="Enter email"
+                                        placeholder={t('auth.login.emailPlaceholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
@@ -58,10 +60,10 @@ const LoginPage: React.FC = () => {
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" controlId="password">
-                                    <Form.Label>Password</Form.Label>
+                                    <Form.Label>{t('auth.login.passwordLabel')}</Form.Label>
                                     <Form.Control
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder={t('auth.login.passwordPlaceholder')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -71,7 +73,7 @@ const LoginPage: React.FC = () => {
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <Form.Check
                                         type="checkbox"
-                                        label="Remember me"
+                                        label={t('auth.login.rememberMe')}
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
                                     />
@@ -79,23 +81,23 @@ const LoginPage: React.FC = () => {
                                 </div>
 
                                 <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
-                                    {loading ? 'Logging in...' : 'Login'}
+                                    {loading ? t('auth.login.submitting') : t('auth.login.submit')}
                                 </Button>
 
                                 <div className="text-center mb-3">
                                     <Link to="/forgot-password" className="text-decoration-none">
-                                        Forgot password?
+                                        {t('auth.login.forgotPassword')}
                                     </Link>
                                 </div>
                             </Form>
                             <hr />
                             <p className="text-center mb-0">
-                                Don't have an account? <Link to="/register">Sign up</Link>
+                                {t('auth.login.noAccount')} <Link to="/register">{t('auth.login.signUpLink')}</Link>
                             </p>
 
                             {/* Development Helper */}
                             <div className="mt-4 p-3 bg-light rounded text-center">
-                                <small className="text-muted d-block mb-2">Development Credentials</small>
+                                <small className="text-muted d-block mb-2">{t('auth.login.devCredentials')}</small>
                                 <div className="d-flex gap-2 justify-content-center">
                                     <Button
                                         variant="outline-secondary"
@@ -105,7 +107,7 @@ const LoginPage: React.FC = () => {
                                             setPassword('admin123');
                                         }}
                                     >
-                                        Auto-fill Admin
+                                        {t('auth.login.autofillAdmin')}
                                     </Button>
                                     <Button
                                         variant="outline-secondary"
@@ -115,7 +117,7 @@ const LoginPage: React.FC = () => {
                                             setPassword('password123');
                                         }}
                                     >
-                                        Auto-fill User
+                                        {t('auth.login.autofillUser')}
                                     </Button>
                                 </div>
                             </div>

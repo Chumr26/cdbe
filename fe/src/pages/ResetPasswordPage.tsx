@@ -3,6 +3,7 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { authAPI } from '../api/auth.api';
+import { useTranslation } from 'react-i18next';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -14,6 +15,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const ResetPasswordPage: React.FC = () => {
+    const { t } = useTranslation();
     const { token } = useParams<{ token: string }>();
     const navigate = useNavigate();
 
@@ -27,17 +29,17 @@ const ResetPasswordPage: React.FC = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('auth.reset.passwordMismatch'));
             return;
         }
 
         if (password.length < 6) {
-            setError('Password must be at least 6 characters');
+            setError(t('auth.reset.passwordMin'));
             return;
         }
 
         if (!token) {
-            setError('Invalid reset token');
+            setError(t('auth.reset.invalidToken'));
             return;
         }
 
@@ -51,7 +53,7 @@ const ResetPasswordPage: React.FC = () => {
                 navigate('/login');
             }, 3000);
         } catch (err: unknown) {
-            setError(getErrorMessage(err, 'Failed to reset password'));
+            setError(getErrorMessage(err, t('auth.reset.errorFallback')));
         } finally {
             setSubmitting(false);
         }
@@ -66,10 +68,10 @@ const ResetPasswordPage: React.FC = () => {
                             <div className="mb-4">
                                 <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
                             </div>
-                            <h3>Password Reset!</h3>
-                            <p className="text-muted">Your password has been successfully reset. Redirecting to login...</p>
+                            <h3>{t('auth.reset.successTitle')}</h3>
+                            <p className="text-muted">{t('auth.reset.successSubtitle')}</p>
                             <Link to="/login" className="btn btn-primary w-100">
-                                Login Now
+                                {t('auth.reset.loginNow')}
                             </Link>
                         </Card.Body>
                     </Card>
@@ -84,18 +86,18 @@ const ResetPasswordPage: React.FC = () => {
                 <Card style={{ width: '100%', maxWidth: '400px' }} className="shadow-sm">
                     <Card.Body className="p-4">
                         <div className="text-center mb-4">
-                            <h2 className="mb-1">Reset Password</h2>
-                            <p className="text-muted">Enter a new password for your account.</p>
+                            <h2 className="mb-1">{t('auth.reset.title')}</h2>
+                            <p className="text-muted">{t('auth.reset.subtitle')}</p>
                         </div>
 
                         {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>New Password</Form.Label>
+                                <Form.Label>{t('auth.reset.newPassword')}</Form.Label>
                                 <Form.Control
                                     type="password"
-                                    placeholder="Enter new password"
+                                    placeholder={t('auth.reset.newPasswordPlaceholder')}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -104,10 +106,10 @@ const ResetPasswordPage: React.FC = () => {
                             </Form.Group>
 
                             <Form.Group className="mb-4">
-                                <Form.Label>Confirm Password</Form.Label>
+                                <Form.Label>{t('auth.reset.confirmPassword')}</Form.Label>
                                 <Form.Control
                                     type="password"
-                                    placeholder="Confirm new password"
+                                    placeholder={t('auth.reset.confirmPasswordPlaceholder')}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
@@ -121,7 +123,7 @@ const ResetPasswordPage: React.FC = () => {
                                 className="w-100"
                                 disabled={submitting}
                             >
-                                {submitting ? 'Resetting...' : 'Reset Password'}
+                                {submitting ? t('auth.reset.submitting') : t('auth.reset.submit')}
                             </Button>
                         </Form>
                     </Card.Body>

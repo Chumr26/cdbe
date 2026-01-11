@@ -3,8 +3,10 @@ import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../api/auth.api';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPasswordPage: React.FC = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'danger'; text: string } | null>(null);
@@ -25,12 +27,12 @@ const ForgotPasswordPage: React.FC = () => {
 
         try {
             const response = await authAPI.forgotPassword(email);
-            setMessage({ type: 'success', text: response.message || 'Check your email for a reset link' });
+            setMessage({ type: 'success', text: response.message || t('auth.forgot.successFallback') });
             setEmail('');
         } catch (error: unknown) {
             setMessage({
                 type: 'danger',
-                text: getErrorMessage(error, 'Failed to request password reset')
+                text: getErrorMessage(error, t('auth.forgot.errorFallback'))
             });
         } finally {
             setSubmitting(false);
@@ -43,8 +45,8 @@ const ForgotPasswordPage: React.FC = () => {
                 <Card style={{ width: '100%', maxWidth: '400px' }} className="shadow-sm">
                     <Card.Body className="p-4">
                         <div className="text-center mb-4">
-                            <h2 className="mb-1">Forgot Password?</h2>
-                            <p className="text-muted">Enter your email to receive a reset link.</p>
+                            <h2 className="mb-1">{t('auth.forgot.title')}</h2>
+                            <p className="text-muted">{t('auth.forgot.subtitle')}</p>
                         </div>
 
                         {message && (
@@ -55,10 +57,10 @@ const ForgotPasswordPage: React.FC = () => {
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Email Address</Form.Label>
+                                <Form.Label>{t('auth.forgot.emailLabel')}</Form.Label>
                                 <Form.Control
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder={t('auth.forgot.emailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -71,13 +73,13 @@ const ForgotPasswordPage: React.FC = () => {
                                 className="w-100 mb-3"
                                 disabled={submitting}
                             >
-                                {submitting ? 'Sending Link...' : 'Send Reset Link'}
+                                {submitting ? t('auth.forgot.submitting') : t('auth.forgot.submit')}
                             </Button>
                         </Form>
 
                         <div className="text-center mt-3">
                             <Link to="/login" className="text-decoration-none">
-                                <i className="bi bi-arrow-left me-1"></i> Back to Login
+                                <i className="bi bi-arrow-left me-1"></i> {t('auth.forgot.backToLogin')}
                             </Link>
                         </div>
                     </Card.Body>

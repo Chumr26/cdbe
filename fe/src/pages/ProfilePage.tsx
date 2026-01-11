@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../api/auth.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -15,6 +16,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const ProfilePage: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const { user, updateUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -61,10 +63,10 @@ const ProfilePage: React.FC = () => {
 
             if (response.success) {
                 updateUser(response.data);
-                setSuccess('Profile updated successfully!');
+                setSuccess(t('profile.updated'));
             }
         } catch (err: unknown) {
-            setError(getErrorMessage(err, 'Failed to update profile'));
+            setError(getErrorMessage(err, t('profile.updateError')));
         } finally {
             setLoading(false);
         }
@@ -72,14 +74,19 @@ const ProfilePage: React.FC = () => {
 
     if (!user) return <LoadingSpinner fullPage />;
 
+    const memberSinceLabel = new Date('2024-01-01').toLocaleDateString(
+        i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US',
+        { year: 'numeric', month: 'long', day: 'numeric' }
+    );
+
     return (
         <Container className="py-5">
-            <h1 className="mb-4">My Profile</h1>
+            <h1 className="mb-4">{t('profile.title')}</h1>
             <Row>
                 <Col md={8}>
                     <Card className="shadow-sm">
                         <Card.Body>
-                            <h4 className="mb-4">Personal Information</h4>
+                            <h4 className="mb-4">{t('profile.personalInfo')}</h4>
                             {error && <Alert variant="danger">{error}</Alert>}
                             {success && <Alert variant="success">{success}</Alert>}
 
@@ -87,7 +94,7 @@ const ProfilePage: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>First Name</Form.Label>
+                                            <Form.Label>{t('profile.firstName')}</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="firstName"
@@ -98,7 +105,7 @@ const ProfilePage: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Last Name</Form.Label>
+                                            <Form.Label>{t('profile.lastName')}</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="lastName"
@@ -110,7 +117,7 @@ const ProfilePage: React.FC = () => {
                                 </Row>
 
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Email Address</Form.Label>
+                                    <Form.Label>{t('profile.email')}</Form.Label>
                                     <Form.Control
                                         type="email"
                                         value={formData.email}
@@ -118,12 +125,12 @@ const ProfilePage: React.FC = () => {
                                         className="bg-light"
                                     />
                                     <Form.Text className="text-muted">
-                                        Email cannot be changed directly.
+                                        {t('profile.emailNote')}
                                     </Form.Text>
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Phone Number</Form.Label>
+                                    <Form.Label>{t('profile.phone')}</Form.Label>
                                     <Form.Control
                                         type="tel"
                                         name="phoneNumber"
@@ -134,7 +141,7 @@ const ProfilePage: React.FC = () => {
 
                                 <div className="d-flex justify-content-end">
                                     <Button variant="primary" type="submit" disabled={loading}>
-                                        {loading ? 'Saving...' : 'Save Changes'}
+                                        {loading ? t('profile.saving') : t('profile.save')}
                                     </Button>
                                 </div>
                             </Form>
@@ -144,12 +151,12 @@ const ProfilePage: React.FC = () => {
                 <Col md={4}>
                     <Card className="shadow-sm mb-4">
                         <Card.Body>
-                            <h4 className="mb-3">Account Summary</h4>
+                            <h4 className="mb-3">{t('profile.accountSummary')}</h4>
                             <div className="mb-2">
-                                <strong>Role:</strong> {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                <strong>{t('profile.role')}</strong> {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                             </div>
                             <div className="mb-2">
-                                <strong>Member since:</strong> {'January 1, 2024' /* Placeholder, user.createdAt if available */}
+                                <strong>{t('profile.memberSince')}</strong> {memberSinceLabel /* Placeholder, user.createdAt if available */}
                             </div>
                         </Card.Body>
                     </Card>

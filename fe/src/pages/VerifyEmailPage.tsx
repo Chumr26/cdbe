@@ -3,10 +3,12 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Container, Card, Alert, Button, Spinner } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../api/auth.api';
+import { useTranslation } from 'react-i18next';
 
 const verifiedTokens = new Set<string>();
 
 const VerifyEmailPage: React.FC = () => {
+    const { t } = useTranslation();
     const { token } = useParams<{ token: string }>();
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
     const [message, setMessage] = useState('');
@@ -17,7 +19,7 @@ const VerifyEmailPage: React.FC = () => {
         const verify = async () => {
             if (!token) {
                 setStatus('error');
-                setMessage('Invalid verification link.');
+                setMessage(t('auth.verify.invalidLink'));
                 return;
             }
 
@@ -69,7 +71,7 @@ const VerifyEmailPage: React.FC = () => {
                 updateUser(response.data);
 
                 setStatus('success');
-                setMessage('Email verified successfully! You can now login.');
+                setMessage(t('auth.verify.success'));
 
                 // For better UX, let's redirect to login after a few seconds
                 setTimeout(() => {
@@ -81,7 +83,7 @@ const VerifyEmailPage: React.FC = () => {
                 // We can check if we just verified this token successfully? No, we just added it.
 
                 setStatus('error');
-                setMessage('Verification failed. The link may be invalid, expired, or you verified your account already.');
+                setMessage(t('auth.verify.error'));
             }
         };
 
@@ -96,27 +98,27 @@ const VerifyEmailPage: React.FC = () => {
         // So the second one MUST run, and the first one MUST NOT consume the token.
         // But we can't fully stop the first one's request if it's already sent.
 
-    }, [token, navigate, updateUser]);
+    }, [token, navigate, updateUser, t]);
 
     return (
         <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
             <Card className="shadow p-4" style={{ maxWidth: '500px', width: '100%' }}>
                 <Card.Body className="text-center">
-                    <h2 className="mb-4">Email Verification</h2>
+                    <h2 className="mb-4">{t('auth.verify.title')}</h2>
 
                     {status === 'verifying' && (
                         <div className="my-4">
                             <Spinner animation="border" variant="primary" />
-                            <p className="mt-3">Verifying your email...</p>
+                            <p className="mt-3">{t('auth.verify.verifying')}</p>
                         </div>
                     )}
 
                     {status === 'success' && (
                         <div>
                             <Alert variant="success">{message}</Alert>
-                            <p>Redirecting to login page...</p>
+                            <p>{t('auth.verify.successRedirect')}</p>
                             <Link to="/login">
-                                <Button variant="primary">Go to Login</Button>
+                                <Button variant="primary">{t('auth.verify.goToLogin')}</Button>
                             </Link>
                         </div>
                     )}
@@ -126,10 +128,10 @@ const VerifyEmailPage: React.FC = () => {
                             <Alert variant="danger">{message}</Alert>
                             <div className="d-flex gap-2 justify-content-center mt-3">
                                 <Link to="/login">
-                                    <Button variant="primary">Go to Login</Button>
+                                    <Button variant="primary">{t('auth.verify.goToLogin')}</Button>
                                 </Link>
                                 <Link to="/register">
-                                    <Button variant="outline-secondary">Register Again</Button>
+                                    <Button variant="outline-secondary">{t('auth.verify.registerAgain')}</Button>
                                 </Link>
                             </div>
                         </div>
