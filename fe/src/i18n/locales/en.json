@@ -300,6 +300,149 @@
     "you": "(You)",
     "relatedTitle": "Related Books in {{category}}"
   },
+  "admin": {
+    "common": {
+      "noData": "No data",
+      "unknown": "Unknown",
+      "close": "Close"
+    },
+    "dashboard": {
+      "title": "Advanced Analytics Dashboard",
+      "lastDays": "Last {{days}} days",
+      "manageProducts": "Manage Products",
+      "manageOrders": "Manage Orders",
+      "manageUsers": "Manage Users",
+      "manageCoupons": "Manage Coupons",
+      "newUsers": "New Users",
+      "orders": "Orders",
+      "revenue": "Revenue",
+      "avgOrderValue": "Avg Order Value",
+      "revenueOrdersTrend": "Revenue & Orders Trend",
+      "orderStatus": "Order Status",
+      "newUsersPerDay": "New Users Per Day",
+      "totalNewUsers": "Total new users: {{count}}",
+      "orderStatusDistribution": "Order Status Distribution",
+      "paymentStatusDistribution": "Payment Status Distribution",
+      "dailyTrends": "Daily Trends",
+      "dailyTotals": "Total: {{orders}} orders · {{revenue}} revenue · {{newUsers}} new users",
+      "table": {
+        "date": "Date",
+        "orders": "Orders",
+        "revenue": "Revenue",
+        "newUsers": "New Users"
+      },
+      "topProducts": "Top Products (by Revenue)",
+      "noCompletedSales": "No completed sales in range",
+      "topProductsTable": {
+        "title": "Title",
+        "isbn": "ISBN",
+        "qtySold": "Qty Sold",
+        "revenue": "Revenue"
+      },
+      "lowStockAlert": "⚠️ Low Stock Alert",
+      "lowStockTable": {
+        "product": "Product",
+        "author": "Author",
+        "category": "Category",
+        "stock": "Stock",
+        "left": "{{count}} left"
+      },
+      "tooltip": {
+        "date": "Date: {{date}}",
+        "orders": "Orders",
+        "revenue": "Revenue",
+        "newUsers": "New Users"
+      }
+    },
+    "products": {
+      "title": "Product Management",
+      "addNew": "Add New Product",
+      "loadError": "Failed to load products",
+      "saveError": "Failed to save product",
+      "deleteError": "Failed to delete product",
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "category": "Category",
+        "price": "Price",
+        "stock": "Stock",
+        "actions": "Actions",
+        "empty": "No products found"
+      },
+      "pagination": "Showing {{shown}} of {{total}} products",
+      "modal": {
+        "editTitle": "Edit Product",
+        "createTitle": "Add New Product",
+        "title": "Title",
+        "author": "Author",
+        "category": "Category",
+        "selectCategory": "Select Category",
+        "isbn": "ISBN",
+        "price": "Price",
+        "stock": "Stock",
+        "description": "Description",
+        "featured": "Featured Product",
+        "coverImage": "Cover Image",
+        "coverHint": "Upload a custom cover image, or leave empty to fetch from API using ISBN",
+        "save": "Save Product",
+        "saving": "Saving...",
+        "cancel": "Cancel"
+      },
+      "delete": {
+        "title": "Confirm Delete",
+        "body": "Are you sure you want to delete the product {{title}}? This action cannot be undone.",
+        "confirm": "Delete Product",
+        "cancel": "Cancel"
+      }
+    },
+    "orders": {
+      "title": "Order Management",
+      "loadError": "Failed to load orders",
+      "updateStatusError": "Failed to update status",
+      "updatePaymentStatusError": "Failed to update payment status",
+      "filter": {
+        "all": "All Statuses",
+        "pending": "Pending",
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      },
+      "table": {
+        "order": "Order #",
+        "customer": "Customer",
+        "date": "Date",
+        "total": "Total",
+        "status": "Status",
+        "actions": "Actions",
+        "details": "details",
+        "empty": "No orders found"
+      },
+      "pagination": "Showing {{shown}} of {{total}} orders",
+      "modal": {
+        "title": "Order Details",
+        "orderInfo": "Order Info",
+        "shippingAddress": "Shipping Address",
+        "id": "ID:",
+        "date": "Date:",
+        "paymentMethod": "Payment Method:",
+        "paymentStatus": "Payment Status:",
+        "items": "Items",
+        "itemsTable": {
+          "product": "Product",
+          "price": "Price",
+          "qty": "Qty",
+          "total": "Total",
+          "totalLabel": "Total:"
+        },
+        "updateOrderStatus": "Update Order Status",
+        "update": "Update",
+        "updating": "Updating...",
+        "updateCodPaymentStatus": "Update COD Payment Status",
+        "updatePayment": "Update Payment"
+      }
+    }
+  },
   "paymentResult": {
     "successTitle": "Payment successful!",
     "successMessage": "Thank you for shopping. Your order {{order}} has been paid successfully.",

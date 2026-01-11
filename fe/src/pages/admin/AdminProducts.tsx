@@ -7,6 +7,8 @@ import type { Product } from '../../api/products.api';
 import { categoriesAPI } from '../../api/categories.api';
 import type { Category } from '../../api/categories.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { formatVnd, usdToVnd } from '../../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -18,6 +20,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const AdminProducts: React.FC = () => {
+    const { t } = useTranslation();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -58,7 +61,7 @@ const AdminProducts: React.FC = () => {
             setTotalItems(response.total);
             setCurrentPage(response.page);
         } catch {
-            setError('Failed to load products');
+            setError(t('admin.products.loadError'));
         } finally {
             setLoading(false);
         }
@@ -157,7 +160,7 @@ const AdminProducts: React.FC = () => {
             fetchProducts(currentPage);
             handleCloseModal();
         } catch (err: unknown) {
-            setModalError(getErrorMessage(err, 'Failed to save product'));
+            setModalError(getErrorMessage(err, t('admin.products.saveError')));
         } finally {
             setSaving(false);
         }
@@ -178,8 +181,13 @@ const AdminProducts: React.FC = () => {
             setShowDeleteModal(false);
             setProductToDelete(null);
         } catch {
-            setError('Failed to delete product');
+            setError(t('admin.products.deleteError'));
         }
+    };
+
+    const displayPrice = (p: Product) => {
+        const vnd = typeof p.priceVnd === 'number' ? p.priceVnd : usdToVnd(p.price);
+        return formatVnd(vnd);
     };
 
     if (loading && !products.length) return <LoadingSpinner fullPage />;
@@ -187,9 +195,9 @@ const AdminProducts: React.FC = () => {
     return (
         <Container className="py-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Product Management</h2>
+                <h2>{t('admin.products.title')}</h2>
                 <Button variant="primary" onClick={() => handleShowModal()}>
-                    <FaPlus className="me-2" /> Add New Product
+                    <FaPlus className="me-2" /> {t('admin.products.addNew')}
                 </Button>
             </div>
 
@@ -200,12 +208,12 @@ const AdminProducts: React.FC = () => {
                     <Table responsive hover className="align-middle mb-0">
                         <thead className="bg-light">
                             <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Actions</th>
+                                <th>{t('admin.products.table.title')}</th>
+                                <th>{t('admin.products.table.author')}</th>
+                                <th>{t('admin.products.table.category')}</th>
+                                <th>{t('admin.products.table.price')}</th>
+                                <th>{t('admin.products.table.stock')}</th>
+                                <th>{t('admin.products.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -215,7 +223,7 @@ const AdminProducts: React.FC = () => {
                                         <td>{product.title}</td>
                                         <td>{product.author}</td>
                                         <td><span className="badge bg-info text-dark">{product.category}</span></td>
-                                        <td>${product.price.toFixed(2)}</td>
+                                        <td>{displayPrice(product)}</td>
                                         <td>
                                             <span className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
                                                 {product.stock}
@@ -233,14 +241,14 @@ const AdminProducts: React.FC = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-4">No products found</td>
+                                    <td colSpan={6} className="text-center py-4">{t('admin.products.table.empty')}</td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-between align-items-center">
-                    <div>Showing {products.length} of {totalItems} products</div>
+                    <div>{t('admin.products.pagination', { shown: products.length, total: totalItems })}</div>
                     {totalPages > 1 && (
                         <Pagination className="mb-0">
                             <Pagination.Prev
@@ -268,7 +276,7 @@ const AdminProducts: React.FC = () => {
             {/* Create/Edit Modal */}
             <Modal show={showModal} onHide={handleCloseModal} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingProduct ? 'Edit Product' : 'Add New Product'}</Modal.Title>
+                    <Modal.Title>{editingProduct ? t('admin.products.modal.editTitle') : t('admin.products.modal.createTitle')}</Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={handleSaveProduct}>
                     <Modal.Body>
@@ -276,7 +284,7 @@ const AdminProducts: React.FC = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Title</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.title')}</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="title"
@@ -288,7 +296,7 @@ const AdminProducts: React.FC = () => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Author</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.author')}</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="author"
@@ -302,13 +310,13 @@ const AdminProducts: React.FC = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Category</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.category')}</Form.Label>
                                     <Form.Select
                                         name="category"
                                         value={modalData.category}
                                         onChange={handleModalChange}
                                     >
-                                        <option value="">Select Category</option>
+                                        <option value="">{t('admin.products.modal.selectCategory')}</option>
                                         {categories.map(cat => (
                                             <option key={cat._id} value={cat.name}>{cat.name}</option>
                                         ))}
@@ -317,7 +325,7 @@ const AdminProducts: React.FC = () => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>ISBN</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.isbn')}</Form.Label>
                                     <Form.Control
                                         type="text"
                                         name="isbn"
@@ -331,7 +339,7 @@ const AdminProducts: React.FC = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Price</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.price')}</Form.Label>
                                     <Form.Control
                                         type="number"
                                         step="0.01"
@@ -344,7 +352,7 @@ const AdminProducts: React.FC = () => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Stock</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.stock')}</Form.Label>
                                     <Form.Control
                                         type="number"
                                         name="stock"
@@ -356,7 +364,7 @@ const AdminProducts: React.FC = () => {
                             </Col>
                         </Row>
                         <Form.Group className="mb-3">
-                            <Form.Label>Description</Form.Label>
+                            <Form.Label>{t('admin.products.modal.description')}</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
@@ -368,14 +376,14 @@ const AdminProducts: React.FC = () => {
                         <Form.Group className="mb-3">
                             <Form.Check
                                 type="checkbox"
-                                label="Featured Product"
+                                label={t('admin.products.modal.featured')}
                                 name="featured"
                                 checked={modalData.featured}
                                 onChange={handleModalChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Cover Image</Form.Label>
+                            <Form.Label>{t('admin.products.modal.coverImage')}</Form.Label>
                             <Form.Control
                                 type="file"
                                 accept="image/*"
@@ -387,16 +395,16 @@ const AdminProducts: React.FC = () => {
                                 }}
                             />
                             <Form.Text className="text-muted">
-                                Upload a custom cover image, or leave empty to fetch from API using ISBN
+                                {t('admin.products.modal.coverHint')}
                             </Form.Text>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseModal}>
-                            Cancel
+                            {t('admin.products.modal.cancel')}
                         </Button>
                         <Button variant="primary" type="submit" disabled={saving}>
-                            {saving ? 'Saving...' : 'Save Product'}
+                            {saving ? t('admin.products.modal.saving') : t('admin.products.modal.save')}
                         </Button>
                     </Modal.Footer>
                 </Form>
@@ -405,17 +413,17 @@ const AdminProducts: React.FC = () => {
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
+                    <Modal.Title>{t('admin.products.delete.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to delete the product <strong>{productToDelete?.title}</strong>? This action cannot be undone.
+                    {t('admin.products.delete.body', { title: productToDelete?.title ?? '' })}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-                        Cancel
+                        {t('admin.products.delete.cancel')}
                     </Button>
                     <Button variant="danger" onClick={handleDeleteProduct}>
-                        Delete Product
+                        {t('admin.products.delete.confirm')}
                     </Button>
                 </Modal.Footer>
             </Modal>

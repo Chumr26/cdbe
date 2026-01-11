@@ -21,8 +21,10 @@ import type { AdvancedAnalytics, DashboardStats } from '../../api/admin.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import { formatVnd } from '../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboard: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [analytics, setAnalytics] = useState<AdvancedAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
@@ -88,7 +90,8 @@ const AdminDashboard: React.FC = () => {
     );
 
     const formatCompactCurrency = (value: number) => {
-        return new Intl.NumberFormat('en-US', {
+        const locale = i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US';
+        return new Intl.NumberFormat(locale, {
             notation: 'compact',
             maximumFractionDigits: 1,
         }).format(value);
@@ -102,8 +105,8 @@ const AdminDashboard: React.FC = () => {
         <Container className="py-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 className="mb-1">Advanced Analytics Dashboard</h1>
-                    <div className="text-muted">Last {analytics.rangeDays} days</div>
+                    <h1 className="mb-1">{t('admin.dashboard.title')}</h1>
+                    <div className="text-muted">{t('admin.dashboard.lastDays', { days: analytics.rangeDays })}</div>
                 </div>
             </div>
 
@@ -111,22 +114,22 @@ const AdminDashboard: React.FC = () => {
             <Row className="mb-4">
                 <Col md={3}>
                     <Button variant="outline-primary" className="w-100 py-3" onClick={() => window.location.href = '/admin/products'}>
-                        <FaBoxOpen className="me-2" /> Manage Products
+                        <FaBoxOpen className="me-2" /> {t('admin.dashboard.manageProducts')}
                     </Button>
                 </Col>
                 <Col md={3}>
                     <Button variant="outline-success" className="w-100 py-3" onClick={() => window.location.href = '/admin/orders'}>
-                        <FaShoppingCart className="me-2" /> Manage Orders
+                        <FaShoppingCart className="me-2" /> {t('admin.dashboard.manageOrders')}
                     </Button>
                 </Col>
                 <Col md={3}>
                     <Button variant="outline-info" className="w-100 py-3" onClick={() => window.location.href = '/admin/users'}>
-                        <FaUsers className="me-2" /> Manage Users
+                        <FaUsers className="me-2" /> {t('admin.dashboard.manageUsers')}
                     </Button>
                 </Col>
                 <Col md={3}>
                     <Button variant="outline-warning" className="w-100 py-3" onClick={() => window.location.href = '/admin/coupons'}>
-                        <FaDollarSign className="me-2" /> Manage Coupons
+                        <FaDollarSign className="me-2" /> {t('admin.dashboard.manageCoupons')}
                     </Button>
                 </Col>
             </Row>
@@ -137,7 +140,7 @@ const AdminDashboard: React.FC = () => {
                         <Card.Body>
                             <FaUsers size={40} className="text-primary mb-2" />
                             <h3>{analytics.totals.newUsers}</h3>
-                            <p className="text-muted mb-0">New Users</p>
+                            <p className="text-muted mb-0">{t('admin.dashboard.newUsers')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -146,7 +149,7 @@ const AdminDashboard: React.FC = () => {
                         <Card.Body>
                             <FaShoppingCart size={40} className="text-success mb-2" />
                             <h3>{analytics.totals.totalOrders}</h3>
-                            <p className="text-muted mb-0">Orders</p>
+                            <p className="text-muted mb-0">{t('admin.dashboard.orders')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -155,7 +158,7 @@ const AdminDashboard: React.FC = () => {
                         <Card.Body>
                             <FaDollarSign size={40} className="text-warning mb-2" />
                             <h3>{formatPrice(analytics.totals.revenue)}</h3>
-                            <p className="text-muted mb-0">Revenue</p>
+                            <p className="text-muted mb-0">{t('admin.dashboard.revenue')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -164,7 +167,7 @@ const AdminDashboard: React.FC = () => {
                         <Card.Body>
                             <FaBoxOpen size={40} className="text-danger mb-2" />
                             <h3>{formatPrice(analytics.totals.avgOrderValue)}</h3>
-                            <p className="text-muted mb-0">Avg Order Value</p>
+                            <p className="text-muted mb-0">{t('admin.dashboard.avgOrderValue')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -174,7 +177,7 @@ const AdminDashboard: React.FC = () => {
                 <Col lg={8}>
                     <Card className="shadow-sm h-100">
                         <Card.Header className="bg-light">
-                            <h5 className="mb-0">Revenue & Orders Trend</h5>
+                            <h5 className="mb-0">{t('admin.dashboard.revenueOrdersTrend')}</h5>
                         </Card.Header>
                         <Card.Body style={{ height: 320 }}>
                             <ResponsiveContainer width="100%" height="100%">
@@ -186,17 +189,17 @@ const AdminDashboard: React.FC = () => {
                                     <Tooltip
                                         formatter={(value: unknown, name?: string) => {
                                             const key = name || '';
-                                            if (key === 'revenue') return [formatPrice(Number(value)), 'Revenue'] as const;
-                                            return [String(value ?? ''), 'Orders'] as const;
+                                            if (key === 'revenue') return [formatPrice(Number(value)), t('admin.dashboard.tooltip.revenue')] as const;
+                                            return [String(value ?? ''), t('admin.dashboard.tooltip.orders')] as const;
                                         }}
-                                        labelFormatter={(label) => `Date: ${label}`}
+                                        labelFormatter={(label) => t('admin.dashboard.tooltip.date', { date: label })}
                                     />
                                     <Legend />
                                     <Line
                                         yAxisId="left"
                                         type="monotone"
                                         dataKey="revenue"
-                                        name="Revenue"
+                                        name={t('admin.dashboard.revenue')}
                                         stroke={chartTheme.primary}
                                         strokeWidth={2}
                                         dot={false}
@@ -205,7 +208,7 @@ const AdminDashboard: React.FC = () => {
                                         yAxisId="right"
                                         type="monotone"
                                         dataKey="orders"
-                                        name="Orders"
+                                        name={t('admin.dashboard.orders')}
                                         stroke={chartTheme.success}
                                         strokeWidth={2}
                                         dot={false}
@@ -218,15 +221,15 @@ const AdminDashboard: React.FC = () => {
                 <Col lg={4}>
                     <Card className="shadow-sm h-100">
                         <Card.Header className="bg-light">
-                            <h5 className="mb-0">Order Status</h5>
+                            <h5 className="mb-0">{t('admin.dashboard.orderStatus')}</h5>
                         </Card.Header>
                         <Card.Body style={{ height: 320 }}>
                             {orderStatusPieData.length === 0 ? (
-                                <div className="text-muted">No data</div>
+                                <div className="text-muted">{t('admin.common.noData')}</div>
                             ) : (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
-                                        <Tooltip formatter={(value: unknown) => [String(value ?? ''), 'Orders']} />
+                                        <Tooltip formatter={(value: unknown) => [String(value ?? ''), t('admin.dashboard.tooltip.orders')]} />
                                         <Legend />
                                         <Pie
                                             data={orderStatusPieData}
@@ -252,9 +255,9 @@ const AdminDashboard: React.FC = () => {
                 <Col lg={12}>
                     <Card className="shadow-sm">
                         <Card.Header className="bg-light d-flex justify-content-between align-items-center">
-                            <h5 className="mb-0">New Users Per Day</h5>
+                            <h5 className="mb-0">{t('admin.dashboard.newUsersPerDay')}</h5>
                             {timeSeriesTotals && (
-                                <div className="text-muted">Total new users: {timeSeriesTotals.newUsers}</div>
+                                <div className="text-muted">{t('admin.dashboard.totalNewUsers', { count: timeSeriesTotals.newUsers })}</div>
                             )}
                         </Card.Header>
                         <Card.Body style={{ height: 280 }}>
@@ -264,11 +267,11 @@ const AdminDashboard: React.FC = () => {
                                     <XAxis dataKey="date" tick={{ fill: chartTheme.muted }} minTickGap={24} />
                                     <YAxis tick={{ fill: chartTheme.muted }} />
                                     <Tooltip
-                                        formatter={(value: unknown) => [String(value ?? ''), 'New Users']}
-                                        labelFormatter={(label) => `Date: ${label}`}
+                                        formatter={(value: unknown) => [String(value ?? ''), t('admin.dashboard.tooltip.newUsers')]}
+                                        labelFormatter={(label) => t('admin.dashboard.tooltip.date', { date: label })}
                                     />
                                     <Legend />
-                                    <Bar dataKey="newUsers" name="New Users" fill={chartTheme.info} />
+                                    <Bar dataKey="newUsers" name={t('admin.dashboard.newUsers')} fill={chartTheme.info} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </Card.Body>
@@ -280,11 +283,11 @@ const AdminDashboard: React.FC = () => {
                 <Col md={6}>
                     <Card className="shadow-sm h-100">
                         <Card.Header className="bg-light">
-                            <h5 className="mb-0">Order Status Distribution</h5>
+                            <h5 className="mb-0">{t('admin.dashboard.orderStatusDistribution')}</h5>
                         </Card.Header>
                         <Card.Body>
                             {analytics.distributions.orderStatus.length === 0 ? (
-                                <div className="text-muted">No data</div>
+                                <div className="text-muted">{t('admin.common.noData')}</div>
                             ) : (
                                 <div className="d-flex flex-wrap gap-2">
                                     {analytics.distributions.orderStatus.map((d) => (
@@ -300,11 +303,11 @@ const AdminDashboard: React.FC = () => {
                 <Col md={6}>
                     <Card className="shadow-sm h-100">
                         <Card.Header className="bg-light">
-                            <h5 className="mb-0">Payment Status Distribution</h5>
+                            <h5 className="mb-0">{t('admin.dashboard.paymentStatusDistribution')}</h5>
                         </Card.Header>
                         <Card.Body>
                             {analytics.distributions.paymentStatus.length === 0 ? (
-                                <div className="text-muted">No data</div>
+                                <div className="text-muted">{t('admin.common.noData')}</div>
                             ) : (
                                 <div className="d-flex flex-wrap gap-2">
                                     {analytics.distributions.paymentStatus.map((d) => (
@@ -321,10 +324,10 @@ const AdminDashboard: React.FC = () => {
 
             <Card className="shadow-sm mb-4">
                 <Card.Header className="bg-light d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Daily Trends</h5>
+                    <h5 className="mb-0">{t('admin.dashboard.dailyTrends')}</h5>
                     {timeSeriesTotals && (
                         <div className="text-muted">
-                            Total: {timeSeriesTotals.orders} orders · {formatPrice(timeSeriesTotals.revenue)} revenue · {timeSeriesTotals.newUsers} new users
+                            {t('admin.dashboard.dailyTotals', { orders: timeSeriesTotals.orders, revenue: formatPrice(timeSeriesTotals.revenue), newUsers: timeSeriesTotals.newUsers })}
                         </div>
                     )}
                 </Card.Header>
@@ -333,10 +336,10 @@ const AdminDashboard: React.FC = () => {
                         <table className="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Orders</th>
-                                    <th>Revenue</th>
-                                    <th>New Users</th>
+                                    <th>{t('admin.dashboard.table.date')}</th>
+                                    <th>{t('admin.dashboard.table.orders')}</th>
+                                    <th>{t('admin.dashboard.table.revenue')}</th>
+                                    <th>{t('admin.dashboard.table.newUsers')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -356,26 +359,26 @@ const AdminDashboard: React.FC = () => {
 
             <Card className="shadow-sm mb-4">
                 <Card.Header className="bg-light">
-                    <h5 className="mb-0">Top Products (by Revenue)</h5>
+                    <h5 className="mb-0">{t('admin.dashboard.topProducts')}</h5>
                 </Card.Header>
                 <Card.Body>
                     {analytics.topProducts.length === 0 ? (
-                        <div className="text-muted">No completed sales in range</div>
+                        <div className="text-muted">{t('admin.dashboard.noCompletedSales')}</div>
                     ) : (
                         <div className="table-responsive">
                             <table className="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>ISBN</th>
-                                        <th>Qty Sold</th>
-                                        <th>Revenue</th>
+                                        <th>{t('admin.dashboard.topProductsTable.title')}</th>
+                                        <th>{t('admin.dashboard.topProductsTable.isbn')}</th>
+                                        <th>{t('admin.dashboard.topProductsTable.qtySold')}</th>
+                                        <th>{t('admin.dashboard.topProductsTable.revenue')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {analytics.topProducts.map((p) => (
                                         <tr key={p.productId}>
-                                            <td>{p.title || 'Unknown'}</td>
+                                            <td>{p.title || t('admin.common.unknown')}</td>
                                             <td>{p.isbn || '-'}</td>
                                             <td>{p.quantitySold}</td>
                                             <td>{formatPrice(p.revenue)}</td>
@@ -391,17 +394,17 @@ const AdminDashboard: React.FC = () => {
             {stats.lowStockProducts && stats.lowStockProducts.length > 0 && (
                 <Card className="shadow-sm">
                     <Card.Header className="bg-warning text-dark">
-                        <h5 className="mb-0">⚠️ Low Stock Alert</h5>
+                        <h5 className="mb-0">{t('admin.dashboard.lowStockAlert')}</h5>
                     </Card.Header>
                     <Card.Body>
                         <div className="table-responsive">
                             <table className="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Author</th>
-                                        <th>Category</th>
-                                        <th>Stock</th>
+                                        <th>{t('admin.dashboard.lowStockTable.product')}</th>
+                                        <th>{t('admin.dashboard.lowStockTable.author')}</th>
+                                        <th>{t('admin.dashboard.lowStockTable.category')}</th>
+                                        <th>{t('admin.dashboard.lowStockTable.stock')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -411,7 +414,7 @@ const AdminDashboard: React.FC = () => {
                                             <td>{product.author}</td>
                                             <td>{product.category}</td>
                                             <td>
-                                                <span className="badge bg-danger">{product.stock} left</span>
+                                                <span className="badge bg-danger">{t('admin.dashboard.lowStockTable.left', { count: product.stock })}</span>
                                             </td>
                                         </tr>
                                     ))}

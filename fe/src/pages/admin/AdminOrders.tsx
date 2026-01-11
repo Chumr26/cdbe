@@ -5,6 +5,8 @@ import axios from 'axios';
 import { adminAPI } from '../../api/admin.api';
 import type { Order } from '../../api/orders.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useTranslation } from 'react-i18next';
+import { formatVnd } from '../../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -16,6 +18,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const AdminOrders: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -46,7 +49,7 @@ const AdminOrders: React.FC = () => {
             setTotalItems(response.total);
             setCurrentPage(response.page);
         } catch {
-            setError('Failed to load orders');
+            setError(t('admin.orders.loadError'));
         } finally {
             setLoading(false);
         }
@@ -79,7 +82,7 @@ const AdminOrders: React.FC = () => {
             setShowModal(false);
             setSelectedOrder(null);
         } catch (err: unknown) {
-            setModalError(getErrorMessage(err, 'Failed to update status'));
+            setModalError(getErrorMessage(err, t('admin.orders.updateStatusError')));
         } finally {
             setUpdating(false);
         }
@@ -99,11 +102,13 @@ const AdminOrders: React.FC = () => {
             setSelectedOrder(response.data);
             fetchOrders(currentPage, statusFilter);
         } catch (err: unknown) {
-            setModalError(getErrorMessage(err, 'Failed to update payment status'));
+            setModalError(getErrorMessage(err, t('admin.orders.updatePaymentStatusError')));
         } finally {
             setUpdatingPaymentStatus(false);
         }
     };
+
+    const locale = i18n.language?.startsWith('vi') ? 'vi-VN' : 'en-US';
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -120,18 +125,18 @@ const AdminOrders: React.FC = () => {
     return (
         <Container className="py-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Order Management</h2>
+                <h2>{t('admin.orders.title')}</h2>
                 <Form.Select
                     style={{ width: '200px' }}
                     value={statusFilter}
                     onChange={handleFilterChange}
                 >
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="">{t('admin.orders.filter.all')}</option>
+                    <option value="pending">{t('admin.orders.filter.pending')}</option>
+                    <option value="processing">{t('admin.orders.filter.processing')}</option>
+                    <option value="shipped">{t('admin.orders.filter.shipped')}</option>
+                    <option value="delivered">{t('admin.orders.filter.delivered')}</option>
+                    <option value="cancelled">{t('admin.orders.filter.cancelled')}</option>
                 </Form.Select>
             </div>
 
@@ -142,12 +147,12 @@ const AdminOrders: React.FC = () => {
                     <Table responsive hover className="align-middle mb-0">
                         <thead className="bg-light">
                             <tr>
-                                <th>Order #</th>
-                                <th>Customer</th>
-                                <th>Date</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>{t('admin.orders.table.order')}</th>
+                                <th>{t('admin.orders.table.customer')}</th>
+                                <th>{t('admin.orders.table.date')}</th>
+                                <th>{t('admin.orders.table.total')}</th>
+                                <th>{t('admin.orders.table.status')}</th>
+                                <th>{t('admin.orders.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,8 +165,8 @@ const AdminOrders: React.FC = () => {
                                             <br />
                                             <small className="text-muted">{order.shippingAddress.city}</small>
                                         </td>
-                                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                                        <td>${order.total.toFixed(2)}</td>
+                                        <td>{new Date(order.createdAt).toLocaleDateString(locale)}</td>
+                                        <td>{formatVnd(order.total)}</td>
                                         <td>
                                             <Badge bg={getStatusBadge(order.orderStatus)}>
                                                 {order.orderStatus.toUpperCase()}
@@ -169,21 +174,21 @@ const AdminOrders: React.FC = () => {
                                         </td>
                                         <td>
                                             <Button variant="outline-primary" size="sm" onClick={() => handleShowModal(order)}>
-                                                <FaEdit /> details
+                                                <FaEdit /> {t('admin.orders.table.details')}
                                             </Button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-4">No orders found</td>
+                                    <td colSpan={6} className="text-center py-4">{t('admin.orders.table.empty')}</td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-between align-items-center">
-                    <div>Showing {orders.length} of {totalItems} orders</div>
+                    <div>{t('admin.orders.pagination', { shown: orders.length, total: totalItems })}</div>
                     {totalPages > 1 && (
                         <Pagination className="mb-0">
                             <Pagination.Prev
@@ -211,7 +216,7 @@ const AdminOrders: React.FC = () => {
             {/* View/Update Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>Order Details</Modal.Title>
+                    <Modal.Title>{t('admin.orders.modal.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {modalError && <Alert variant="danger">{modalError}</Alert>}
@@ -219,16 +224,16 @@ const AdminOrders: React.FC = () => {
                         <>
                             <Row className="mb-3">
                                 <Col md={6}>
-                                    <h5>Order Info</h5>
+                                    <h5>{t('admin.orders.modal.orderInfo')}</h5>
                                     <p>
-                                        <strong>ID:</strong> {selectedOrder._id}<br />
-                                        <strong>Date:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}<br />
-                                        <strong>Payment Method:</strong> {(selectedOrder.paymentMethod ?? 'payos').toUpperCase()}<br />
-                                        <strong>Payment Status:</strong> {selectedOrder.paymentStatus}
+                                        <strong>{t('admin.orders.modal.id')}</strong> {selectedOrder._id}<br />
+                                        <strong>{t('admin.orders.modal.date')}</strong> {new Date(selectedOrder.createdAt).toLocaleString(locale)}<br />
+                                        <strong>{t('admin.orders.modal.paymentMethod')}</strong> {(selectedOrder.paymentMethod ?? 'payos').toUpperCase()}<br />
+                                        <strong>{t('admin.orders.modal.paymentStatus')}</strong> {selectedOrder.paymentStatus}
                                     </p>
                                 </Col>
                                 <Col md={6}>
-                                    <h5>Shipping Address</h5>
+                                    <h5>{t('admin.orders.modal.shippingAddress')}</h5>
                                     <p>
                                         {selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}<br />
                                         {selectedOrder.shippingAddress.street}<br />
@@ -238,54 +243,54 @@ const AdminOrders: React.FC = () => {
                                 </Col>
                             </Row>
 
-                            <h5>Items</h5>
+                            <h5>{t('admin.orders.modal.items')}</h5>
                             <Table size="sm" className="mb-4">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Qty</th>
-                                        <th>Total</th>
+                                        <th>{t('admin.orders.modal.itemsTable.product')}</th>
+                                        <th>{t('admin.orders.modal.itemsTable.price')}</th>
+                                        <th>{t('admin.orders.modal.itemsTable.qty')}</th>
+                                        <th>{t('admin.orders.modal.itemsTable.total')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {selectedOrder.items.map((item, idx) => (
                                         <tr key={idx}>
                                             <td>{item.title}</td>
-                                            <td>${item.price.toFixed(2)}</td>
+                                            <td>{formatVnd(item.price)}</td>
                                             <td>{item.quantity}</td>
-                                            <td>${(item.price * item.quantity).toFixed(2)}</td>
+                                            <td>{formatVnd(item.price * item.quantity)}</td>
                                         </tr>
                                     ))}
                                     <tr>
-                                        <td colSpan={3} className="text-end fw-bold">Total:</td>
-                                        <td className="fw-bold">${selectedOrder.total.toFixed(2)}</td>
+                                        <td colSpan={3} className="text-end fw-bold">{t('admin.orders.modal.itemsTable.totalLabel')}</td>
+                                        <td className="fw-bold">{formatVnd(selectedOrder.total)}</td>
                                     </tr>
                                 </tbody>
                             </Table>
 
                             <Form.Group>
-                                <Form.Label className="fw-bold">Update Order Status</Form.Label>
+                                <Form.Label className="fw-bold">{t('admin.orders.modal.updateOrderStatus')}</Form.Label>
                                 <div className="d-flex gap-2">
                                     <Form.Select
                                         value={statusToUpdate}
                                         onChange={(e) => setStatusToUpdate(e.target.value)}
                                     >
-                                        <option value="pending">Pending</option>
-                                        <option value="processing">Processing</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <option value="pending">{t('admin.orders.filter.pending')}</option>
+                                        <option value="processing">{t('admin.orders.filter.processing')}</option>
+                                        <option value="shipped">{t('admin.orders.filter.shipped')}</option>
+                                        <option value="delivered">{t('admin.orders.filter.delivered')}</option>
+                                        <option value="cancelled">{t('admin.orders.filter.cancelled')}</option>
                                     </Form.Select>
                                     <Button variant="primary" onClick={handleUpdateStatus} disabled={updating}>
-                                        {updating ? 'Updating...' : 'Update'}
+                                        {updating ? t('admin.orders.modal.updating') : t('admin.orders.modal.update')}
                                     </Button>
                                 </div>
                             </Form.Group>
 
                             {(selectedOrder.paymentMethod ?? 'payos') === 'cod' && (
                                 <Form.Group className="mt-3">
-                                    <Form.Label className="fw-bold">Update COD Payment Status</Form.Label>
+                                    <Form.Label className="fw-bold">{t('admin.orders.modal.updateCodPaymentStatus')}</Form.Label>
                                     <div className="d-flex gap-2">
                                         <Form.Select
                                             value={paymentStatusToUpdate}
@@ -300,7 +305,7 @@ const AdminOrders: React.FC = () => {
                                             onClick={handleUpdatePaymentStatus}
                                             disabled={updatingPaymentStatus}
                                         >
-                                            {updatingPaymentStatus ? 'Updating...' : 'Update Payment'}
+                                            {updatingPaymentStatus ? t('admin.orders.modal.updating') : t('admin.orders.modal.updatePayment')}
                                         </Button>
                                     </div>
                                 </Form.Group>
@@ -309,7 +314,7 @@ const AdminOrders: React.FC = () => {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>{t('admin.common.close')}</Button>
                 </Modal.Footer>
             </Modal>
         </Container>

@@ -300,6 +300,149 @@
     "you": "(Bạn)",
     "relatedTitle": "Sách liên quan trong {{category}}"
   },
+  "admin": {
+    "common": {
+      "noData": "Không có dữ liệu",
+      "unknown": "Không rõ",
+      "close": "Đóng"
+    },
+    "dashboard": {
+      "title": "Bảng điều khiển phân tích nâng cao",
+      "lastDays": "{{days}} ngày gần nhất",
+      "manageProducts": "Quản lý sản phẩm",
+      "manageOrders": "Quản lý đơn hàng",
+      "manageUsers": "Quản lý người dùng",
+      "manageCoupons": "Quản lý mã giảm giá",
+      "newUsers": "Người dùng mới",
+      "orders": "Đơn hàng",
+      "revenue": "Doanh thu",
+      "avgOrderValue": "Giá trị đơn TB",
+      "revenueOrdersTrend": "Xu hướng doanh thu & đơn hàng",
+      "orderStatus": "Trạng thái đơn hàng",
+      "newUsersPerDay": "Người dùng mới mỗi ngày",
+      "totalNewUsers": "Tổng người dùng mới: {{count}}",
+      "orderStatusDistribution": "Phân bố trạng thái đơn hàng",
+      "paymentStatusDistribution": "Phân bố trạng thái thanh toán",
+      "dailyTrends": "Xu hướng theo ngày",
+      "dailyTotals": "Tổng: {{orders}} đơn · {{revenue}} doanh thu · {{newUsers}} người dùng mới",
+      "table": {
+        "date": "Ngày",
+        "orders": "Đơn hàng",
+        "revenue": "Doanh thu",
+        "newUsers": "Người dùng mới"
+      },
+      "topProducts": "Sản phẩm hàng đầu (theo doanh thu)",
+      "noCompletedSales": "Không có giao dịch hoàn tất trong khoảng thời gian này",
+      "topProductsTable": {
+        "title": "Tên",
+        "isbn": "ISBN",
+        "qtySold": "SL bán",
+        "revenue": "Doanh thu"
+      },
+      "lowStockAlert": "⚠️ Cảnh báo tồn kho thấp",
+      "lowStockTable": {
+        "product": "Sản phẩm",
+        "author": "Tác giả",
+        "category": "Danh mục",
+        "stock": "Tồn kho",
+        "left": "Còn {{count}}"
+      },
+      "tooltip": {
+        "date": "Ngày: {{date}}",
+        "orders": "Đơn hàng",
+        "revenue": "Doanh thu",
+        "newUsers": "Người dùng mới"
+      }
+    },
+    "products": {
+      "title": "Quản lý sản phẩm",
+      "addNew": "Thêm sản phẩm",
+      "loadError": "Không thể tải sản phẩm",
+      "saveError": "Không thể lưu sản phẩm",
+      "deleteError": "Không thể xóa sản phẩm",
+      "table": {
+        "title": "Tên",
+        "author": "Tác giả",
+        "category": "Danh mục",
+        "price": "Giá",
+        "stock": "Tồn kho",
+        "actions": "Thao tác",
+        "empty": "Không có sản phẩm"
+      },
+      "pagination": "Hiển thị {{shown}} / {{total}} sản phẩm",
+      "modal": {
+        "editTitle": "Sửa sản phẩm",
+        "createTitle": "Thêm sản phẩm",
+        "title": "Tên",
+        "author": "Tác giả",
+        "category": "Danh mục",
+        "selectCategory": "Chọn danh mục",
+        "isbn": "ISBN",
+        "price": "Giá",
+        "stock": "Tồn kho",
+        "description": "Mô tả",
+        "featured": "Sản phẩm nổi bật",
+        "coverImage": "Ảnh bìa",
+        "coverHint": "Tải ảnh bìa tùy chỉnh hoặc để trống để lấy từ API theo ISBN",
+        "save": "Lưu sản phẩm",
+        "saving": "Đang lưu...",
+        "cancel": "Hủy"
+      },
+      "delete": {
+        "title": "Xác nhận xóa",
+        "body": "Bạn có chắc muốn xóa sản phẩm {{title}}? Hành động này không thể hoàn tác.",
+        "confirm": "Xóa sản phẩm",
+        "cancel": "Hủy"
+      }
+    },
+    "orders": {
+      "title": "Quản lý đơn hàng",
+      "loadError": "Không thể tải đơn hàng",
+      "updateStatusError": "Không thể cập nhật trạng thái",
+      "updatePaymentStatusError": "Không thể cập nhật trạng thái thanh toán",
+      "filter": {
+        "all": "Tất cả trạng thái",
+        "pending": "Chờ xử lý",
+        "processing": "Đang xử lý",
+        "shipped": "Đang giao",
+        "delivered": "Đã giao",
+        "cancelled": "Đã hủy"
+      },
+      "table": {
+        "order": "Mã đơn",
+        "customer": "Khách hàng",
+        "date": "Ngày",
+        "total": "Tổng",
+        "status": "Trạng thái",
+        "actions": "Thao tác",
+        "details": "chi tiết",
+        "empty": "Không có đơn hàng"
+      },
+      "pagination": "Hiển thị {{shown}} / {{total}} đơn hàng",
+      "modal": {
+        "title": "Chi tiết đơn hàng",
+        "orderInfo": "Thông tin đơn",
+        "shippingAddress": "Địa chỉ giao hàng",
+        "id": "ID:",
+        "date": "Ngày:",
+        "paymentMethod": "Phương thức thanh toán:",
+        "paymentStatus": "Trạng thái thanh toán:",
+        "items": "Sản phẩm",
+        "itemsTable": {
+          "product": "Sản phẩm",
+          "price": "Giá",
+          "qty": "SL",
+          "total": "Tổng",
+          "totalLabel": "Tổng:"
+        },
+        "updateOrderStatus": "Cập nhật trạng thái đơn",
+        "update": "Cập nhật",
+        "updating": "Đang cập nhật...",
+        "updateCodPaymentStatus": "Cập nhật trạng thái thanh toán COD",
+        "updatePayment": "Cập nhật thanh toán"
+      }
+    }
+  },
   "paymentResult": {
     "successTitle": "Thanh toán thành công!",
     "successMessage": "Cảm ơn bạn đã mua hàng. Đơn hàng {{order}} đã được thanh toán.",
