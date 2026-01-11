@@ -5,6 +5,7 @@ import axios from 'axios';
 import { cartAPI } from '../api/cart.api';
 import type { Cart } from '../api/cart.api';
 import { useAuth } from './AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface CartContextType {
     cartItems: string[]; // Array of product IDs in cart
@@ -23,6 +24,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [cartItems, setCartItems] = useState<string[]>([]);
     const [cartCount, setCartCount] = useState(0);
     const [isBouncing, setIsBouncing] = useState(false);
+    const { t } = useTranslation();
 
     // Load cart data
     const refreshCart = useCallback(async () => {
@@ -80,7 +82,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             notification.className = 'alert alert-success position-fixed start-50 translate-middle-x mt-3';
             notification.style.zIndex = '9999';
             notification.style.top = '60px';
-            notification.textContent = '✓ Product added to cart!';
+            notification.textContent = t('toast.productAdded');
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
         } catch (error: unknown) {
@@ -98,7 +100,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setTimeout(() => notification.remove(), 3000);
             throw error;
         }
-    }, [refreshCart, triggerBounce]);
+    }, [refreshCart, t, triggerBounce]);
 
     const value: CartContextType = {
         cartItems,

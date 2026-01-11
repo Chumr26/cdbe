@@ -6,6 +6,7 @@ import type { Product } from '../../api/products.api';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { formatVnd, usdToVnd } from '../../utils/currency';
 
 interface ProductCardProps {
     product: Product;
@@ -18,12 +19,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const navigate = useNavigate();
     const inCart = isInCart(product._id);
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(price);
-    };
+    const priceVnd = typeof (product as Product & { priceVnd?: number }).priceVnd === 'number'
+        ? (product as Product & { priceVnd?: number }).priceVnd!
+        : usdToVnd(product.price);
 
     // Smart image source selection: API cover > uploaded cover > legacy images > placeholder
     const getImageSource = () => {
@@ -91,7 +89,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </Card.Text>
                 <div className="mt-auto">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h5 className="mb-0 text-primary">{formatPrice(product.price)}</h5>
+                        <h5 className="mb-0 text-primary">{formatVnd(priceVnd)}</h5>
                         <small className="text-muted">{product.stock} in stock</small>
                     </div>
                     <Button

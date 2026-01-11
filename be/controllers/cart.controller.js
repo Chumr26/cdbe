@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Cart = require('../models/Cart.model');
 const Product = require('../models/Product.model');
 const { normalizeCouponCode, recalculateCartTotals } = require('../utils/couponPricing');
+const { usdToVnd } = require('../utils/currency');
 
 // @desc    Get user cart
 // @route   GET /api/cart
@@ -48,10 +49,12 @@ exports.addToCart = asyncHandler(async (req, res) => {
 
   let cart = await Cart.findOne({ userId: req.user.id });
 
+  const priceVnd = usdToVnd(product.price);
+
   if (!cart) {
     cart = await Cart.create({
       userId: req.user.id,
-      items: [{ productId, quantity, price: product.price }]
+      items: [{ productId, quantity, price: priceVnd }]
     });
   } else {
     // Check if item already in cart
@@ -62,7 +65,7 @@ exports.addToCart = asyncHandler(async (req, res) => {
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      cart.items.push({ productId, quantity, price: product.price });
+      cart.items.push({ productId, quantity, price: priceVnd });
     }
 
     ({ cart } = await recalculateCartTotals(cart, req.user.id));

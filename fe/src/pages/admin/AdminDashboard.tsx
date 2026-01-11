@@ -20,6 +20,7 @@ import { adminAPI } from '../../api/admin.api';
 import type { AdvancedAnalytics, DashboardStats } from '../../api/admin.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import { formatVnd } from '../../utils/currency';
 
 const AdminDashboard: React.FC = () => {
     const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -46,12 +47,7 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(price);
-    };
+    const formatPrice = (price: number) => formatVnd(price);
 
     const timeSeriesTotals = useMemo(() => {
         if (!analytics?.timeSeries?.length) return null;

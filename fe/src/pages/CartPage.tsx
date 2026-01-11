@@ -9,6 +9,7 @@ import { couponsAPI } from '../api/coupons.api';
 import type { AvailableCoupon } from '../api/coupons.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { formatVnd } from '../utils/currency';
 
 const CartPage: React.FC = () => {
     const [cart, setCart] = useState<Cart | null>(null);
@@ -133,13 +134,6 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(price);
-    };
-
     if (loading) return <LoadingSpinner fullPage />;
     if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
 
@@ -208,7 +202,7 @@ const CartPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="align-middle">{formatPrice(item.price)}</td>
+                                                <td className="align-middle">{formatVnd(item.price)}</td>
                                                 <td className="align-middle">
                                                     <div className="d-flex align-items-center">
                                                         <Button
@@ -233,7 +227,7 @@ const CartPage: React.FC = () => {
                                                     </div>
                                                 </td>
                                                 <td className="align-middle">
-                                                    <strong>{formatPrice(item.price * item.quantity)}</strong>
+                                                    <strong>{formatVnd(item.price * item.quantity)}</strong>
                                                 </td>
                                                 <td className="align-middle">
                                                     <Button
@@ -269,7 +263,7 @@ const CartPage: React.FC = () => {
                                             {availableCoupons.map((c) => (
                                                 <option key={c._id} value={c.code}>
                                                     {c.code}
-                                                    {c.type === 'percent' ? ` - ${c.value}% off` : ` - $${c.value} off`}
+                                                    {c.type === 'percent' ? ` - ${c.value}% off` : ` - ${formatVnd(c.value)} off`}
                                                 </option>
                                             ))}
                                         </Form.Select>
@@ -315,12 +309,12 @@ const CartPage: React.FC = () => {
 
                                 <div className="d-flex justify-content-between mb-2">
                                     <span>Subtotal:</span>
-                                    <strong>{formatPrice(subtotal)}</strong>
+                                    <strong>{formatVnd(subtotal)}</strong>
                                 </div>
                                 {discountTotal > 0 && (
                                     <div className="d-flex justify-content-between mb-2">
                                         <span>Discount:</span>
-                                        <strong className="text-success">-{formatPrice(discountTotal)}</strong>
+                                        <strong className="text-success">-{formatVnd(discountTotal)}</strong>
                                     </div>
                                 )}
                                 <div className="d-flex justify-content-between mb-2">
@@ -330,7 +324,7 @@ const CartPage: React.FC = () => {
                                 <hr />
                                 <div className="d-flex justify-content-between mb-3">
                                     <strong>Total:</strong>
-                                    <strong className="text-primary">{formatPrice(total)}</strong>
+                                    <strong className="text-primary">{formatVnd(total)}</strong>
                                 </div>
                                 <Button
                                     variant="primary"

@@ -67,6 +67,9 @@ JWT_SECRET=your_super_secret_key_change_this
 JWT_EXPIRE=7d
 ```
 
+
+# Currency conversion (Product prices stored in USD)
+USD_TO_VND_RATE=25000
 ### 3. Start MongoDB
 Make sure MongoDB is running on your machine:
 ```bash

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Pagination } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { productsAPI } from '../api/products.api';
 import type { Product, ProductFilters } from '../api/products.api';
 import { categoriesAPI } from '../api/categories.api';
@@ -23,6 +24,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 
 const ProductsPage: React.FC = () => {
     const [searchParams] = useSearchParams();
+    const { t } = useTranslation();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
@@ -99,20 +101,20 @@ const ProductsPage: React.FC = () => {
 
     return (
         <Container className="py-4">
-            <h1 className="mb-4">Browse Books</h1>
+            <h1 className="mb-4">{t('products.browseTitle')}</h1>
 
             <Row>
                 {/* Filters Sidebar */}
                 <Col md={3} className="mb-4">
                     <div className="bg-light p-3 rounded">
-                        <h5 className="mb-3">Filters</h5>
+                        <h5 className="mb-3">{t('products.filters')}</h5>
 
                         {/* Search */}
                         <Form.Group className="mb-3">
-                            <Form.Label>Search</Form.Label>
+                            <Form.Label>{t('products.searchLabel')}</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Search books..."
+                                placeholder={t('products.searchPlaceholder')}
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
                             />
@@ -120,12 +122,12 @@ const ProductsPage: React.FC = () => {
 
                         {/* Category */}
                         <Form.Group className="mb-3">
-                            <Form.Label>Category</Form.Label>
+                            <Form.Label>{t('products.category')}</Form.Label>
                             <Form.Select
                                 value={filters.category}
                                 onChange={(e) => handleFilterChange('category', e.target.value)}
                             >
-                                <option value="">All Categories</option>
+                                <option value="">{t('products.allCategories')}</option>
                                 {categories.map((cat) => (
                                     <option key={cat._id} value={cat.name}>
                                         {cat.name}
@@ -136,7 +138,7 @@ const ProductsPage: React.FC = () => {
 
                         {/* Price Range */}
                         <Form.Group className="mb-3">
-                            <Form.Label>Min Price</Form.Label>
+                            <Form.Label>{t('products.minPrice')}</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Min"
@@ -145,7 +147,7 @@ const ProductsPage: React.FC = () => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Max Price</Form.Label>
+                            <Form.Label>{t('products.maxPrice')}</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Max"
@@ -156,26 +158,26 @@ const ProductsPage: React.FC = () => {
 
                         {/* Sort */}
                         <Form.Group className="mb-3">
-                            <Form.Label>Sort By</Form.Label>
+                            <Form.Label>{t('products.sortBy')}</Form.Label>
                             <Form.Select
                                 value={filters.sort}
                                 onChange={(e) => handleFilterChange('sort', e.target.value)}
                             >
-                                <option value="createdAt">Newest</option>
-                                <option value="price">Price</option>
-                                <option value="rating">Rating</option>
-                                <option value="title">Title</option>
+                                <option value="createdAt">{t('products.newest')}</option>
+                                <option value="price">{t('products.price')}</option>
+                                <option value="rating">{t('products.rating')}</option>
+                                <option value="title">{t('products.title')}</option>
                             </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Order</Form.Label>
+                            <Form.Label>{t('products.order')}</Form.Label>
                             <Form.Select
                                 value={filters.order}
                                 onChange={(e) => handleFilterChange('order', e.target.value as 'asc' | 'desc')}
                             >
-                                <option value="asc">Ascending</option>
-                                <option value="desc">Descending</option>
+                                <option value="asc">{t('products.ascending')}</option>
+                                <option value="desc">{t('products.descending')}</option>
                             </Form.Select>
                         </Form.Group>
 
@@ -187,7 +189,7 @@ const ProductsPage: React.FC = () => {
                             sort: 'createdAt',
                             order: 'desc',
                         })}>
-                            Clear Filters
+                            {t('products.clearFilters')}
                         </Button>
                     </div>
                 </Col>
@@ -202,7 +204,7 @@ const ProductsPage: React.FC = () => {
                         <>
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <p className="text-muted mb-0">
-                                    Showing {products.length} products
+                                    {t('products.showing', { count: products.length })}
                                 </p>
                             </div>
 
@@ -216,7 +218,7 @@ const ProductsPage: React.FC = () => {
 
                             {products.length === 0 && (
                                 <div className="text-center py-5">
-                                    <p className="text-muted">No products found. Try adjusting your filters.</p>
+                                    <p className="text-muted">{t('products.empty')}</p>
                                 </div>
                             )}
 

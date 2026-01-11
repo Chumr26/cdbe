@@ -58,7 +58,7 @@ const createPaymentLink = asyncHandler(async (req, res) => {
         items: order.items.map(item => ({
             name: item.title || 'Book',
             quantity: item.quantity,
-            price: item.price
+            price: Math.round(Number(item.price || 0))
         }))
     };
 

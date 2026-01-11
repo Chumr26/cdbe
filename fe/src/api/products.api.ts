@@ -8,6 +8,8 @@ export interface Product {
   description?: string;
   category: string;
   price: number;
+  priceVnd?: number;
+  currency?: 'USD' | 'VND';
   stock: number;
   images?: string[];
   coverImage?: {

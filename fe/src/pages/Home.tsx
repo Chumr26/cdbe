@@ -9,8 +9,10 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import { cartAPI } from '../api/cart.api';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
+    const { t } = useTranslation();
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -34,7 +36,7 @@ const Home: React.FC = () => {
             const response = await productsAPI.getFeaturedProducts();
             setFeaturedProducts(response.data);
         } catch {
-            setError('Failed to load featured products');
+            setError(t('home.featuredLoadError'));
         } finally {
             setLoading(false);
         }
@@ -48,9 +50,9 @@ const Home: React.FC = () => {
 
         try {
             await cartAPI.addToCart(productId, 1);
-            alert('Product added to cart!');
+            alert(t('toast.productAdded'));
         } catch (err: unknown) {
-            alert(getErrorMessage(err, 'Failed to add to cart'));
+            alert(getErrorMessage(err, t('home.addToCartError')));
         }
     };
 
@@ -61,12 +63,10 @@ const Home: React.FC = () => {
                 <Container>
                     <Row className="align-items-center">
                         <Col lg={6}>
-                            <h1 className="display-4 fw-bold mb-3">Welcome to Bookstore</h1>
-                            <p className="lead mb-4">
-                                Discover your next favorite book from our extensive collection of titles across all genres.
-                            </p>
+                            <h1 className="display-4 fw-bold mb-3">{t('home.heroTitle')}</h1>
+                            <p className="lead mb-4">{t('home.heroSubtitle')}</p>
                             <Link to="/products">
-                                <Button variant="light" size="lg">Browse Books</Button>
+                                <Button variant="light" size="lg">{t('home.browseBooks')}</Button>
                             </Link>
                         </Col>
                         <Col lg={6} className="d-none d-lg-block">
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
 
             {/* Featured Products Section */}
             <Container className="py-5">
-                <h2 className="text-center mb-4">Featured Books</h2>
+                <h2 className="text-center mb-4">{t('home.featuredTitle')}</h2>
                 {loading ? (
                     <LoadingSpinner />
                 ) : error ? (
@@ -97,20 +97,27 @@ const Home: React.FC = () => {
                     </Row>
                 )}
                 {!loading && !error && featuredProducts.length === 0 && (
-                    <p className="text-center text-muted">No featured products available.</p>
+                    <p className="text-center text-muted">{t('home.featuredEmpty')}</p>
                 )}
             </Container>
 
             {/* Categories Section */}
             <div className="bg-light py-5">
                 <Container>
-                    <h2 className="text-center mb-4">Browse by Category</h2>
+                    <h2 className="text-center mb-4">{t('home.browseByCategory')}</h2>
                     <Row xs={2} md={3} lg={6} className="g-3">
-                        {['Fiction', 'Non-Fiction', 'Science', 'Technology', 'Self-Help', 'History'].map((category) => (
-                            <Col key={category}>
-                                <Link to={`/products?category=${category}`} className="text-decoration-none">
+                        {[
+                            { slug: 'Fiction', labelKey: 'fiction' },
+                            { slug: 'Non-Fiction', labelKey: 'nonFiction' },
+                            { slug: 'Science', labelKey: 'science' },
+                            { slug: 'Technology', labelKey: 'technology' },
+                            { slug: 'Self-Help', labelKey: 'selfHelp' },
+                            { slug: 'History', labelKey: 'history' },
+                        ].map((category) => (
+                            <Col key={category.slug}>
+                                <Link to={`/products?category=${category.slug}`} className="text-decoration-none">
                                     <div className="bg-white p-4 rounded text-center shadow-sm hover-shadow transition">
-                                        <h5 className="mb-0">{category}</h5>
+                                        <h5 className="mb-0">{t(`home.categories.${category.labelKey}`)}</h5>
                                     </div>
                                 </Link>
                             </Col>
@@ -121,13 +128,11 @@ const Home: React.FC = () => {
 
             {/* Call to Action */}
             <Container className="py-5 text-center">
-                <h2 className="mb-3">Start Your Reading Journey Today</h2>
-                <p className="lead text-muted mb-4">
-                    Join thousands of book lovers and discover your next great read.
-                </p>
+                <h2 className="mb-3">{t('home.ctaTitle')}</h2>
+                <p className="lead text-muted mb-4">{t('home.ctaSubtitle')}</p>
                 {!isAuthenticated && (
                     <Link to="/register">
-                        <Button variant="primary" size="lg">Sign Up Now</Button>
+                        <Button variant="primary" size="lg">{t('home.signUpNow')}</Button>
                     </Link>
                 )}
             </Container>

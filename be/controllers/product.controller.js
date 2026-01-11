@@ -1,5 +1,15 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/Product.model');
+const { usdToVnd } = require('../utils/currency');
+
+const withVndPrice = (productDoc) => {
+  const obj = productDoc?.toObject ? productDoc.toObject() : productDoc;
+  return {
+    ...obj,
+    priceVnd: usdToVnd(obj?.price),
+    currency: 'USD'
+  };
+};
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -52,7 +62,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     total,
     page,
     pages: Math.ceil(total / limit),
-    data: products
+    data: products.map(withVndPrice)
   });
 });
 
@@ -71,7 +81,7 @@ exports.getProduct = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    data: product
+    data: withVndPrice(product)
   });
 });
 
@@ -84,7 +94,7 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     count: products.length,
-    data: products
+    data: products.map(withVndPrice)
   });
 });
 
