@@ -268,3 +268,68 @@ exports.verifyEmail = asyncHandler(async (req, res) => {
     console.log(`User ${user.email} verified successfully.`);
     sendTokenResponse(user, 200, res);
 });
+
+// @desc    List dev accounts for login autofill (development only)
+// @route   GET /api/auth/dev-accounts
+// @access  Public (development only)
+exports.getDevAccounts = asyncHandler(async (req, res) => {
+    const ip = req.ip || '';
+    const hostname = (req.hostname || '').toLowerCase();
+    const isLoopback =
+        ip === '127.0.0.1' ||
+        ip === '::1' ||
+        ip.startsWith('::ffff:127.0.0.1');
+
+    const isLocalHostname = hostname === 'localhost' || hostname === '127.0.0.1';
+
+    if (process.env.NODE_ENV === 'production' && !isLoopback && !isLocalHostname) {
+        return res.status(404).json({
+            success: false,
+            message: 'Route not found'
+        });
+    }
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@bookstore.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    // Seed script uses the same password for all customer accounts.
+    // We identify those accounts by reusing john@test.com password hash.
+    const seedCustomer = await User.findOne({ email: 'john@test.com' }).select('+password');
+    const customerPassword = 'password123';
+
+    const accounts = [];
+
+    const admin = await User.findOne({ email: adminEmail }).select('email role firstName lastName isEmailVerified');
+    if (admin) {
+        accounts.push({
+            email: admin.email,
+            role: admin.role,
+            label: `${admin.role}: ${admin.email}`,
+            password: adminPassword,
+            isEmailVerified: !!admin.isEmailVerified
+        });
+    }
+
+    if (seedCustomer?.password) {
+        const seededCustomers = await User.find({
+            password: seedCustomer.password
+        }).select('email role firstName lastName isEmailVerified');
+
+        seededCustomers
+            .sort((a, b) => (a.email || '').localeCompare(b.email || ''))
+            .forEach((u) => {
+                accounts.push({
+                    email: u.email,
+                    role: u.role,
+                    label: `${u.role}: ${u.email}`,
+                    password: customerPassword,
+                    isEmailVerified: !!u.isEmailVerified
+                });
+            });
+    }
+
+    res.status(200).json({
+        success: true,
+        data: accounts
+    });
+});

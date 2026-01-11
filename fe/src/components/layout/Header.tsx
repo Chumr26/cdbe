@@ -141,9 +141,24 @@ const Header: React.FC = () => {
                             ) : (
                                 <>
                                     <Nav.Link as={Link} to="/login">{t('nav.login')}</Nav.Link>
-                                    <Nav.Link as={Link} to="/register">
-                                        <Button variant="outline-light" size="sm">{t('nav.signUp')}</Button>
-                                    </Nav.Link>
+                                    <NavDropdown
+                                        title={t('nav.language')}
+                                        id="language-dropdown"
+                                        align="end"
+                                    >
+                                        <NavDropdown.Item
+                                            active={i18n.language?.startsWith('vi')}
+                                            onClick={() => i18n.changeLanguage('vi')}
+                                        >
+                                            Tiếng Việt
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item
+                                            active={i18n.language?.startsWith('en')}
+                                            onClick={() => i18n.changeLanguage('en')}
+                                        >
+                                            English
+                                        </NavDropdown.Item>
+                                    </NavDropdown>
                                 </>
                             )}
                         </Nav>

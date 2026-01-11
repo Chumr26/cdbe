@@ -43,6 +43,7 @@
       "signUpLink": "Đăng ký",
       "errorFallback": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin.",
       "devCredentials": "Tài khoản phát triển",
+      "selectAccount": "Chọn tài khoản…",
       "autofillAdmin": "Điền Admin",
       "autofillUser": "Điền User"
     },

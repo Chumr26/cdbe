@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import api from '../api/axios';
+
+type DevAccount = {
+    email: string;
+    role?: string;
+    label?: string;
+    password: string;
+    isEmailVerified?: boolean;
+};
 
 const LoginPage: React.FC = () => {
     const { t } = useTranslation();
@@ -12,8 +21,53 @@ const LoginPage: React.FC = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [devAccounts, setDevAccounts] = useState<DevAccount[]>([]);
+    const [selectedDevEmail, setSelectedDevEmail] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadDevAccounts = async () => {
+            try {
+                const res = await api.get('/auth/dev-accounts');
+                const raw = (res.data as { data?: DevAccount[] } | undefined)?.data;
+                if (!cancelled && Array.isArray(raw)) {
+                    setDevAccounts(raw);
+                }
+            } catch {
+                // Ignore: endpoint is dev-only and may not exist in production.
+            }
+        };
+
+        loadDevAccounts();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const fallbackDevAccounts = useMemo<DevAccount[]>(
+        () => [
+            {
+                email: 'admin@bookstore.com',
+                role: 'admin',
+                label: 'admin: admin@bookstore.com',
+                password: 'admin123',
+                isEmailVerified: true
+            },
+            {
+                email: 'john@test.com',
+                role: 'customer',
+                label: 'customer: john@test.com',
+                password: 'password123',
+                isEmailVerified: true
+            }
+        ],
+        []
+    );
+
+    const visibleDevAccounts = devAccounts.length > 0 ? devAccounts : fallbackDevAccounts;
 
     const getErrorMessage = (err: unknown, fallback: string) => {
         if (axios.isAxiosError(err)) {
@@ -98,28 +152,27 @@ const LoginPage: React.FC = () => {
                             {/* Development Helper */}
                             <div className="mt-4 p-3 bg-light rounded text-center">
                                 <small className="text-muted d-block mb-2">{t('auth.login.devCredentials')}</small>
-                                <div className="d-flex gap-2 justify-content-center">
-                                    <Button
-                                        variant="outline-secondary"
-                                        size="sm"
-                                        onClick={() => {
-                                            setEmail('admin@bookstore.com');
-                                            setPassword('admin123');
-                                        }}
-                                    >
-                                        {t('auth.login.autofillAdmin')}
-                                    </Button>
-                                    <Button
-                                        variant="outline-secondary"
-                                        size="sm"
-                                        onClick={() => {
-                                            setEmail('john@test.com');
-                                            setPassword('password123');
-                                        }}
-                                    >
-                                        {t('auth.login.autofillUser')}
-                                    </Button>
-                                </div>
+                                <Form.Select
+                                    size="sm"
+                                    value={selectedDevEmail}
+                                    onChange={(e) => {
+                                        const nextEmail = e.target.value;
+                                        setSelectedDevEmail(nextEmail);
+
+                                        const selected = visibleDevAccounts.find((a) => a.email === nextEmail);
+                                        if (selected) {
+                                            setEmail(selected.email);
+                                            setPassword(selected.password);
+                                        }
+                                    }}
+                                >
+                                    <option value="">{t('auth.login.selectAccount')}</option>
+                                    {visibleDevAccounts.map((a) => (
+                                        <option key={a.email} value={a.email}>
+                                            {`${a.label || `${a.role || 'user'}: ${a.email}`}${a.isEmailVerified === false ? ' (unverified)' : ''}`}
+                                        </option>
+                                    ))}
+                                </Form.Select>
                             </div>
                         </Card.Body>
                     </Card>

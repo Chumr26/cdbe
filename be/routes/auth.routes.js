@@ -9,7 +9,8 @@ const {
     forgotPassword,
     resetPassword,
     changePassword,
-    verifyEmail
+    verifyEmail,
+    getDevAccounts
 } = require('../controllers/auth.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -135,6 +136,9 @@ router.post('/register', registerValidation, register);
  *               $ref: '#/components/schemas/Error'
  */
 router.post('/login', loginValidation, login);
+
+// Development helper (returns seeded/known accounts; disabled in production)
+router.get('/dev-accounts', getDevAccounts);
 
 /**
  * @swagger

@@ -86,7 +86,7 @@ const { protect, authorize } = require('../middleware/auth.middleware');
  *         schema:
  *           type: string
  *           example: vi
- *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *         description: "Preferred language for localized fields (e.g. description). Supported: en, vi."
  *       - in: query
  *         name: lang
  *         schema:
@@ -126,7 +126,7 @@ router.get('/', getProducts);
  *         schema:
  *           type: string
  *           example: vi
- *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *         description: "Preferred language for localized fields (e.g. description). Supported: en, vi."
  *       - in: query
  *         name: lang
  *         schema:
@@ -172,7 +172,7 @@ router.get('/featured', getFeaturedProducts);
  *         schema:
  *           type: string
  *           example: vi
- *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *         description: "Preferred language for localized fields (e.g. description). Supported: en, vi."
  *       - in: query
  *         name: lang
  *         schema:

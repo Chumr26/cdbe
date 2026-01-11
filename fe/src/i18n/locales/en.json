@@ -43,6 +43,7 @@
       "signUpLink": "Sign up",
       "errorFallback": "Failed to login. Please check your credentials.",
       "devCredentials": "Development Credentials",
+      "selectAccount": "Select an account…",
       "autofillAdmin": "Auto-fill Admin",
       "autofillUser": "Auto-fill User"
     },
