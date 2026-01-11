@@ -9,7 +9,7 @@ import { couponsAPI } from '../api/coupons.api';
 import type { AvailableCoupon } from '../api/coupons.api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
-import { formatVnd } from '../utils/currency';
+import { formatMoney } from '../utils/currency';
 import { useTranslation } from 'react-i18next';
 
 const CartPage: React.FC = () => {
@@ -204,7 +204,7 @@ const CartPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="align-middle">{formatVnd(item.price)}</td>
+                                                <td className="align-middle">{formatMoney(item.price, 'VND')}</td>
                                                 <td className="align-middle">
                                                     <div className="d-flex align-items-center">
                                                         <Button
@@ -229,7 +229,7 @@ const CartPage: React.FC = () => {
                                                     </div>
                                                 </td>
                                                 <td className="align-middle">
-                                                    <strong>{formatVnd(item.price * item.quantity)}</strong>
+                                                    <strong>{formatMoney(item.price * item.quantity, 'VND')}</strong>
                                                 </td>
                                                 <td className="align-middle">
                                                     <Button
@@ -267,7 +267,7 @@ const CartPage: React.FC = () => {
                                                     {c.code}
                                                     {c.type === 'percent'
                                                         ? t('cart.couponOffPercent', { value: c.value })
-                                                        : t('cart.couponOffFixed', { amount: formatVnd(c.value) })}
+                                                        : t('cart.couponOffFixed', { amount: formatMoney(c.value, 'VND') })}
                                                 </option>
                                             ))}
                                         </Form.Select>
@@ -313,12 +313,12 @@ const CartPage: React.FC = () => {
 
                                 <div className="d-flex justify-content-between mb-2">
                                     <span>{t('cart.subtotal')}</span>
-                                    <strong>{formatVnd(subtotal)}</strong>
+                                    <strong>{formatMoney(subtotal, 'VND')}</strong>
                                 </div>
                                 {discountTotal > 0 && (
                                     <div className="d-flex justify-content-between mb-2">
                                         <span>{t('cart.discount')}</span>
-                                        <strong className="text-success">-{formatVnd(discountTotal)}</strong>
+                                        <strong className="text-success">-{formatMoney(discountTotal, 'VND')}</strong>
                                     </div>
                                 )}
                                 <div className="d-flex justify-content-between mb-2">
@@ -328,7 +328,7 @@ const CartPage: React.FC = () => {
                                 <hr />
                                 <div className="d-flex justify-content-between mb-3">
                                     <strong>{t('cart.table.total')}:</strong>
-                                    <strong className="text-primary">{formatVnd(total)}</strong>
+                                    <strong className="text-primary">{formatMoney(total, 'VND')}</strong>
                                 </div>
                                 <Button
                                     variant="primary"

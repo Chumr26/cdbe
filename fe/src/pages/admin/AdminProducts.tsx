@@ -8,7 +8,7 @@ import { categoriesAPI } from '../../api/categories.api';
 import type { Category } from '../../api/categories.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
-import { formatVnd, usdToVnd } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -185,10 +185,7 @@ const AdminProducts: React.FC = () => {
         }
     };
 
-    const displayPrice = (p: Product) => {
-        const vnd = typeof p.priceVnd === 'number' ? p.priceVnd : usdToVnd(p.price);
-        return formatVnd(vnd);
-    };
+    const displayPrice = (p: Product) => formatMoney(p.price, 'USD');
 
     if (loading && !products.length) return <LoadingSpinner fullPage />;
 

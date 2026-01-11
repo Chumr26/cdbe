@@ -81,6 +81,18 @@ const { protect, authorize } = require('../middleware/auth.middleware');
  *           type: integer
  *           default: 10
  *         description: Items per page
+ *       - in: header
+ *         name: Accept-Language
+ *         schema:
+ *           type: string
+ *           example: vi
+ *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *       - in: query
+ *         name: lang
+ *         schema:
+ *           type: string
+ *           enum: [en, vi]
+ *         description: Optional override for language selection (takes precedence over Accept-Language)
  *     responses:
  *       200:
  *         description: Products retrieved successfully
@@ -108,6 +120,19 @@ router.get('/', getProducts);
  *   get:
  *     summary: Get featured products
  *     tags: [Products]
+ *     parameters:
+ *       - in: header
+ *         name: Accept-Language
+ *         schema:
+ *           type: string
+ *           example: vi
+ *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *       - in: query
+ *         name: lang
+ *         schema:
+ *           type: string
+ *           enum: [en, vi]
+ *         description: Optional override for language selection (takes precedence over Accept-Language)
  *     responses:
  *       200:
  *         description: Featured products retrieved successfully
@@ -142,6 +167,18 @@ router.get('/featured', getFeaturedProducts);
  *         schema:
  *           type: string
  *         description: Product ID
+ *       - in: header
+ *         name: Accept-Language
+ *         schema:
+ *           type: string
+ *           example: vi
+ *         description: Preferred language for localized fields (e.g. description). Supported: en, vi.
+ *       - in: query
+ *         name: lang
+ *         schema:
+ *           type: string
+ *           enum: [en, vi]
+ *         description: Optional override for language selection (takes precedence over Accept-Language)
  *     responses:
  *       200:
  *         description: Product retrieved successfully

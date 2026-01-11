@@ -6,7 +6,7 @@ import type { Product } from '../../api/products.api';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { formatVnd, usdToVnd } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 
 interface ProductCardProps {
@@ -20,10 +20,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const inCart = isInCart(product._id);
-
-    const priceVnd = typeof (product as Product & { priceVnd?: number }).priceVnd === 'number'
-        ? (product as Product & { priceVnd?: number }).priceVnd!
-        : usdToVnd(product.price);
 
     // Smart image source selection: API cover > uploaded cover > legacy images > placeholder
     const getImageSource = () => {
@@ -130,7 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </Card.Text>
                 <div className="mt-auto">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h5 className="mb-0 text-primary">{formatVnd(priceVnd)}</h5>
+                        <h5 className="mb-0 text-primary">{formatMoney(product.price, 'USD')}</h5>
                         <small className="text-muted">{t('productCard.stock', { count: product.stock })}</small>
                     </div>
                     <Button

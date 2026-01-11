@@ -20,6 +20,13 @@ const productSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  // Localized descriptions. Keep `description` as a backward-compatible fallback.
+  // Example: { en: "...", vi: "..." }
+  descriptionI18n: {
+    type: Map,
+    of: String,
+    default: {}
+  },
   category: {
     type: String,
     required: [true, 'Category is required']
@@ -87,6 +94,12 @@ const productSchema = new mongoose.Schema({
 });
 
 // Text index for search
-productSchema.index({ title: 'text', author: 'text', description: 'text' });
+productSchema.index({
+  title: 'text',
+  author: 'text',
+  description: 'text',
+  'descriptionI18n.en': 'text',
+  'descriptionI18n.vi': 'text'
+});
 
 module.exports = mongoose.model('Product', productSchema);

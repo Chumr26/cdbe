@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { formatVnd } from '../utils/currency';
+import { formatMoney } from '../utils/currency';
 
 const OrdersPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -52,7 +52,7 @@ const OrdersPage: React.FC = () => {
     };
 
     const formatPrice = (price: number) => {
-        return formatVnd(Number(price) || 0);
+        return formatMoney(Number(price) || 0, 'VND');
     };
 
     const formatDate = (date: string) => {

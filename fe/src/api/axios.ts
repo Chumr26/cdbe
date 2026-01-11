@@ -14,6 +14,11 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Sync API localization with current UI language
+    const lang = localStorage.getItem('language') || navigator.language || 'en';
+    config.headers['Accept-Language'] = lang;
+
     return config;
   },
   (error) => {

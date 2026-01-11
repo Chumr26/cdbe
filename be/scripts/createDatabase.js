@@ -40,8 +40,14 @@ async function createCollections() {
     await db.collection('products').createIndex({ isbn: 1 }, { unique: true });
     console.log('✅ Created index: products.isbn (unique)');
 
-    await db.collection('products').createIndex({ title: "text", author: "text" });
-    console.log('✅ Created index: products.title, author (text search)');
+    await db.collection('products').createIndex({
+      title: "text",
+      author: "text",
+      description: "text",
+      "descriptionI18n.en": "text",
+      "descriptionI18n.vi": "text"
+    });
+    console.log('✅ Created index: products.title, author, description, descriptionI18n (text search)');
 
     await db.collection('products').createIndex({ category: 1 });
     console.log('✅ Created index: products.category');

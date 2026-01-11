@@ -24,7 +24,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 
 const ProductsPage: React.FC = () => {
     const [searchParams] = useSearchParams();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ const ProductsPage: React.FC = () => {
 
     useEffect(() => {
         loadProducts();
-    }, [filters]);
+    }, [filters, i18n.language]);
 
     const loadCategories = async () => {
         try {

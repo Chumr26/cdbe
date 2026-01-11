@@ -238,6 +238,114 @@ async function seedData() {
         console.log('📖 Seeding real books and fetching covers...');
 
         // Curated list of real books with ISBNs
+        const viDescriptionByIsbn = {
+            // Fiction
+            '9780743273565':
+                'Nick Carraway bị cuốn vào thế giới hào nhoáng của Jay Gatsby, nơi những bữa tiệc xa hoa che giấu một nỗi khao khát đơn độc. Bối cảnh thời Jazz phơi bày ám ảnh về địa vị, giàu sang và sự vỡ mộng của Giấc mơ Mỹ.',
+            '9780061120084':
+                'Ở Alabama thập niên 1930, cô bé Scout chứng kiến cha mình, luật sư Atticus Finch, bào chữa cho một người da màu bị buộc tội oan. Câu chuyện về công lý, lòng trắc ẩn và dũng khí đạo đức được kể bằng góc nhìn trẻ thơ vừa ấm áp vừa sắc sảo.',
+            '9780451524935':
+                'Winston Smith sống trong một xã hội bị giám sát toàn diện, nơi quyền lực kiểm soát thông tin và cả ký ức. Khi anh tìm kiếm sự thật và sự thân mật, mọi lựa chọn đều trở nên nguy hiểm, phơi bày bản chất của tuyên truyền và sự thao túng thực tại.',
+            '9780141439518':
+                'Elizabeth Bennet đối mặt áp lực gia đình và chuẩn mực xã hội, đồng thời không ngừng “đấu khẩu” với một quý ông kiêu hãnh. Tác phẩm pha trộn lãng mạn và châm biếm xã hội, xoáy sâu vào định kiến, danh tiếng và những ấn tượng ban đầu dễ đánh lừa.',
+            '9780316769488':
+                'Holden Caulfield lang thang ở New York sau khi rời trường, dùng mỉa mai để che giấu nỗi buồn và sự hoang mang tuổi mới lớn. Giọng kể cô độc và bất an tạo nên một bức chân dung ám ảnh về sự xa lạ và khát khao chân thật.',
+
+            // Technology
+            '9780132350884':
+                'Cuốn sách nhấn mạnh “tính dễ đọc” là một tính năng của phần mềm. Từ đặt tên, viết hàm, kiểm thử đến refactor, tác giả hướng dẫn những thói quen nhỏ giúp code dễ bảo trì, ít lỗi và dễ cộng tác trong đội nhóm.',
+            '9780135957059':
+                'Tập hợp bài học thực hành về cách làm phần mềm với tư duy đúng: tự động hóa, gỡ lỗi, thiết kế, kiến trúc và làm việc nhóm. Lời khuyên mang tính nguyên tắc, ít phụ thuộc công cụ và rất dễ áp dụng vào công việc hằng ngày.',
+            '9780262033848':
+                'Giáo trình kinh điển về thuật toán và cấu trúc dữ liệu, cân bằng giữa lập luận chặt chẽ và trực giác. Từ sắp xếp, đồ thị đến quy hoạch động và NP-đầy đủ, đây là tài liệu nền tảng cho học tập lẫn ôn phỏng vấn nghiêm túc.',
+            '9780201633610':
+                'Bộ “mẫu thiết kế” của Gang of Four tổng hợp các giải pháp lặp lại cho bài toán thiết kế hướng đối tượng. Mỗi pattern được trình bày kèm động cơ, cấu trúc và đánh đổi, giúp bạn lựa chọn thiết kế có chủ đích và có chung ngôn ngữ với đồng đội.',
+            '9781491904244':
+                'Đi sâu vào cách JavaScript vận hành: phạm vi, closure, kiểu dữ liệu và bất đồng bộ. Tác giả tập trung xây dựng mô hình tư duy để bạn hiểu đúng những góc “khó chịu” của ngôn ngữ và tự tin suy luận về code thực tế.',
+
+            // Science
+            '9780553380163':
+                'Stephen Hawking dẫn dắt qua những câu hỏi lớn về không-thời gian, hố đen và nguồn gốc vũ trụ. Các ý tưởng phức tạp được trình bày dễ tiếp cận, khơi gợi tò mò về cách khoa học thay đổi hiểu biết của chúng ta về vũ trụ.',
+            '9780062316110':
+                'Tác phẩm kể hành trình của loài người từ những nhóm săn bắt-hái lượm đến xã hội toàn cầu. Tác giả đặt câu hỏi về tiền tệ, tôn giáo, đế chế và công nghệ, giải thích vì sao con người có thể hợp tác ở quy mô lớn.',
+            '9780345331309':
+                'Carl Sagan đưa bạn du hành qua thiên văn học, lịch sử và triết học để hiểu phương pháp khoa học. Giọng văn giàu cảm hứng kết nối các khám phá với con người và văn hóa phía sau chúng, vừa lãng mạn vừa tỉnh táo.',
+            '9780198788607':
+                'Richard Dawkins nhìn tiến hóa từ góc độ gen như “đơn vị” bền bỉ của chọn lọc tự nhiên. Qua nhiều ví dụ sinh động, ông giải thích hợp tác, vị tha và các hành vi tưởng như mâu thuẫn, mở ra cách nghĩ mới về sinh học.',
+            '9780544272996':
+                'Những câu hỏi giả định “khó đỡ” được trả lời bằng vật lý và toán học nghiêm túc nhưng đầy hài hước. Bạn học được cách tư duy khoa học bằng việc kéo các ý tưởng đến cực hạn một cách vui nhộn và dễ hiểu.',
+
+            // Non-Fiction & History
+            '9780399590504':
+                'Hồi ký về tuổi thơ khép kín trong một gia đình cực đoan và hành trình tự học để bước ra thế giới. Câu chuyện chạm đến lòng trung thành với gia đình, bản sắc cá nhân và cái giá của việc viết lại cuộc đời mình.',
+            '9780374533557':
+                'Daniel Kahneman mô tả hai “hệ thống” tư duy: nhanh-trực giác và chậm-suy xét. Qua thí nghiệm và ví dụ đời thường, ông cho thấy các thiên kiến chi phối quyết định và cách ta có thể thiết kế lựa chọn tốt hơn.',
+            '9780553296983':
+                'Nhật ký của Anne Frank ghi lại tuổi thiếu niên trong những ngày trốn chạy phát xít, vừa hồn nhiên vừa đau xót. Những trang viết chân thật biến lịch sử khắc nghiệt thành trải nghiệm con người cụ thể và ám ảnh.',
+            '9780393317558':
+                'Jared Diamond lý giải vì sao các xã hội phát triển không đồng đều, nhấn mạnh vai trò của địa lý, loài vật thuần hóa và dịch bệnh. Tác phẩm tổng hợp nhiều ngành để đưa ra một lập luận lớn về tiến trình lịch sử nhân loại.',
+            '9780385486804':
+                'Hành trình của Christopher McCandless rời bỏ tiện nghi để tìm ý nghĩa trong hoang dã Alaska. Tác phẩm vừa điều tra vừa suy ngẫm về tự do, lý tưởng, rủi ro và cái giá của việc đi một mình.',
+
+            // Self-Help
+            '9780735211292':
+                'Một hệ thống thay đổi thói quen bằng những bước nhỏ có thể lặp lại: tín hiệu, khao khát, phản hồi và phần thưởng. Thay vì dựa vào động lực, sách tập trung thiết kế môi trường và xây dựng bản sắc để duy trì thói quen lâu dài.',
+            '9781577314806':
+                'Khuyến khích bạn rời khỏi lo âu và suy tưởng bằng cách neo tâm trí vào hiện tại. Với giọng văn tâm linh nhưng gần gũi, sách bàn về bản ngã, đau khổ và chánh niệm trong đời sống hằng ngày.',
+            '9780743269513':
+                'Khung nguyên tắc cho hiệu quả cá nhân và lãnh đạo, đi từ làm chủ bản thân đến hợp tác và tạo ảnh hưởng. Các “thói quen” nhấn mạnh tư duy dài hạn và phẩm chất, phù hợp để đọc lại nhiều lần khi bối cảnh thay đổi.',
+            '9780671027032':
+                'Những kỹ năng giao tiếp cốt lõi: lắng nghe, thể hiện sự quan tâm chân thành và xử lý xung đột khéo léo. Sách hướng đến xây dựng niềm tin và tôn trọng, giúp cải thiện quan hệ trong công việc lẫn đời sống.',
+            '9781455586691':
+                'Lập luận rằng khả năng tập trung sâu, không bị phân tán là lợi thế cạnh tranh thời hiện đại. Sách đưa ra chiến lược xây thói quen làm việc tập trung, giảm “việc nông” và tạo ra kết quả chất lượng hơn.',
+
+            // Thriller & Mystery
+            '9780307474278':
+                'Một vụ án mạng ở bảo tàng Louvre kéo Robert Langdon vào chuỗi mật mã, biểu tượng và hội kín. Nhịp truyện nhanh, nhiều cú “cliffhanger”, kết hợp lịch sử nghệ thuật với âm mưu và cuộc rượt đuổi liên tục.',
+            '9780307588371':
+                'Amy biến mất và mọi nghi ngờ dồn lên người chồng Nick, trong cơn bão truyền thông biến hôn nhân thành phiên tòa công khai. Các góc nhìn xoay chuyển liên tục, bóc tách dối trá, quyền lực và “màn trình diễn” trong quan hệ thân mật.',
+            '9780307949486':
+                'Nhà báo Blomkvist và hacker Lisbeth Salander điều tra một vụ mất tích nhiều thập kỷ gắn với gia tộc quyền lực. Bí ẩn dần mở ra thành câu chuyện đen tối về tham nhũng và bạo lực, căng thẳng và giàu chi tiết điều tra.',
+            '9781250301697':
+                'Alicia Berenson bắn chồng rồi im lặng tuyệt đối, khóa chặt động cơ trong bí mật. Một nhà trị liệu ám ảnh truy tìm sự thật, để rồi cuộc điều tra trở nên cá nhân và dẫn đến những cú rẽ bất ngờ.',
+            '9780062073488':
+                'Mười người lạ bị mời đến hòn đảo biệt lập và lần lượt chết theo một kịch bản rùng rợn. Nỗi sợ và tội lỗi bào mòn niềm tin, tạo nên một “bài học” trinh thám kinh điển về sự tất yếu của hậu quả.',
+
+            // Romance
+            '9780446605236':
+                'Noah hồi tưởng mối tình mùa hè với Allie, một tình cảm kéo dài qua năm tháng và thử thách. Câu chuyện dịu dàng về ký ức, sự lựa chọn và lòng chung thủy, dành cho người đọc thích chất lãng mạn giàu cảm xúc.',
+            '9780143124542':
+                'Louisa nhận việc chăm sóc Will sau tai nạn thay đổi cuộc đời anh. Từ những va chạm ban đầu, họ học cách nhìn lại tự do, phẩm giá và ý nghĩa của việc sống trọn vẹn, vừa hài hước vừa day dứt.',
+            '9780440212560':
+                'Claire bị đưa từ Scotland thập niên 1940 về thế kỷ 18 và phải sinh tồn giữa nguy hiểm chính trị lẫn tình yêu mới. Tác phẩm pha lẫn lãng mạn, lịch sử và phiêu lưu, với nhịp truyện rộng và giàu bối cảnh.',
+            '9780062439604':
+                'Hai đồng nghiệp “khắc khẩu” biến đối đầu công sở thành trò so kè, cho đến khi sức hút khiến mọi thứ rối tung. Truyện rom-com hiện đại với đối thoại sắc bén, căng thẳng chậm rãi và chemistry rõ rệt.',
+
+            // Biography
+            '9781451648539':
+                'Chân dung Steve Jobs qua nhiều cuộc phỏng vấn, khắc họa một thiên tài cầu toàn và đầy mâu thuẫn. Sách theo dấu Apple và các sản phẩm biểu tượng, đồng thời soi vào sáng tạo, lãnh đạo và cái giá của tiêu chuẩn không khoan nhượng.',
+            '9781524763138':
+                'Hồi ký của Michelle Obama từ tuổi thơ ở Chicago đến vai trò Đệ nhất Phu nhân. Giọng kể ấm áp về bản sắc, gia đình và áp lực của sự chú ý công chúng, truyền cảm hứng về mục đích và sự bền bỉ.',
+            '9780062301239':
+                'Tiểu sử Elon Musk mô tả tham vọng, khẩu vị rủi ro và văn hóa khốc liệt trong các dự án công nghệ cao. Sách vừa ca ngợi sức bật đổi mới, vừa cho thấy xung đột và đánh đổi khi theo đuổi các sứ mệnh lớn.',
+            '9780399588174':
+                'Trevor Noah kể tuổi thơ ở Nam Phi thời apartheid, nơi thân phận “lai” từng là bất hợp pháp. Câu chuyện pha hài hước và góc nhìn sắc sảo về chính trị, nghèo đói và gia đình, nói về bản sắc và cảm giác thuộc về.',
+            '9780316548182':
+                'Nelson Mandela thuật lại hành trình từ làng quê đến đấu tranh chống apartheid, những năm tháng tù đày và con đường trở thành tổng thống. Một câu chuyện về hy sinh, bền bỉ và hòa giải, kể lịch sử qua trải nghiệm sống.',
+
+            // Children
+            '9780590353427':
+                'Harry phát hiện mình là phù thủy và bước vào thế giới phép thuật ở Hogwarts, nơi tình bạn và hiểm nguy song hành. Câu chuyện vừa kỳ ảo vừa gần gũi, mở ra hành trình trưởng thành và đối mặt với một thế lực đen tối.',
+            '9780061124952':
+                'Chú heo Wilbur đối mặt tương lai bấp bênh cho đến khi nhện Charlotte lập kế hoạch cứu bạn. Tình bạn dịu dàng và chân thật về lòng tốt, sự hy sinh và nỗi buồn ngọt ngào của trưởng thành.',
+            '9780547928227':
+                'Bilbo rời cuộc sống yên ổn để tham gia chuyến phiêu lưu cùng người lùn, đối đầu quái vật và gặp Gollum bí ẩn. Truyện giàu chất kỳ ảo, nói về can đảm, lòng tham và niềm vui của hành trình bất ngờ.',
+            '9780142410370':
+                'Matilda thông minh khác thường, tìm thấy nơi trú ẩn trong sách giữa gia đình thờ ơ và cô hiệu trưởng đáng sợ. Với sự lanh trí và năng lực kỳ lạ, cô học cách bảo vệ mình và người mình yêu quý một cách hài hước, mạnh mẽ.',
+            '9780060254926':
+                'Sau một cơn giận, Max lạc đến xứ sở quái thú và trở thành “vua”, rồi nhận ra nỗi nhớ nhà. Chỉ trong vài trang, truyện chạm đến cảm xúc lớn của trẻ: giận dữ, tưởng tượng và sự an ủi của tình yêu.',
+        };
+
         const realBooksList = [
             // Fiction
             {
@@ -781,6 +889,10 @@ async function seedData() {
 
             return {
                 ...book,
+                descriptionI18n: {
+                    en: book.description || '',
+                    vi: viDescriptionByIsbn[book.isbn] || book.description || '',
+                },
                 price: parseFloat(faker.commerce.price({ min: 10, max: 60 })),
                 stock: faker.number.int({ min: 5, max: 100 }),
                 rating: faker.number.float({

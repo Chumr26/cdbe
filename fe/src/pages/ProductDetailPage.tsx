@@ -11,7 +11,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import ProductCard from '../components/products/ProductCard';
 import { useTranslation } from 'react-i18next';
-import { formatVnd, usdToVnd } from '../utils/currency';
+import { formatMoney } from '../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -23,7 +23,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const ProductDetailPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
@@ -51,8 +51,15 @@ const ProductDetailPage: React.FC = () => {
             setLoading(true);
             setError('');
             loadProduct();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, i18n.language]);
+
+    useEffect(() => {
+        if (id) {
             loadReviews();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const loadProduct = async () => {
@@ -199,8 +206,7 @@ const ProductDetailPage: React.FC = () => {
     };
 
     const formatPrice = (p: Product) => {
-        const vnd = typeof p.priceVnd === 'number' ? p.priceVnd : usdToVnd(p.price);
-        return formatVnd(vnd);
+        return formatMoney(p.price, 'USD');
     };
 
     const renderStars = (rating: number) => {

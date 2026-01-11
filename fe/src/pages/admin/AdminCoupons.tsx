@@ -4,7 +4,7 @@ import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { adminAPI } from '../../api/admin.api';
 import type { Coupon } from '../../api/admin.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import { formatVnd } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency';
 
 type CouponFormState = {
   code: string;
@@ -73,7 +73,7 @@ const AdminCoupons: React.FC = () => {
     fetchCoupons(currentPage);
   }, [currentPage]);
 
-  const formatPrice = (price: number) => formatVnd(price);
+  const formatPrice = (price: number) => formatMoney(price, 'VND');
 
   const toDateInputValue = (value?: string) => {
     if (!value) return '';

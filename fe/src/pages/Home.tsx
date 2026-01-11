@@ -12,7 +12,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -29,7 +29,8 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         loadFeaturedProducts();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [i18n.language]);
 
     const loadFeaturedProducts = async () => {
         try {

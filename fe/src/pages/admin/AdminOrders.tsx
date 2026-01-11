@@ -6,7 +6,7 @@ import { adminAPI } from '../../api/admin.api';
 import type { Order } from '../../api/orders.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
-import { formatVnd } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -166,7 +166,7 @@ const AdminOrders: React.FC = () => {
                                             <small className="text-muted">{order.shippingAddress.city}</small>
                                         </td>
                                         <td>{new Date(order.createdAt).toLocaleDateString(locale)}</td>
-                                        <td>{formatVnd(order.total)}</td>
+                                        <td>{formatMoney(order.total, 'VND')}</td>
                                         <td>
                                             <Badge bg={getStatusBadge(order.orderStatus)}>
                                                 {order.orderStatus.toUpperCase()}
@@ -257,14 +257,14 @@ const AdminOrders: React.FC = () => {
                                     {selectedOrder.items.map((item, idx) => (
                                         <tr key={idx}>
                                             <td>{item.title}</td>
-                                            <td>{formatVnd(item.price)}</td>
+                                            <td>{formatMoney(item.price, 'VND')}</td>
                                             <td>{item.quantity}</td>
-                                            <td>{formatVnd(item.price * item.quantity)}</td>
+                                            <td>{formatMoney(item.price * item.quantity, 'VND')}</td>
                                         </tr>
                                     ))}
                                     <tr>
                                         <td colSpan={3} className="text-end fw-bold">{t('admin.orders.modal.itemsTable.totalLabel')}</td>
-                                        <td className="fw-bold">{formatVnd(selectedOrder.total)}</td>
+                                        <td className="fw-bold">{formatMoney(selectedOrder.total, 'VND')}</td>
                                     </tr>
                                 </tbody>
                             </Table>

@@ -20,7 +20,7 @@ import { adminAPI } from '../../api/admin.api';
 import type { AdvancedAnalytics, DashboardStats } from '../../api/admin.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
-import { formatVnd } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 
 const AdminDashboard: React.FC = () => {
@@ -49,7 +49,7 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
-    const formatPrice = (price: number) => formatVnd(price);
+    const formatPrice = (price: number) => formatMoney(price, 'VND');
 
     const timeSeriesTotals = useMemo(() => {
         if (!analytics?.timeSeries?.length) return null;
