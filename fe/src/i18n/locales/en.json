@@ -178,9 +178,20 @@
     "free": "FREE",
     "proceed": "Proceed to Checkout",
     "confirmRemoveTitle": "Remove Item",
-    "confirmRemoveBody": "Are you sure you want to remove this item from your cart?",
+    "confirmRemoveBody": "Are you sure you want to remove {{title}} from your cart?",
     "confirmClearTitle": "Clear Cart",
-    "confirmClearBody": "Are you sure you want to remove all items from your cart?"
+    "confirmClearBody": "Are you sure you want to remove all items from your cart?",
+    "cannotUndo": "This action cannot be undone.",
+    "apply": "Apply",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "continueShopping": "Continue Shopping",
+    "loadError": "Failed to load cart",
+    "applyCouponError": "Failed to apply coupon",
+    "removeCouponError": "Failed to remove coupon",
+    "updateQuantityError": "Failed to update quantity",
+    "removeItemError": "Failed to remove item",
+    "clearCartError": "Failed to clear cart"
   },
   "checkout": {
     "title": "Checkout",
@@ -300,6 +311,65 @@
     "you": "(You)",
     "relatedTitle": "Related Books in {{category}}"
   },
+  "productCard": {
+    "featured": "Featured",
+    "by": "by {{author}}",
+    "stock": "{{count}} in stock",
+    "outOfStock": "Out of Stock",
+    "inCart": "✓ In Cart",
+    "addToCart": "Add to Cart"
+  },
+  "footer": {
+    "about": {
+      "title": "About Bookstore",
+      "description": "Welcome to Bookstore - your trusted destination for quality books. We curate the finest selection across all genres to inspire and entertain readers of all ages."
+    },
+    "categories": {
+      "title": "Categories",
+      "fiction": "Fiction",
+      "nonFiction": "Non-Fiction",
+      "selfHelp": "Self-Help",
+      "children": "Children's Books",
+      "academic": "Academic"
+    },
+    "customerService": {
+      "title": "Customer Service",
+      "helpCenter": "Help Center",
+      "shippingInfo": "Shipping Info",
+      "returnsRefunds": "Returns & Refunds",
+      "trackOrder": "Track Order",
+      "faqs": "FAQs"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "home": "Home",
+      "allBooks": "All Books",
+      "aboutUs": "About Us",
+      "contact": "Contact",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Subscribe to get special offers, free giveaways, and exclusive deals.",
+      "placeholder": "Enter your email",
+      "subscribed": "✓ Subscribed!",
+      "subscribe": "Subscribe",
+      "thankYou": "Thank you for subscribing!"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "address": "123 Nguyen Van Linh, District 7, Ho Chi Minh City"
+    },
+    "payment": {
+      "title": "We Accept",
+      "fastDelivery": "Fast Delivery"
+    },
+    "bottom": {
+      "copyright": "{{year}} Bookstore. All rights reserved.",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    }
+  },
   "admin": {
     "common": {
       "noData": "No data",
@@ -307,7 +377,7 @@
       "close": "Close"
     },
     "dashboard": {
-      "title": "Advanced Analytics Dashboard",
+      "title": "Dashboard",
       "lastDays": "Last {{days}} days",
       "manageProducts": "Manage Products",
       "manageOrders": "Manage Orders",

@@ -125,7 +125,7 @@
       "nonFiction": "Phi hư cấu",
       "science": "Khoa học",
       "technology": "Công nghệ",
-      "selfHelp": "Phát triển bản thân",
+      "selfHelp": "Self-Help",
       "history": "Lịch sử"
     }
   },
@@ -178,9 +178,20 @@
     "free": "MIỄN PHÍ",
     "proceed": "Tiến hành thanh toán",
     "confirmRemoveTitle": "Xóa sản phẩm",
-    "confirmRemoveBody": "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+    "confirmRemoveBody": "Bạn có chắc muốn xóa {{title}} khỏi giỏ hàng?",
     "confirmClearTitle": "Xóa giỏ hàng",
-    "confirmClearBody": "Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?"
+    "confirmClearBody": "Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?",
+    "cannotUndo": "Hành động này không thể hoàn tác.",
+    "apply": "Áp dụng",
+    "remove": "Gỡ",
+    "cancel": "Hủy",
+    "continueShopping": "Tiếp tục mua sắm",
+    "loadError": "Không thể tải giỏ hàng",
+    "applyCouponError": "Không thể áp dụng mã giảm giá",
+    "removeCouponError": "Không thể gỡ mã giảm giá",
+    "updateQuantityError": "Không thể cập nhật số lượng",
+    "removeItemError": "Không thể xóa sản phẩm",
+    "clearCartError": "Không thể xóa giỏ hàng"
   },
   "checkout": {
     "title": "Thanh toán",
@@ -300,6 +311,65 @@
     "you": "(Bạn)",
     "relatedTitle": "Sách liên quan trong {{category}}"
   },
+  "productCard": {
+    "featured": "Nổi bật",
+    "by": "bởi {{author}}",
+    "stock": "Còn {{count}}",
+    "outOfStock": "Hết hàng",
+    "inCart": "✓ Trong giỏ hàng",
+    "addToCart": "Thêm vào giỏ"
+  },
+  "footer": {
+    "about": {
+      "title": "Về Bookstore",
+      "description": "Chào mừng đến với Bookstore - điểm đến tin cậy cho những cuốn sách chất lượng. Chúng tôi tuyển chọn đa dạng thể loại để truyền cảm hứng và giải trí cho độc giả mọi lứa tuổi."
+    },
+    "categories": {
+      "title": "Danh mục",
+      "fiction": "Tiểu thuyết",
+      "nonFiction": "Phi hư cấu",
+      "selfHelp": "Kỹ năng",
+      "children": "Thiếu nhi",
+      "academic": "Học thuật"
+    },
+    "customerService": {
+      "title": "Hỗ trợ khách hàng",
+      "helpCenter": "Trung tâm trợ giúp",
+      "shippingInfo": "Thông tin giao hàng",
+      "returnsRefunds": "Đổi trả & hoàn tiền",
+      "trackOrder": "Theo dõi đơn hàng",
+      "faqs": "Câu hỏi thường gặp"
+    },
+    "quickLinks": {
+      "title": "Liên kết nhanh",
+      "home": "Trang chủ",
+      "allBooks": "Tất cả sách",
+      "aboutUs": "Về chúng tôi",
+      "contact": "Liên hệ",
+      "privacyPolicy": "Chính sách bảo mật"
+    },
+    "newsletter": {
+      "title": "Bản tin",
+      "description": "Đăng ký để nhận ưu đãi đặc biệt, quà tặng miễn phí và khuyến mãi độc quyền.",
+      "placeholder": "Nhập email của bạn",
+      "subscribed": "✓ Đã đăng ký!",
+      "subscribe": "Đăng ký",
+      "thankYou": "Cảm ơn bạn đã đăng ký!"
+    },
+    "contact": {
+      "title": "Thông tin liên hệ",
+      "address": "123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh"
+    },
+    "payment": {
+      "title": "Chấp nhận thanh toán",
+      "fastDelivery": "Giao hàng nhanh"
+    },
+    "bottom": {
+      "copyright": "{{year}} Bookstore. Bảo lưu mọi quyền.",
+      "terms": "Điều khoản dịch vụ",
+      "privacy": "Chính sách bảo mật"
+    }
+  },
   "admin": {
     "common": {
       "noData": "Không có dữ liệu",
@@ -307,7 +377,7 @@
       "close": "Đóng"
     },
     "dashboard": {
-      "title": "Bảng điều khiển phân tích nâng cao",
+      "title": "Bảng điều khiển",
       "lastDays": "{{days}} ngày gần nhất",
       "manageProducts": "Quản lý sản phẩm",
       "manageOrders": "Quản lý đơn hàng",

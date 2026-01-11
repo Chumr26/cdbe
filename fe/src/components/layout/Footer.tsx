@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     FaFacebook,
     FaTwitter,
@@ -17,6 +18,7 @@ import {
 } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
 
@@ -36,10 +38,9 @@ const Footer: React.FC = () => {
             <Container>
                 <Row className="mb-4">
                     <Col lg={3} md={6} className="mb-4">
-                        <h5 className="mb-3 fw-bold">About CDBE Bookstore</h5>
+                        <h5 className="mb-3 fw-bold">{t('footer.about.title')}</h5>
                         <p className="text-secondary small">
-                            Welcome to CDBE Bookstore - your trusted destination for quality books.
-                            We curate the finest selection across all genres to inspire and entertain readers of all ages.
+                            {t('footer.about.description')}
                         </p>
                         <div className="d-flex gap-3 mt-3">
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
@@ -70,108 +71,108 @@ const Footer: React.FC = () => {
                     </Col>
 
                     <Col lg={2} md={6} className="mb-4">
-                        <h5 className="mb-3 fw-bold">Categories</h5>
+                        <h5 className="mb-3 fw-bold">{t('footer.categories.title')}</h5>
                         <ul className="list-unstyled">
                             <li className="mb-2">
                                 <Link to="/products?category=fiction" className="text-secondary text-decoration-none small">
-                                    Fiction
+                                    {t('footer.categories.fiction')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/products?category=non-fiction" className="text-secondary text-decoration-none small">
-                                    Non-Fiction
+                                    {t('footer.categories.nonFiction')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/products?category=self-help" className="text-secondary text-decoration-none small">
-                                    Self-Help
+                                    {t('footer.categories.selfHelp')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/products?category=children" className="text-secondary text-decoration-none small">
-                                    Children's Books
+                                    {t('footer.categories.children')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/products?category=academic" className="text-secondary text-decoration-none small">
-                                    Academic
+                                    {t('footer.categories.academic')}
                                 </Link>
                             </li>
                         </ul>
                     </Col>
 
                     <Col lg={2} md={6} className="mb-4">
-                        <h5 className="mb-3 fw-bold">Customer Service</h5>
+                        <h5 className="mb-3 fw-bold">{t('footer.customerService.title')}</h5>
                         <ul className="list-unstyled">
                             <li className="mb-2">
                                 <Link to="/help" className="text-secondary text-decoration-none small">
-                                    Help Center
+                                    {t('footer.customerService.helpCenter')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/shipping" className="text-secondary text-decoration-none small">
-                                    Shipping Info
+                                    {t('footer.customerService.shippingInfo')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/returns" className="text-secondary text-decoration-none small">
-                                    Returns & Refunds
+                                    {t('footer.customerService.returnsRefunds')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/orders" className="text-secondary text-decoration-none small">
-                                    Track Order
+                                    {t('footer.customerService.trackOrder')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/faq" className="text-secondary text-decoration-none small">
-                                    FAQs
+                                    {t('footer.customerService.faqs')}
                                 </Link>
                             </li>
                         </ul>
                     </Col>
 
                     <Col lg={2} md={6} className="mb-4">
-                        <h5 className="mb-3 fw-bold">Quick Links</h5>
+                        <h5 className="mb-3 fw-bold">{t('footer.quickLinks.title')}</h5>
                         <ul className="list-unstyled">
                             <li className="mb-2">
                                 <Link to="/" className="text-secondary text-decoration-none small">
-                                    Home
+                                    {t('footer.quickLinks.home')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/products" className="text-secondary text-decoration-none small">
-                                    All Books
+                                    {t('footer.quickLinks.allBooks')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/about" className="text-secondary text-decoration-none small">
-                                    About Us
+                                    {t('footer.quickLinks.aboutUs')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/contact" className="text-secondary text-decoration-none small">
-                                    Contact
+                                    {t('footer.quickLinks.contact')}
                                 </Link>
                             </li>
                             <li className="mb-2">
                                 <Link to="/privacy" className="text-secondary text-decoration-none small">
-                                    Privacy Policy
+                                    {t('footer.quickLinks.privacyPolicy')}
                                 </Link>
                             </li>
                         </ul>
                     </Col>
 
                     <Col lg={3} md={12} className="mb-4">
-                        <h5 className="mb-3 fw-bold">Newsletter</h5>
+                        <h5 className="mb-3 fw-bold">{t('footer.newsletter.title')}</h5>
                         <p className="text-secondary small mb-3">
-                            Subscribe to get special offers, free giveaways, and exclusive deals.
+                            {t('footer.newsletter.description')}
                         </p>
                         <Form onSubmit={handleSubscribe}>
                             <InputGroup>
                                 <Form.Control
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder={t('footer.newsletter.placeholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -183,13 +184,13 @@ const Footer: React.FC = () => {
                                     size="sm"
                                     disabled={subscribed}
                                 >
-                                    {subscribed ? '✓ Subscribed!' : 'Subscribe'}
+                                    {subscribed ? t('footer.newsletter.subscribed') : t('footer.newsletter.subscribe')}
                                 </Button>
                             </InputGroup>
                         </Form>
                         {subscribed && (
                             <small className="text-success d-block mt-2">
-                                Thank you for subscribing!
+                                {t('footer.newsletter.thankYou')}
                             </small>
                         )}
                     </Col>
@@ -199,11 +200,11 @@ const Footer: React.FC = () => {
 
                 <Row>
                     <Col md={6} className="mb-3">
-                        <h6 className="mb-3 fw-bold">Contact Information</h6>
+                        <h6 className="mb-3 fw-bold">{t('footer.contact.title')}</h6>
                         <ul className="list-unstyled text-secondary small">
                             <li className="mb-2">
                                 <FaMapMarkerAlt className="me-2" />
-                                123 Nguyen Van Linh, District 7, Ho Chi Minh City
+                                {t('footer.contact.address')}
                             </li>
                             <li className="mb-2">
                                 <FaPhone className="me-2" />
@@ -221,7 +222,7 @@ const Footer: React.FC = () => {
                     </Col>
 
                     <Col md={6} className="mb-3">
-                        <h6 className="mb-3 fw-bold">We Accept</h6>
+                        <h6 className="mb-3 fw-bold">{t('footer.payment.title')}</h6>
                         <div className="d-flex gap-3 align-items-center flex-wrap">
                             <FaCcVisa size={40} className="text-secondary" />
                             <FaCcMastercard size={40} className="text-secondary" />
@@ -229,7 +230,7 @@ const Footer: React.FC = () => {
                             <FaCreditCard size={32} className="text-secondary" />
                             <div className="d-flex align-items-center text-secondary">
                                 <FaShippingFast size={24} className="me-2" />
-                                <small>Fast Delivery</small>
+                                <small>{t('footer.payment.fastDelivery')}</small>
                             </div>
                         </div>
                     </Col>
@@ -240,9 +241,9 @@ const Footer: React.FC = () => {
                 <Row>
                     <Col className="text-center">
                         <p className="mb-0 text-secondary small">
-                            &copy; {new Date().getFullYear()} CDBE Bookstore. All rights reserved. |
-                            <Link to="/terms" className="text-secondary text-decoration-none ms-2">Terms of Service</Link> |
-                            <Link to="/privacy" className="text-secondary text-decoration-none ms-2">Privacy Policy</Link>
+                            &copy; {t('footer.bottom.copyright', { year: new Date().getFullYear() })} |
+                            <Link to="/terms" className="text-secondary text-decoration-none ms-2">{t('footer.bottom.terms')}</Link> |
+                            <Link to="/privacy" className="text-secondary text-decoration-none ms-2">{t('footer.bottom.privacy')}</Link>
                         </p>
                     </Col>
                 </Row>

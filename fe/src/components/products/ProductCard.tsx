@@ -7,6 +7,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { formatVnd, usdToVnd } from '../../utils/currency';
+import { useTranslation } from 'react-i18next';
 
 interface ProductCardProps {
     product: Product;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    const { t, i18n } = useTranslation();
     const { isInCart, addToCart } = useCart();
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -49,6 +51,45 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         }
     };
 
+    const getCategoryLabel = (rawCategory: string) => {
+        const trimmed = rawCategory.trim();
+        if (!trimmed) return rawCategory;
+
+        const normalized = trimmed
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/_+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+
+        const key = (() => {
+            if (trimmed === 'nonFiction') return 'nonFiction';
+            if (trimmed === 'selfHelp') return 'selfHelp';
+
+            switch (normalized) {
+                case 'non-fiction':
+                    return 'nonFiction';
+                case 'self-help':
+                    return 'selfHelp';
+                case 'childrens':
+                case 'children':
+                case 'childrens-books':
+                    return 'children';
+                default:
+                    return normalized;
+            }
+        })();
+
+        const footerKey = `footer.categories.${key}`;
+        if (i18n.exists(footerKey)) return t(footerKey);
+
+        const homeKey = `home.categories.${key}`;
+        if (i18n.exists(homeKey)) return t(homeKey);
+
+        return rawCategory;
+    };
+
+    const categoryLabel = getCategoryLabel(product.category);
+
     return (
         <Card className="h-100 shadow-sm hover-shadow product-card">
             <div className="position-relative">
@@ -60,12 +101,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 />
                 {product.featured && (
                     <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
-                        Featured
+                        {t('productCard.featured')}
                     </Badge>
                 )}
                 {product.stock === 0 && (
                     <Badge bg="danger" className="position-absolute top-0 start-0 m-2">
-                        Out of Stock
+                        {t('productCard.outOfStock')}
                     </Badge>
                 )}
             </div>
@@ -76,10 +117,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </Link>
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted text-truncate">
-                    by {product.author}
+                    {t('productCard.by', { author: product.author })}
                 </Card.Subtitle>
                 <div className="mb-2">
-                    <Badge bg="secondary" className="me-1">{product.category}</Badge>
+                    <Badge bg="secondary" className="me-1">{categoryLabel}</Badge>
                     <span className="text-warning">
                         <FaStar /> {product.rating.toFixed(1)} ({product.numReviews})
                     </span>
@@ -90,7 +131,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <div className="mt-auto">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                         <h5 className="mb-0 text-primary">{formatVnd(priceVnd)}</h5>
-                        <small className="text-muted">{product.stock} in stock</small>
+                        <small className="text-muted">{t('productCard.stock', { count: product.stock })}</small>
                     </div>
                     <Button
                         variant={inCart ? "secondary" : "primary"}
@@ -98,7 +139,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         onClick={handleAddToCart}
                         disabled={product.stock === 0 || inCart}
                     >
-                        {product.stock === 0 ? 'Out of Stock' : inCart ? '✓ In Cart' : 'Add to Cart'}
+                        {product.stock === 0
+                            ? t('productCard.outOfStock')
+                            : inCart
+                                ? t('productCard.inCart')
+                                : t('productCard.addToCart')}
                     </Button>
                 </div>
             </Card.Body>

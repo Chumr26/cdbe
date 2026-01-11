@@ -7,8 +7,12 @@ Email Notification System 📧
 implement Advanced Analytics Dashboard 📈
 
 Multi-language Support 🌍
+i want the descriptions and the previews also localized, how should i do?
+i want the price also localzed, how should i do?
 
 Ai assistant
+
+avatar
 
 report
 
