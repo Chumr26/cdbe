@@ -6,6 +6,42 @@ const CouponRedemption = require('../models/CouponRedemption.model');
 const { recalculateCartTotals } = require('../utils/couponPricing');
 const sendEmail = require('../utils/emailHelper');
 
+const validateShippingAddress = (shippingAddress) => {
+  if (!shippingAddress || typeof shippingAddress !== 'object') {
+    return 'Shipping address is required';
+  }
+
+  const requiredFields = [
+    'firstName',
+    'lastName',
+    'street',
+    'city',
+    'state',
+    'zipCode',
+    'country',
+    'phoneNumber'
+  ];
+
+  for (const field of requiredFields) {
+    const value = shippingAddress[field];
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      return `Shipping address ${field} is required`;
+    }
+  }
+
+  const phoneDigits = String(shippingAddress.phoneNumber).replace(/\D/g, '');
+  if (phoneDigits.length < 8) {
+    return 'Shipping address phoneNumber is invalid';
+  }
+
+  const zip = String(shippingAddress.zipCode).trim();
+  if (zip.length < 3) {
+    return 'Shipping address zipCode is invalid';
+  }
+
+  return null;
+};
+
 const formatMoney = (amount) => {
   const numeric = Number(amount || 0);
   try {
@@ -65,6 +101,14 @@ const buildOrderConfirmationMessage = ({ user, order, shippingAddress }) => {
 // @access  Private
 exports.createOrder = asyncHandler(async (req, res) => {
   const { shippingAddress, paymentMethod } = req.body;
+
+  const shippingError = validateShippingAddress(shippingAddress);
+  if (shippingError) {
+    return res.status(400).json({
+      success: false,
+      message: shippingError
+    });
+  }
 
   const cart = await Cart.findOne({ userId: req.user.id }).populate('items.productId');
 

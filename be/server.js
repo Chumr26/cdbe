@@ -136,15 +136,4 @@ app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📄 Swagger docs available at http://localhost:${PORT}/api-docs`);
-    // Add this to register the URL:
-    if (process.env.NODE_ENV === 'development') {
-        const PAYOS_WEBHOOK_URL = "https://newton-marked-aliya.ngrok-free.dev/api/payment/payos-webhook";
-
-        try {
-            await payOS.webhooks.confirm(PAYOS_WEBHOOK_URL);
-            console.log('✅ PayOS Webhook confirmed!');
-        } catch (error) {
-            console.error('❌ Webhook setup failed:', error.message);
-        }
-    }
 });

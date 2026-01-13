@@ -23,6 +23,7 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminCoupons from './pages/admin/AdminCoupons';
 import PaymentResult from './pages/PaymentResult';
+import NotFoundPage from './pages/NotFoundPage';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -120,6 +121,9 @@ function App() {
                                 </ProtectedRoute>
                             }
                         />
+
+                        {/* Catch-all */}
+                        <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Layout>
             </AuthProvider>

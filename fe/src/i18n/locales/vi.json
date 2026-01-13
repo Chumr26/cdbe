@@ -28,6 +28,19 @@
   "toast": {
     "productAdded": "✓ Đã thêm sản phẩm vào giỏ hàng!"
   },
+  "validation": {
+    "fieldRequired": "{{field}} là bắt buộc.",
+    "invalidValue": "Vui lòng nhập giá trị hợp lệ.",
+    "correctHighlighted": "Vui lòng kiểm tra và sửa các trường được tô đỏ.",
+    "phoneMinDigits": "Số điện thoại phải có ít nhất {{min}} chữ số.",
+    "zipMinChars": "Mã bưu chính phải có ít nhất {{min}} ký tự."
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "subtitle": "Trang bạn đang tìm không tồn tại hoặc đã được chuyển đi.",
+    "goHome": "Về trang chủ",
+    "goBack": "Quay lại"
+  },
   "auth": {
     "login": {
       "title": "Đăng nhập",
@@ -221,7 +234,10 @@
     "orderPlaced": "Đơn hàng của bạn đã được tạo thành công.",
     "orderNumber": "Mã đơn hàng:",
     "viewOrders": "Xem đơn hàng",
-    "paymentInitFailed": "Đã tạo đơn hàng nhưng không thể khởi tạo thanh toán. Vui lòng thử thanh toán từ chi tiết đơn hàng."
+    "paymentInitFailed": "Đã tạo đơn hàng nhưng không thể khởi tạo thanh toán. Vui lòng thử thanh toán từ chi tiết đơn hàng.",
+    "errors": {
+      "failedToPlaceOrder": "Không thể đặt hàng"
+    }
   },
   "orders": {
     "title": "Đơn hàng của tôi",

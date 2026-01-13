@@ -1,20 +1,21 @@
 Review & Rating System ⭐
-
 Coupon/Discount System 🎫
-
 Email Notification System 📧
- 
 implement Advanced Analytics Dashboard 📈
-
 Multi-language Support 🌍
 i want the descriptions and the previews also localized, how should i do?
 i want the price also localzed, how should i do?
 
-Ai assistant
+order confirmation mail
+swagger api in production
+order form validation
+localized the checkout page
 
-avatar
-
+create not found route ui
+autofill account in the login page do not consistent with the database when there is update in the database, fix it
 report
 
+Ai assistant
+avatar
 slide
 

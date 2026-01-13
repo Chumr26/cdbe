@@ -28,6 +28,19 @@
   "toast": {
     "productAdded": "✓ Product added to cart!"
   },
+  "validation": {
+    "fieldRequired": "{{field}} is required.",
+    "invalidValue": "Please enter a valid value.",
+    "correctHighlighted": "Please correct the highlighted fields.",
+    "phoneMinDigits": "Phone number must have at least {{min}} digits.",
+    "zipMinChars": "Zip/postal code must be at least {{min}} characters."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you’re looking for doesn’t exist or may have been moved.",
+    "goHome": "Go to Home",
+    "goBack": "Go back"
+  },
   "auth": {
     "login": {
       "title": "Login",
@@ -221,7 +234,10 @@
     "orderPlaced": "Your order has been placed successfully.",
     "orderNumber": "Order Number:",
     "viewOrders": "View My Orders",
-    "paymentInitFailed": "Order created but payment initialization failed. Please try paying from Order Details."
+    "paymentInitFailed": "Order created but payment initialization failed. Please try paying from Order Details.",
+    "errors": {
+      "failedToPlaceOrder": "Failed to place order"
+    }
   },
   "orders": {
     "title": "My Orders",
