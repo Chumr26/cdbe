@@ -714,6 +714,8 @@ Lưu ý cấu hình:
 - Bổ sung các tính năng nâng cao: recommendation, analytics, quản trị đánh giá (ẩn/duyệt), chống spam.
 - Cải tiến bảo mật: refresh token, blacklist token, CSRF (nếu dùng cookie), audit log.
 - Tối ưu hoá truy vấn và caching cho product listing.
+- Bổ sung **tìm kiếm ngữ nghĩa (semantic search)** để cải thiện trải nghiệm tìm kiếm sản phẩm (vượt qua giới hạn keyword matching).
+- Tích hợp **AI assistant** hỗ trợ người dùng (gợi ý sách, tóm tắt nội dung/mô tả, tư vấn theo nhu cầu).
 
 ---
 
