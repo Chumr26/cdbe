@@ -23,7 +23,7 @@
     "language": "Language"
   },
   "search": {
-    "placeholder": "Search books by title, author, or ISBN..."
+    "placeholder": "Find similar meaning, not exact words"
   },
   "toast": {
     "productAdded": "✓ Product added to cart!"
@@ -148,8 +148,6 @@
     "filters": "Filters",
     "searchLabel": "Search",
     "searchPlaceholder": "Search books...",
-    "semanticSearchLabel": "Semantic search",
-    "semanticSearchHelp": "Find similar meaning, not exact words.",
     "category": "Category",
     "allCategories": "All Categories",
     "minPrice": "Min Price",
