@@ -148,6 +148,8 @@
     "filters": "Bộ lọc",
     "searchLabel": "Tìm kiếm",
     "searchPlaceholder": "Tìm sách...",
+    "semanticSearchLabel": "Tìm kiếm ngữ nghĩa",
+    "semanticSearchHelp": "Tìm theo ý nghĩa, không chỉ theo từ khóa.",
     "category": "Danh mục",
     "allCategories": "Tất cả danh mục",
     "minPrice": "Giá tối thiểu",

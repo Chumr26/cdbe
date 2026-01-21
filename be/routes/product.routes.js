@@ -5,6 +5,7 @@ const {
   getProducts,
   getProduct,
   getFeaturedProducts,
+  semanticSearchProducts,
   createProduct,
   updateProduct,
   deleteProduct
@@ -153,6 +154,49 @@ router.get('/', getProducts);
  *                     $ref: '#/components/schemas/Product'
  */
 router.get('/featured', getFeaturedProducts);
+
+/**
+ * @swagger
+ * /products/semantic-search:
+ *   get:
+ *     summary: Semantic search products using vector embeddings
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Semantic search query
+ *         example: clean architecture for backend
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 12
+ *         description: Max results (cap at 50)
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Optional category filter
+ *       - in: header
+ *         name: Accept-Language
+ *         schema:
+ *           type: string
+ *           example: vi
+ *         description: "Preferred language for localized fields (e.g. description). Supported: en, vi."
+ *       - in: query
+ *         name: lang
+ *         schema:
+ *           type: string
+ *           enum: [en, vi]
+ *         description: Optional override for language selection (takes precedence over Accept-Language)
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ */
+router.get('/semantic-search', semanticSearchProducts);
 
 /**
  * @swagger

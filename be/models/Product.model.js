@@ -88,6 +88,11 @@ const productSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  embedding: {
+    type: [Number],
+    default: undefined,
+    select: false
   }
 }, {
   timestamps: true

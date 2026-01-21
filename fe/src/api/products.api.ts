@@ -37,6 +37,12 @@ export interface ProductsResponse {
   data: Product[];
 }
 
+export interface SemanticProductsResponse {
+  success: boolean;
+  count: number;
+  data: Array<Product & { score?: number }>;
+}
+
 export interface ProductResponse {
   success: boolean;
   data: Product;
@@ -88,6 +94,12 @@ export interface ReviewPayload {
   comment?: string;
 }
 
+export interface SemanticSearchParams {
+  q: string;
+  limit?: number;
+  category?: string;
+}
+
 export const productsAPI = {
   getProducts: async (filters?: ProductFilters): Promise<ProductsResponse> => {
     const params = new URLSearchParams();
@@ -104,6 +116,15 @@ export const productsAPI = {
 
   getProduct: async (id: string): Promise<ProductResponse> => {
     const response = await api.get(`/products/${id}`);
+    return response.data;
+  },
+
+  semanticSearchProducts: async (params: SemanticSearchParams): Promise<SemanticProductsResponse> => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('q', params.q);
+    if (params.limit) searchParams.append('limit', params.limit.toString());
+    if (params.category) searchParams.append('category', params.category);
+    const response = await api.get(`/products/semantic-search?${searchParams.toString()}`);
     return response.data;
   },
 

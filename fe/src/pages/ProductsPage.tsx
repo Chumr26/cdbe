@@ -31,6 +31,7 @@ const ProductsPage: React.FC = () => {
     const [error, setError] = useState('');
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
+    const [useSemanticSearch, setUseSemanticSearch] = useState(false);
     const { isAuthenticated } = useAuth();
 
     const [filters, setFilters] = useState<ProductFilters>({
@@ -50,7 +51,7 @@ const ProductsPage: React.FC = () => {
 
     useEffect(() => {
         loadProducts();
-    }, [filters, i18n.language]);
+    }, [filters, i18n.language, useSemanticSearch]);
 
     const loadCategories = async () => {
         try {
@@ -65,10 +66,23 @@ const ProductsPage: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await productsAPI.getProducts(filters);
-            setProducts(response.data);
-            setTotalPages(response.pages);
-            setCurrentPage(response.page);
+            const query = (filters.search || '').trim();
+
+            if (useSemanticSearch && query) {
+                const response = await productsAPI.semanticSearchProducts({
+                    q: query,
+                    limit: filters.limit,
+                    category: filters.category || undefined,
+                });
+                setProducts(response.data);
+                setTotalPages(1);
+                setCurrentPage(1);
+            } else {
+                const response = await productsAPI.getProducts(filters);
+                setProducts(response.data);
+                setTotalPages(response.pages);
+                setCurrentPage(response.page);
+            }
         } catch (err: unknown) {
             setError(getErrorMessage(err, 'Failed to load products'));
         } finally {
@@ -118,6 +132,17 @@ const ProductsPage: React.FC = () => {
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
                             />
+                            <Form.Check
+                                type="switch"
+                                id="semantic-search-toggle"
+                                className="mt-2"
+                                label={t('products.semanticSearchLabel')}
+                                checked={useSemanticSearch}
+                                onChange={(e) => setUseSemanticSearch(e.target.checked)}
+                            />
+                            <Form.Text className="text-muted">
+                                {t('products.semanticSearchHelp')}
+                            </Form.Text>
                         </Form.Group>
 
                         {/* Category */}
@@ -181,14 +206,17 @@ const ProductsPage: React.FC = () => {
                             </Form.Select>
                         </Form.Group>
 
-                        <Button variant="secondary" className="w-100" onClick={() => setFilters({
-                            page: 1,
-                            limit: 12,
-                            search: '',
-                            category: '',
-                            sort: 'createdAt',
-                            order: 'desc',
-                        })}>
+                        <Button variant="secondary" className="w-100" onClick={() => {
+                            setUseSemanticSearch(false);
+                            setFilters({
+                                page: 1,
+                                limit: 12,
+                                search: '',
+                                category: '',
+                                sort: 'createdAt',
+                                order: 'desc',
+                            });
+                        }}>
                             {t('products.clearFilters')}
                         </Button>
                     </div>

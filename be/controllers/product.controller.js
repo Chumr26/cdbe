@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/Product.model');
 const { usdToVnd } = require('../utils/currency');
+const { embedText } = require('../utils/geminiEmbeddings');
 
 const SUPPORTED_LANGS = new Set(['en', 'vi']);
 
@@ -128,6 +129,64 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
     success: true,
     count: products.length,
     data: products.map((p) => withVndPrice(withLocalizedDescription(p, lang)))
+  });
+});
+
+// @desc    Semantic search products
+// @route   GET /api/products/semantic-search
+// @access  Public
+exports.semanticSearchProducts = asyncHandler(async (req, res) => {
+  const lang = detectLang(req);
+  const rawQuery = (req.query.q || '').toString().trim();
+
+  if (!rawQuery) {
+    return res.status(400).json({
+      success: false,
+      message: 'Query q is required'
+    });
+  }
+
+  const limit = Math.min(parseInt(req.query.limit, 10) || 12, 50);
+  const category = req.query.category ? req.query.category.toString() : undefined;
+  const indexName = process.env.ATLAS_VECTOR_INDEX || 'product_embedding';
+  const vectorPath = process.env.ATLAS_VECTOR_PATH || 'embedding';
+  const numCandidates = Math.max(limit * 20, 200);
+
+  const queryVector = await embedText(rawQuery);
+
+  const filter = { isActive: true };
+  if (category) {
+    filter.category = category;
+  }
+
+  const results = await Product.aggregate([
+    {
+      $vectorSearch: {
+        index: indexName,
+        path: vectorPath,
+        queryVector,
+        numCandidates,
+        limit,
+        filter
+      }
+    },
+    {
+      $addFields: {
+        score: { $meta: 'vectorSearchScore' }
+      }
+    },
+    {
+      $project: {
+        embedding: 0,
+        __v: 0
+      }
+    }
+  ]);
+
+  res.status(200).json({
+    success: true,
+    count: results.length,
+    data: results.map((p) => withVndPrice(withLocalizedDescription(p, lang)))
   });
 });
 

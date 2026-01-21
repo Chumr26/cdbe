@@ -148,6 +148,8 @@
     "filters": "Filters",
     "searchLabel": "Search",
     "searchPlaceholder": "Search books...",
+    "semanticSearchLabel": "Semantic search",
+    "semanticSearchHelp": "Find similar meaning, not exact words.",
     "category": "Category",
     "allCategories": "All Categories",
     "minPrice": "Min Price",
