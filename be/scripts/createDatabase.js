@@ -40,14 +40,31 @@ async function createCollections() {
     await db.collection('products').createIndex({ isbn: 1 }, { unique: true });
     console.log('✅ Created index: products.isbn (unique)');
 
-    await db.collection('products').createIndex({
-      title: "text",
-      author: "text",
-      description: "text",
-      "descriptionI18n.en": "text",
-      "descriptionI18n.vi": "text"
-    });
-    console.log('✅ Created index: products.title, author, description, descriptionI18n (text search)');
+    const productsCollection = db.collection('products');
+    const desiredTextIndexName =
+      'titleI18n.en_text_titleI18n.vi_text_author_text_descriptionI18n.en_text_descriptionI18n.vi_text';
+
+    const productIndexes = await productsCollection.listIndexes().toArray();
+    const existingTextIndex = productIndexes.find(
+      (index) => index.key && index.key._fts === 'text'
+    );
+
+    if (existingTextIndex && existingTextIndex.name !== desiredTextIndexName) {
+      await productsCollection.dropIndex(existingTextIndex.name);
+      console.log(`🧹 Dropped old text index: ${existingTextIndex.name}`);
+    }
+
+    await productsCollection.createIndex(
+      {
+        'titleI18n.en': 'text',
+        'titleI18n.vi': 'text',
+        author: 'text',
+        'descriptionI18n.en': 'text',
+        'descriptionI18n.vi': 'text'
+      },
+      { name: desiredTextIndexName }
+    );
+    console.log('✅ Created index: products.titleI18n, author, descriptionI18n (text search)');
 
     await db.collection('products').createIndex({ category: 1 });
     console.log('✅ Created index: products.category');

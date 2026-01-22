@@ -8,6 +8,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../utils/currency';
+import { getLocalizedText } from '../utils/i18n';
 
 const OrdersPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -125,7 +126,7 @@ const OrdersPage: React.FC = () => {
                                 <tbody>
                                     {order.items.map((item, idx) => (
                                         <tr key={idx}>
-                                            <td>{item.title}</td>
+                                            <td>{getLocalizedText(item.titleI18n, i18n.language) || item.title || ''}</td>
                                             <td>{item.quantity}</td>
                                             <td>{formatPrice(item.price)}</td>
                                             <td>{formatPrice(item.price * item.quantity)}</td>

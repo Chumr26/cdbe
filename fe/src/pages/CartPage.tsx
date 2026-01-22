@@ -11,9 +11,10 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { formatMoney } from '../utils/currency';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '../utils/i18n';
 
 const CartPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -181,7 +182,10 @@ const CartPage: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {cart.items.map((item) => (
+                                        {cart.items.map((item) => {
+                                            const itemTitle = getLocalizedText(item.productId.titleI18n, i18n.language) || item.productId.title || '';
+
+                                            return (
                                             <tr key={item.productId._id}>
                                                 <td>
                                                     <div className="d-flex align-items-center">
@@ -191,13 +195,13 @@ const CartPage: React.FC = () => {
                                                                 item.productId.images?.[0] ||
                                                                 'https://via.placeholder.com/60x80?text=No+Cover'
                                                             }
-                                                            alt={item.productId.title}
+                                                            alt={itemTitle}
                                                             style={{ width: '60px', height: '80px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
                                                             className="me-3 rounded"
                                                         />
                                                         <div>
                                                             <Link to={`/products/${item.productId._id}`} className="text-decoration-none">
-                                                                <strong>{item.productId.title}</strong>
+                                                                <strong>{itemTitle}</strong>
                                                             </Link>
                                                             <br />
                                                             <small className="text-muted">{t('productCard.by', { author: item.productId.author })}</small>
@@ -235,13 +239,14 @@ const CartPage: React.FC = () => {
                                                     <Button
                                                         variant="outline-danger"
                                                         size="sm"
-                                                        onClick={() => handleRemoveClick(item.productId._id, item.productId.title)}
+                                                        onClick={() => handleRemoveClick(item.productId._id, itemTitle)}
                                                     >
                                                         <FaTrash />
                                                     </Button>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        );
+                                        })}
                                     </tbody>
                                 </Table>
                             </Card.Body>

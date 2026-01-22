@@ -4,6 +4,23 @@ const Transaction = require('../models/Transaction.model');
 const CouponRedemption = require('../models/CouponRedemption.model');
 const asyncHandler = require('express-async-handler');
 
+const getI18nValue = (i18nMapOrObject, lang) => {
+    if (!i18nMapOrObject) return undefined;
+    if (typeof i18nMapOrObject.get === 'function') return i18nMapOrObject.get(lang);
+    return i18nMapOrObject[lang];
+};
+
+const resolveTitle = (item, lang = 'en') => {
+    const i18n = item?.titleI18n;
+    return (
+        getI18nValue(i18n, lang) ||
+        getI18nValue(i18n, 'en') ||
+        getI18nValue(i18n, 'vi') ||
+        item?.title ||
+        'Book'
+    );
+};
+
 /**
  * @desc    Create PayOS payment link
  * @route   POST /api/payment/create-payment-link
@@ -56,7 +73,7 @@ const createPaymentLink = asyncHandler(async (req, res) => {
         cancelUrl: `${YOUR_DOMAIN}/payment/result?status=cancelled&orderId=${order._id}`,
         returnUrl: `${YOUR_DOMAIN}/payment/result?status=success&orderId=${order._id}`,
         items: order.items.map(item => ({
-            name: item.title || 'Book',
+            name: resolveTitle(item, 'en'),
             quantity: item.quantity,
             price: Math.round(Number(item.price || 0))
         }))

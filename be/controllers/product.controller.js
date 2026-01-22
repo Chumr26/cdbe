@@ -3,36 +3,6 @@ const Product = require('../models/Product.model');
 const { usdToVnd } = require('../utils/currency');
 const { embedText } = require('../utils/geminiEmbeddings');
 
-const SUPPORTED_LANGS = new Set(['en', 'vi']);
-
-const detectLang = (req) => {
-  const raw = (req?.query?.lang || req?.headers?.['accept-language'] || '').toString();
-  const primary = raw.split(',')[0]?.trim() || '';
-  const short = primary.split('-')[0]?.trim().toLowerCase();
-  return SUPPORTED_LANGS.has(short) ? short : 'en';
-};
-
-const getI18nValue = (i18nMapOrObject, lang) => {
-  if (!i18nMapOrObject) return undefined;
-  if (typeof i18nMapOrObject.get === 'function') return i18nMapOrObject.get(lang);
-  return i18nMapOrObject[lang];
-};
-
-const withLocalizedDescription = (productDoc, lang) => {
-  const obj = productDoc?.toObject ? productDoc.toObject() : { ...productDoc };
-  const i18n = obj?.descriptionI18n;
-  const localized =
-    getI18nValue(i18n, lang) ||
-    getI18nValue(i18n, 'en') ||
-    obj?.description ||
-    '';
-
-  return {
-    ...obj,
-    description: localized
-  };
-};
-
 const withVndPrice = (productDoc) => {
   const obj = productDoc?.toObject ? productDoc.toObject() : productDoc;
   return {
@@ -42,11 +12,46 @@ const withVndPrice = (productDoc) => {
   };
 };
 
+const normalizeProductI18n = (payload) => {
+  if (!payload || typeof payload !== 'object') return payload;
+
+  const titleEn = payload['titleI18n.en'] ?? payload['titleI18n[en]'];
+  const titleVi = payload['titleI18n.vi'] ?? payload['titleI18n[vi]'];
+  const descEn = payload['descriptionI18n.en'] ?? payload['descriptionI18n[en]'];
+  const descVi = payload['descriptionI18n.vi'] ?? payload['descriptionI18n[vi]'];
+
+  if (typeof titleEn !== 'undefined' || typeof titleVi !== 'undefined') {
+    payload.titleI18n = {
+      ...(payload.titleI18n || {}),
+      ...(typeof titleEn !== 'undefined' ? { en: titleEn } : {}),
+      ...(typeof titleVi !== 'undefined' ? { vi: titleVi } : {})
+    };
+  }
+
+  if (typeof descEn !== 'undefined' || typeof descVi !== 'undefined') {
+    payload.descriptionI18n = {
+      ...(payload.descriptionI18n || {}),
+      ...(typeof descEn !== 'undefined' ? { en: descEn } : {}),
+      ...(typeof descVi !== 'undefined' ? { vi: descVi } : {})
+    };
+  }
+
+  delete payload['titleI18n.en'];
+  delete payload['titleI18n.vi'];
+  delete payload['titleI18n[en]'];
+  delete payload['titleI18n[vi]'];
+  delete payload['descriptionI18n.en'];
+  delete payload['descriptionI18n.vi'];
+  delete payload['descriptionI18n[en]'];
+  delete payload['descriptionI18n[vi]'];
+
+  return payload;
+};
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
 exports.getProducts = asyncHandler(async (req, res) => {
-  const lang = detectLang(req);
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 12;
   const skip = (page - 1) * limit;
@@ -94,7 +99,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     total,
     page,
     pages: Math.ceil(total / limit),
-    data: products.map((p) => withVndPrice(withLocalizedDescription(p, lang)))
+    data: products.map((p) => withVndPrice(p))
   });
 });
 
@@ -102,7 +107,6 @@ exports.getProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/products/:id
 // @access  Public
 exports.getProduct = asyncHandler(async (req, res) => {
-  const lang = detectLang(req);
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -114,7 +118,7 @@ exports.getProduct = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    data: withVndPrice(withLocalizedDescription(product, lang))
+    data: withVndPrice(product)
   });
 });
 
@@ -122,13 +126,12 @@ exports.getProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/products/featured
 // @access  Public
 exports.getFeaturedProducts = asyncHandler(async (req, res) => {
-  const lang = detectLang(req);
   const products = await Product.find({ featured: true, isActive: true }).limit(8);
 
   res.status(200).json({
     success: true,
     count: products.length,
-    data: products.map((p) => withVndPrice(withLocalizedDescription(p, lang)))
+    data: products.map((p) => withVndPrice(p))
   });
 });
 
@@ -136,7 +139,6 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/products/semantic-search
 // @access  Public
 exports.semanticSearchProducts = asyncHandler(async (req, res) => {
-  const lang = detectLang(req);
   const rawQuery = (req.query.q || '').toString().trim();
 
   if (!rawQuery) {
@@ -186,7 +188,7 @@ exports.semanticSearchProducts = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     count: results.length,
-    data: results.map((p) => withVndPrice(withLocalizedDescription(p, lang)))
+    data: results.map((p) => withVndPrice(p))
   });
 });
 
@@ -194,7 +196,7 @@ exports.semanticSearchProducts = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 exports.createProduct = asyncHandler(async (req, res) => {
-  const productData = req.body;
+  const productData = normalizeProductI18n(req.body);
   
   // Handle uploaded cover image
   if (req.file) {
@@ -222,7 +224,7 @@ exports.createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 exports.updateProduct = asyncHandler(async (req, res) => {
-  const productData = req.body;
+  const productData = normalizeProductI18n(req.body);
   
   // Handle uploaded cover image
   if (req.file) {

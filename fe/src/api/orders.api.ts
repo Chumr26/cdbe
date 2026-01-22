@@ -1,4 +1,5 @@
 import api from './axios';
+import type { LocalizedText } from '../utils/i18n';
 
 export interface ShippingAddress {
   firstName: string;
@@ -13,7 +14,8 @@ export interface ShippingAddress {
 
 export interface OrderItem {
   productId: string;
-  title: string;
+  titleI18n: LocalizedText;
+  title?: string;
   isbn?: string;
   quantity: number;
   price: number;

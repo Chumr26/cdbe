@@ -44,7 +44,10 @@ const orderSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product'
         },
-        title: String,
+        titleI18n: {
+            en: String,
+            vi: String
+        },
         isbn: String,
         quantity: Number,
         price: Number

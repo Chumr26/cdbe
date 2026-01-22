@@ -22,6 +22,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '../../utils/i18n';
 
 const AdminDashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -378,7 +379,7 @@ const AdminDashboard: React.FC = () => {
                                 <tbody>
                                     {analytics.topProducts.map((p) => (
                                         <tr key={p.productId}>
-                                            <td>{p.title || t('admin.common.unknown')}</td>
+                                            <td>{getLocalizedText(p.titleI18n, i18n.language) || p.title || t('admin.common.unknown')}</td>
                                             <td>{p.isbn || '-'}</td>
                                             <td>{p.quantitySold}</td>
                                             <td>{formatPrice(p.revenue)}</td>
@@ -410,7 +411,7 @@ const AdminDashboard: React.FC = () => {
                                 <tbody>
                                     {stats.lowStockProducts.map((product) => (
                                         <tr key={product._id}>
-                                            <td>{product.title}</td>
+                                            <td>{getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}</td>
                                             <td>{product.author}</td>
                                             <td>{product.category}</td>
                                             <td>

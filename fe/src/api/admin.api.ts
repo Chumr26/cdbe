@@ -2,6 +2,7 @@ import api from './axios';
 import type { User } from './auth.api';
 import type { Order } from './orders.api';
 import type { Product } from './products.api';
+import type { LocalizedText } from '../utils/i18n';
 
 export type CouponType = 'percent' | 'fixed';
 
@@ -58,6 +59,7 @@ export interface AnalyticsDistributionPoint {
 
 export interface TopProductAnalytics {
   productId: string;
+  titleI18n?: LocalizedText;
   title?: string;
   isbn?: string;
   quantitySold: number;

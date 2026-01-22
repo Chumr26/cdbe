@@ -423,25 +423,40 @@ router.delete('/:id/reviews/me', protect, deleteMyProductReview);
  *           schema:
  *             type: object
  *             required:
- *               - title
+ *               - titleI18n
  *               - isbn
  *               - author
+ *               - descriptionI18n
  *               - category
  *               - price
  *               - stock
  *             properties:
- *               title:
- *                 type: string
- *                 example: Clean Code
+ *               titleI18n:
+ *                 type: object
+ *                 required: [en, vi]
+ *                 properties:
+ *                   en:
+ *                     type: string
+ *                     example: Clean Code
+ *                   vi:
+ *                     type: string
+ *                     example: Clean Code
  *               isbn:
  *                 type: string
  *                 example: 978-0132350884
  *               author:
  *                 type: string
  *                 example: Robert C. Martin
- *               description:
- *                 type: string
- *                 example: A Handbook of Agile Software Craftsmanship
+ *               descriptionI18n:
+ *                 type: object
+ *                 required: [en, vi]
+ *                 properties:
+ *                   en:
+ *                     type: string
+ *                     example: A Handbook of Agile Software Craftsmanship
+ *                   vi:
+ *                     type: string
+ *                     example: Cẩm nang nghề nghiệp phát triển phần mềm linh hoạt
  *               category:
  *                 type: string
  *                 example: Technology
@@ -490,14 +505,24 @@ router.post('/', protect, authorize('admin'), upload.single('coverImage'), creat
  *           schema:
  *             type: object
  *             properties:
- *               title:
- *                 type: string
+ *               titleI18n:
+ *                 type: object
+ *                 properties:
+ *                   en:
+ *                     type: string
+ *                   vi:
+ *                     type: string
  *               price:
  *                 type: number
  *               stock:
  *                 type: number
- *               description:
- *                 type: string
+ *               descriptionI18n:
+ *                 type: object
+ *                 properties:
+ *                   en:
+ *                     type: string
+ *                   vi:
+ *                     type: string
  *               featured:
  *                 type: boolean
  *               isActive:

@@ -297,7 +297,7 @@ exports.getAdvancedAnalytics = asyncHandler(async (req, res) => {
       {
         $group: {
           _id: '$items.productId',
-          title: { $first: '$items.title' },
+          titleI18n: { $first: '$items.titleI18n' },
           isbn: { $first: '$items.isbn' },
           quantitySold: { $sum: '$items.quantity' },
           revenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
@@ -341,7 +341,7 @@ exports.getAdvancedAnalytics = asyncHandler(async (req, res) => {
       },
       topProducts: topProducts.map((p) => ({
         productId: p._id,
-        title: p.title,
+        titleI18n: p.titleI18n,
         isbn: p.isbn,
         quantitySold: p.quantitySold,
         revenue: p.revenue

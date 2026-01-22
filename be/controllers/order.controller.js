@@ -6,6 +6,32 @@ const CouponRedemption = require('../models/CouponRedemption.model');
 const { recalculateCartTotals } = require('../utils/couponPricing');
 const sendEmail = require('../utils/emailHelper');
 
+const SUPPORTED_LANGS = new Set(['en', 'vi']);
+
+const detectLang = (req) => {
+  const raw = (req?.query?.lang || req?.headers?.['accept-language'] || '').toString();
+  const primary = raw.split(',')[0]?.trim() || '';
+  const short = primary.split('-')[0]?.trim().toLowerCase();
+  return SUPPORTED_LANGS.has(short) ? short : 'en';
+};
+
+const getI18nValue = (i18nMapOrObject, lang) => {
+  if (!i18nMapOrObject) return undefined;
+  if (typeof i18nMapOrObject.get === 'function') return i18nMapOrObject.get(lang);
+  return i18nMapOrObject[lang];
+};
+
+const resolveTitle = (item, lang) => {
+  const i18n = item?.titleI18n;
+  return (
+    getI18nValue(i18n, lang) ||
+    getI18nValue(i18n, 'en') ||
+    getI18nValue(i18n, 'vi') ||
+    item?.title ||
+    ''
+  );
+};
+
 const validateShippingAddress = (shippingAddress) => {
   if (!shippingAddress || typeof shippingAddress !== 'object') {
     return 'Shipping address is required';
@@ -51,10 +77,10 @@ const formatMoney = (amount) => {
   }
 };
 
-const buildOrderConfirmationMessage = ({ user, order, shippingAddress }) => {
+const buildOrderConfirmationMessage = ({ user, order, shippingAddress, lang }) => {
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'there';
   const itemsText = (order.items || [])
-    .map((item) => `- ${item.title} (x${item.quantity})`) 
+    .map((item) => `- ${resolveTitle(item, lang)} (x${item.quantity})`) 
     .join('\n');
 
   const addressLine = [
@@ -100,6 +126,7 @@ const buildOrderConfirmationMessage = ({ user, order, shippingAddress }) => {
 // @route   POST /api/orders
 // @access  Private
 exports.createOrder = asyncHandler(async (req, res) => {
+  const lang = detectLang(req);
   const { shippingAddress, paymentMethod } = req.body;
 
   const shippingError = validateShippingAddress(shippingAddress);
@@ -122,9 +149,10 @@ exports.createOrder = asyncHandler(async (req, res) => {
   // Check stock for all items
   for (const item of cart.items) {
     if (item.productId.stock < item.quantity) {
+      const itemTitle = resolveTitle(item.productId, lang);
       return res.status(400).json({
         success: false,
-        message: `Insufficient stock for ${item.productId.title}`
+        message: `Insufficient stock for ${itemTitle}`
       });
     }
   }
@@ -132,7 +160,10 @@ exports.createOrder = asyncHandler(async (req, res) => {
   // Create order items
   const orderItems = cart.items.map(item => ({
     productId: item.productId._id,
-    title: item.productId.title,
+    titleI18n: item.productId.titleI18n || {
+      en: item.productId.title || '',
+      vi: item.productId.title || ''
+    },
     isbn: item.productId.isbn,
     quantity: item.quantity,
     price: item.price
@@ -206,7 +237,8 @@ exports.createOrder = asyncHandler(async (req, res) => {
     const message = buildOrderConfirmationMessage({
       user: req.user,
       order,
-      shippingAddress
+      shippingAddress,
+      lang
     });
 
     sendEmail({

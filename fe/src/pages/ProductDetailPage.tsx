@@ -12,6 +12,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import ProductCard from '../components/products/ProductCard';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../utils/currency';
+import { getLocalizedText } from '../utils/i18n';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -231,13 +232,16 @@ const ProductDetailPage: React.FC = () => {
     if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
     if (!product) return <Container className="py-5"><ErrorMessage message={t('productDetail.productNotFound')} /></Container>;
 
+    const title = getLocalizedText(product.titleI18n, i18n.language) || product.title || '';
+    const description = getLocalizedText(product.descriptionI18n, i18n.language) || product.description || '';
+
     return (
         <Container className="py-3">
             {/* Breadcrumb Navigation */}
             <Breadcrumb className="mb-2" style={{ fontSize: '0.9rem' }}>
                 <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>{t('nav.home')}</Breadcrumb.Item>
                 <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/products' }}>{t('nav.products')}</Breadcrumb.Item>
-                <Breadcrumb.Item active>{product.title}</Breadcrumb.Item>
+                <Breadcrumb.Item active>{title}</Breadcrumb.Item>
             </Breadcrumb>
 
             {/* Back Button */}
@@ -261,7 +265,7 @@ const ProductDetailPage: React.FC = () => {
                                 product.images?.[0] ||
                                 'https://via.placeholder.com/400x600?text=No+Cover'
                             }
-                            alt={product.title}
+                            alt={title}
                             className="img-fluid rounded shadow"
                             style={{ width: '100%', maxHeight: '700px', objectFit: 'contain' }}
                         />
@@ -277,7 +281,7 @@ const ProductDetailPage: React.FC = () => {
                     </div>
 
                     {/* Title and Author */}
-                    <h2 className="mb-1">{product.title}</h2>
+                    <h2 className="mb-1">{title}</h2>
                     <p className="text-muted mb-2">{t('productDetail.by', { author: product.author })}</p>
 
                     {/* Rating - Compact */}
@@ -326,8 +330,8 @@ const ProductDetailPage: React.FC = () => {
                         {/* Description Tab */}
                         <Tab eventKey="description" title={t('productDetail.descriptionTab')}>
                             <div className="py-2">
-                                {product.description ? (
-                                    <p className="mb-0">{product.description}</p>
+                                {description ? (
+                                    <p className="mb-0">{description}</p>
                                 ) : (
                                     <p className="text-muted mb-0">{t('productDetail.noDescription')}</p>
                                 )}

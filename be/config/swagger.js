@@ -72,10 +72,22 @@ const options = {
           type: 'object',
           properties: {
             _id: { type: 'string', example: '507f1f77bcf86cd799439011' },
-            title: { type: 'string', example: 'Clean Code' },
+            titleI18n: {
+              type: 'object',
+              properties: {
+                en: { type: 'string', example: 'Clean Code' },
+                vi: { type: 'string', example: 'Clean Code' }
+              }
+            },
             isbn: { type: 'string', example: '978-0132350884' },
             author: { type: 'string', example: 'Robert C. Martin' },
-            description: { type: 'string', example: 'A Handbook of Agile Software Craftsmanship' },
+            descriptionI18n: {
+              type: 'object',
+              properties: {
+                en: { type: 'string', example: 'A Handbook of Agile Software Craftsmanship' },
+                vi: { type: 'string', example: 'Cẩm nang nghề nghiệp phát triển phần mềm linh hoạt' }
+              }
+            },
             category: { type: 'string', example: 'Technology' },
             price: { type: 'number', example: 39.99 },
             stock: { type: 'number', example: 50 },
@@ -132,7 +144,13 @@ const options = {
           type: 'object',
           properties: {
             productId: { type: 'string', example: '507f1f77bcf86cd799439011' },
-            title: { type: 'string', example: 'Clean Code' },
+            titleI18n: {
+              type: 'object',
+              properties: {
+                en: { type: 'string', example: 'Clean Code' },
+                vi: { type: 'string', example: 'Clean Code' }
+              }
+            },
             price: { type: 'number', example: 39.99 },
             quantity: { type: 'number', example: 2 },
           },

@@ -13,14 +13,18 @@
   "nav": {
     "home": "Home",
     "products": "Products",
-    "login": "Login",
+        "title": "Title",
+        "titleEn": "Title (EN)",
+        "titleVi": "Title (VI)",
     "signUp": "Sign Up",
     "profile": "Profile",
     "myOrders": "My Orders",
     "dashboard": "Dashboard",
     "logout": "Logout",
     "account": "Account",
-    "language": "Language"
+        "description": "Description",
+        "descriptionEn": "Description (EN)",
+        "descriptionVi": "Description (VI)"
   },
   "search": {
     "placeholder": "Find similar meaning, not exact words"

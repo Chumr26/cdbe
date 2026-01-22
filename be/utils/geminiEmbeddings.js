@@ -14,27 +14,30 @@ const normalizeText = (text) => {
     .trim();
 };
 
+const getI18nValue = (i18nMapOrObject, lang) => {
+  if (!i18nMapOrObject) return undefined;
+  if (typeof i18nMapOrObject.get === 'function') return i18nMapOrObject.get(lang);
+  return i18nMapOrObject[lang];
+};
+
 const buildProductEmbeddingText = (product) => {
   if (!product) return '';
 
+  const titleI18n = product.titleI18n || {};
   const descriptionI18n = product.descriptionI18n || {};
-  const descEn =
-    typeof descriptionI18n.get === 'function'
-      ? descriptionI18n.get('en')
-      : descriptionI18n.en;
-  const descVi =
-    typeof descriptionI18n.get === 'function'
-      ? descriptionI18n.get('vi')
-      : descriptionI18n.vi;
+  const titleEn = getI18nValue(titleI18n, 'en');
+  const titleVi = getI18nValue(titleI18n, 'vi');
+  const descEn = getI18nValue(descriptionI18n, 'en');
+  const descVi = getI18nValue(descriptionI18n, 'vi');
 
   const parts = [
-    product.title,
+    titleEn,
+    titleVi,
     product.author,
     product.category,
     product.isbn,
     product.publisher,
     product.language,
-    product.description,
     descEn,
     descVi
   ];

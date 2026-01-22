@@ -9,6 +9,7 @@ import type { Category } from '../../api/categories.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/currency';
+import { getLocalizedText } from '../../utils/i18n';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -20,7 +21,7 @@ const getErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const AdminProducts: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -35,12 +36,18 @@ const AdminProducts: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [modalData, setModalData] = useState({
-        title: '',
+        titleI18n: {
+            en: '',
+            vi: ''
+        },
         author: '',
         category: '',
         price: '',
         stock: '',
-        description: '',
+        descriptionI18n: {
+            en: '',
+            vi: ''
+        },
         isbn: '',
         featured: false
     });
@@ -89,24 +96,36 @@ const AdminProducts: React.FC = () => {
         setEditingProduct(product);
         if (product) {
             setModalData({
-                title: product.title,
+                titleI18n: {
+                    en: product.titleI18n?.en || product.title || '',
+                    vi: product.titleI18n?.vi || product.title || ''
+                },
                 author: product.author,
                 category: product.category,
                 price: product.price.toString(),
                 stock: product.stock.toString(),
-                description: product.description || '',
+                descriptionI18n: {
+                    en: product.descriptionI18n?.en || product.description || '',
+                    vi: product.descriptionI18n?.vi || product.description || ''
+                },
                 isbn: product.isbn || '',
                 featured: product.featured
             });
         } else {
             // New product defaults
             setModalData({
-                title: '',
+                titleI18n: {
+                    en: '',
+                    vi: ''
+                },
                 author: '',
                 category: categories.length > 0 ? categories[0].name : '', // Default to first category if available
                 price: '',
                 stock: '',
-                description: '',
+                descriptionI18n: {
+                    en: '',
+                    vi: ''
+                },
                 isbn: '',
                 featured: false
             });
@@ -124,6 +143,18 @@ const AdminProducts: React.FC = () => {
     const handleModalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const target = e.target as HTMLInputElement; // Type assertion to access checked property safely
         const value = target.type === 'checkbox' ? target.checked : target.value;
+        if (target.name.includes('.')) {
+            const [parentKey, childKey] = target.name.split('.') as ['titleI18n' | 'descriptionI18n', 'en' | 'vi'];
+            setModalData((prev) => ({
+                ...prev,
+                [parentKey]: {
+                    ...prev[parentKey],
+                    [childKey]: value
+                }
+            }));
+            return;
+        }
+
         setModalData({
             ...modalData,
             [target.name]: value
@@ -138,12 +169,14 @@ const AdminProducts: React.FC = () => {
         try {
             // Use FormData for file upload
             const formData = new FormData();
-            formData.append('title', modalData.title);
+            formData.append('titleI18n.en', modalData.titleI18n.en);
+            formData.append('titleI18n.vi', modalData.titleI18n.vi);
             formData.append('author', modalData.author);
             formData.append('category', modalData.category);
             formData.append('price', modalData.price);
             formData.append('stock', modalData.stock);
-            formData.append('description', modalData.description);
+            formData.append('descriptionI18n.en', modalData.descriptionI18n.en);
+            formData.append('descriptionI18n.vi', modalData.descriptionI18n.vi);
             formData.append('isbn', modalData.isbn);
             formData.append('featured', modalData.featured.toString());
 
@@ -217,7 +250,7 @@ const AdminProducts: React.FC = () => {
                             {products.length > 0 ? (
                                 products.map(product => (
                                     <tr key={product._id}>
-                                        <td>{product.title}</td>
+                                        <td>{getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}</td>
                                         <td>{product.author}</td>
                                         <td><span className="badge bg-info text-dark">{product.category}</span></td>
                                         <td>{displayPrice(product)}</td>
@@ -281,16 +314,30 @@ const AdminProducts: React.FC = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.title')}</Form.Label>
+                                    <Form.Label>{t('admin.products.modal.titleEn')}</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        name="title"
-                                        value={modalData.title}
+                                        name="titleI18n.en"
+                                        value={modalData.titleI18n.en}
                                         onChange={handleModalChange}
                                         required
                                     />
                                 </Form.Group>
                             </Col>
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>{t('admin.products.modal.titleVi')}</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="titleI18n.vi"
+                                        value={modalData.titleI18n.vi}
+                                        onChange={handleModalChange}
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>{t('admin.products.modal.author')}</Form.Label>
@@ -360,16 +407,34 @@ const AdminProducts: React.FC = () => {
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('admin.products.modal.description')}</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                name="description"
-                                value={modalData.description}
-                                onChange={handleModalChange}
-                            />
-                        </Form.Group>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>{t('admin.products.modal.descriptionEn')}</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        name="descriptionI18n.en"
+                                        value={modalData.descriptionI18n.en}
+                                        onChange={handleModalChange}
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>{t('admin.products.modal.descriptionVi')}</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        name="descriptionI18n.vi"
+                                        value={modalData.descriptionI18n.vi}
+                                        onChange={handleModalChange}
+                                        required
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
                         <Form.Group className="mb-3">
                             <Form.Check
                                 type="checkbox"
@@ -413,7 +478,7 @@ const AdminProducts: React.FC = () => {
                     <Modal.Title>{t('admin.products.delete.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {t('admin.products.delete.body', { title: productToDelete?.title ?? '' })}
+                    {t('admin.products.delete.body', { title: productToDelete ? getLocalizedText(productToDelete.titleI18n, i18n.language) : '' })}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>

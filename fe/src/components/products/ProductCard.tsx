@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedText } from '../../utils/i18n';
 
 interface ProductCardProps {
     product: Product;
@@ -20,6 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const inCart = isInCart(product._id);
+    const title = getLocalizedText(product.titleI18n, i18n.language) || product.title || '';
+    const description = getLocalizedText(product.descriptionI18n, i18n.language) || product.description || '';
 
     // Smart image source selection: API cover > uploaded cover > legacy images > placeholder
     const getImageSource = () => {
@@ -92,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <Card.Img
                     variant="top"
                     src={getImageSource()}
-                    alt={product.title}
+                    alt={title}
                     style={{ height: '400px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
                 />
                 {product.featured && (
@@ -107,9 +110,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 )}
             </div>
             <Card.Body className="d-flex flex-column">
-                <Card.Title className="text-truncate" title={product.title}>
+                <Card.Title className="text-truncate" title={title}>
                     <Link to={`/products/${product._id}`} className="text-decoration-none text-dark">
-                        {product.title}
+                        {title}
                     </Link>
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted text-truncate">
@@ -122,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </span>
                 </div>
                 <Card.Text className="text-truncate" style={{ maxHeight: '3em' }}>
-                    {product.description}
+                    {description}
                 </Card.Text>
                 <div className="mt-auto">
                     <div className="d-flex justify-content-between align-items-center mb-2">

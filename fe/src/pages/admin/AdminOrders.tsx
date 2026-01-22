@@ -7,6 +7,7 @@ import type { Order } from '../../api/orders.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/currency';
+import { getLocalizedText } from '../../utils/i18n';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -256,7 +257,7 @@ const AdminOrders: React.FC = () => {
                                 <tbody>
                                     {selectedOrder.items.map((item, idx) => (
                                         <tr key={idx}>
-                                            <td>{item.title}</td>
+                                            <td>{getLocalizedText(item.titleI18n, i18n.language) || item.title || ''}</td>
                                             <td>{formatMoney(item.price, 'VND')}</td>
                                             <td>{item.quantity}</td>
                                             <td>{formatMoney(item.price * item.quantity, 'VND')}</td>

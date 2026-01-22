@@ -1,11 +1,14 @@
 import api from './axios';
+import type { LocalizedText } from '../utils/i18n';
 
 export interface Product {
   _id: string;
-  title: string;
+  title?: string;
+  titleI18n: LocalizedText;
   isbn?: string;
   author: string;
   description?: string;
+  descriptionI18n: LocalizedText;
   category: string;
   price: number;
   priceVnd?: number;
