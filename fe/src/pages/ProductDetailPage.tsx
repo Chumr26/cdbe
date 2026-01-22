@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../utils/currency';
 import { getLocalizedText } from '../utils/i18n';
 import { getCategoryLabel } from '../utils/categoryLabel';
+import { resolveAssetUrl } from '../utils/image';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -263,8 +264,8 @@ const ProductDetailPage: React.FC = () => {
                     <div className="position-sticky" style={{ top: '20px' }}>
                         <img
                             src={
-                                product.coverImage?.url ||
-                                product.images?.[0] ||
+                                resolveAssetUrl(product.coverImage?.url) ||
+                                resolveAssetUrl(product.images?.[0]) ||
                                 'https://via.placeholder.com/400x600?text=No+Cover'
                             }
                             alt={title}

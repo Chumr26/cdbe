@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Pagination, Alert, Badge, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Container, Card, Table, Button, Modal, Form, Pagination, Alert, Badge, Row, Col, Dropdown } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
 import axios from 'axios';
 import { adminAPI } from '../../api/admin.api';
@@ -41,7 +41,7 @@ const AdminOrders: React.FC = () => {
     const [updatingPaymentStatus, setUpdatingPaymentStatus] = useState(false);
     const [modalError, setModalError] = useState('');
 
-    const fetchOrders = async (page = 1, status = '') => {
+    const fetchOrders = useCallback(async (page = 1, status = '') => {
         setLoading(true);
         try {
             const response = await adminAPI.getOrders(page, 10, status);
@@ -54,11 +54,11 @@ const AdminOrders: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
     useEffect(() => {
         fetchOrders(currentPage, statusFilter);
-    }, [currentPage, statusFilter]);
+    }, [currentPage, statusFilter, fetchOrders]);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setStatusFilter(e.target.value);
@@ -118,6 +118,23 @@ const AdminOrders: React.FC = () => {
             case 'processing': return 'primary';
             case 'cancelled': return 'danger';
             default: return 'warning';
+        }
+    };
+
+    const getOrderStatusLabel = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return t('admin.orders.filter.pending');
+            case 'processing':
+                return t('admin.orders.filter.processing');
+            case 'shipped':
+                return t('admin.orders.filter.shipped');
+            case 'delivered':
+                return t('admin.orders.filter.delivered');
+            case 'cancelled':
+                return t('admin.orders.filter.cancelled');
+            default:
+                return status;
         }
     };
 
@@ -272,43 +289,55 @@ const AdminOrders: React.FC = () => {
 
                             <Form.Group>
                                 <Form.Label className="fw-bold">{t('admin.orders.modal.updateOrderStatus')}</Form.Label>
-                                <div className="d-flex gap-2">
-                                    <Form.Select
-                                        value={statusToUpdate}
-                                        onChange={(e) => setStatusToUpdate(e.target.value)}
-                                    >
-                                        <option value="pending">{t('admin.orders.filter.pending')}</option>
-                                        <option value="processing">{t('admin.orders.filter.processing')}</option>
-                                        <option value="shipped">{t('admin.orders.filter.shipped')}</option>
-                                        <option value="delivered">{t('admin.orders.filter.delivered')}</option>
-                                        <option value="cancelled">{t('admin.orders.filter.cancelled')}</option>
-                                    </Form.Select>
-                                    <Button variant="primary" onClick={handleUpdateStatus} disabled={updating}>
-                                        {updating ? t('admin.orders.modal.updating') : t('admin.orders.modal.update')}
-                                    </Button>
-                                </div>
+                                <Row className="g-2 align-items-center">
+                                    <Col xs={12} md>
+                                        <Dropdown onSelect={(eventKey) => eventKey && setStatusToUpdate(eventKey)}>
+                                            <Dropdown.Toggle variant="outline-secondary" className="w-100">
+                                                {getOrderStatusLabel(statusToUpdate)}
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu className="w-100">
+                                                <Dropdown.Item eventKey="pending">{t('admin.orders.filter.pending')}</Dropdown.Item>
+                                                <Dropdown.Item eventKey="processing">{t('admin.orders.filter.processing')}</Dropdown.Item>
+                                                <Dropdown.Item eventKey="shipped">{t('admin.orders.filter.shipped')}</Dropdown.Item>
+                                                <Dropdown.Item eventKey="delivered">{t('admin.orders.filter.delivered')}</Dropdown.Item>
+                                                <Dropdown.Item eventKey="cancelled">{t('admin.orders.filter.cancelled')}</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </Col>
+                                    <Col xs={12} md="auto">
+                                        <Button variant="primary" onClick={handleUpdateStatus} disabled={updating}>
+                                            {updating ? t('admin.orders.modal.updating') : t('admin.orders.modal.update')}
+                                        </Button>
+                                    </Col>
+                                </Row>
                             </Form.Group>
 
                             {(selectedOrder.paymentMethod ?? 'payos') === 'cod' && (
                                 <Form.Group className="mt-3">
                                     <Form.Label className="fw-bold">{t('admin.orders.modal.updateCodPaymentStatus')}</Form.Label>
-                                    <div className="d-flex gap-2">
-                                        <Form.Select
-                                            value={paymentStatusToUpdate}
-                                            onChange={(e) => setPaymentStatusToUpdate(e.target.value)}
-                                        >
-                                            <option value="pending">Pending</option>
-                                            <option value="completed">Completed</option>
-                                            <option value="failed">Failed</option>
-                                        </Form.Select>
-                                        <Button
-                                            variant="secondary"
-                                            onClick={handleUpdatePaymentStatus}
-                                            disabled={updatingPaymentStatus}
-                                        >
-                                            {updatingPaymentStatus ? t('admin.orders.modal.updating') : t('admin.orders.modal.updatePayment')}
-                                        </Button>
-                                    </div>
+                                    <Row className="g-2 align-items-center">
+                                        <Col xs={12} md>
+                                            <Dropdown onSelect={(eventKey) => eventKey && setPaymentStatusToUpdate(eventKey)}>
+                                                <Dropdown.Toggle variant="outline-secondary" className="w-100">
+                                                    {paymentStatusToUpdate || 'Pending'}
+                                                </Dropdown.Toggle>
+                                                <Dropdown.Menu className="w-100">
+                                                    <Dropdown.Item eventKey="pending">Pending</Dropdown.Item>
+                                                    <Dropdown.Item eventKey="completed">Completed</Dropdown.Item>
+                                                    <Dropdown.Item eventKey="failed">Failed</Dropdown.Item>
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        </Col>
+                                        <Col xs={12} md="auto">
+                                            <Button
+                                                variant="secondary"
+                                                onClick={handleUpdatePaymentStatus}
+                                                disabled={updatingPaymentStatus}
+                                            >
+                                                {updatingPaymentStatus ? t('admin.orders.modal.updating') : t('admin.orders.modal.updatePayment')}
+                                            </Button>
+                                        </Col>
+                                    </Row>
                                 </Form.Group>
                             )}
                         </>

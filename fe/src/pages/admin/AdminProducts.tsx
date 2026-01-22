@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Table, Button, Modal, Form, Pagination, Alert } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/currency';
 import { getLocalizedText } from '../../utils/i18n';
 import { getCategoryLabel } from '../../utils/categoryLabel';
+import { resolveAssetUrl } from '../../utils/image';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -55,12 +56,13 @@ const AdminProducts: React.FC = () => {
     const [modalError, setModalError] = useState('');
     const [saving, setSaving] = useState(false);
     const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+    const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
 
     // Delete Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
-    const fetchProducts = async (page = 1) => {
+    const fetchProducts = useCallback(async (page = 1) => {
         setLoading(true);
         try {
             const response = await productsAPI.getProducts({ page, limit: 10, sort: 'createdAt', order: 'desc' });
@@ -73,21 +75,35 @@ const AdminProducts: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
-    const fetchCategories = async () => {
+    const fetchCategories = useCallback(async () => {
         try {
             const response = await categoriesAPI.getCategories();
             setCategories(response.data);
         } catch {
             console.error('Failed to load categories');
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchProducts();
         fetchCategories();
-    }, []);
+    }, [fetchProducts, fetchCategories]);
+
+    useEffect(() => {
+        if (!coverImageFile) {
+            setCoverPreviewUrl(null);
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(coverImageFile);
+        setCoverPreviewUrl(previewUrl);
+
+        return () => {
+            URL.revokeObjectURL(previewUrl);
+        };
+    }, [coverImageFile]);
 
     const handlePageChange = (page: number) => {
         fetchProducts(page);
@@ -309,164 +325,194 @@ const AdminProducts: React.FC = () => {
             </Card>
 
             {/* Create/Edit Modal */}
-            <Modal show={showModal} onHide={handleCloseModal} size="lg">
+            <Modal show={showModal} onHide={handleCloseModal} size="xl">
                 <Modal.Header closeButton>
                     <Modal.Title>{editingProduct ? t('admin.products.modal.editTitle') : t('admin.products.modal.createTitle')}</Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={handleSaveProduct}>
                     <Modal.Body>
                         {modalError && <Alert variant="danger">{modalError}</Alert>}
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.titleEn')}</Form.Label>
+                        <Row className="g-4">
+                            <Col md={4}>
+                                <div className="border rounded bg-light d-flex align-items-center justify-content-center p-3" style={{ minHeight: '360px' }}>
+                                    <img
+                                        src={
+                                            coverPreviewUrl ||
+                                            resolveAssetUrl(editingProduct?.coverImage?.url) ||
+                                            resolveAssetUrl(editingProduct?.images?.[0]) ||
+                                            'https://via.placeholder.com/300x400?text=No+Cover'
+                                        }
+                                        alt={modalData.titleI18n.en || modalData.titleI18n.vi || 'Cover'}
+                                        className="img-fluid rounded"
+                                        style={{ maxHeight: '360px', objectFit: 'contain' }}
+                                    />
+                                </div>
+                                <Form.Group className="mt-3">
+                                    <Form.Label>{t('admin.products.modal.coverImage')}</Form.Label>
+                                    <Form.Control
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const files = e.target.files;
+                                            if (files && files[0]) {
+                                                setCoverImageFile(files[0]);
+                                            }
+                                        }}
+                                    />
+                                    <Form.Text className="text-muted">
+                                        {t('admin.products.modal.coverHint')}
+                                    </Form.Text>
+                                </Form.Group>
+                                <Form.Group className="mt-3">
+                                    <Form.Label>{t('admin.products.modal.coverUrl')}</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        name="titleI18n.en"
-                                        value={modalData.titleI18n.en}
-                                        onChange={handleModalChange}
-                                        required
+                                        readOnly
+                                        value={
+                                            coverPreviewUrl ||
+                                            resolveAssetUrl(editingProduct?.coverImage?.url) ||
+                                            resolveAssetUrl(editingProduct?.images?.[0]) ||
+                                            ''
+                                        }
                                     />
                                 </Form.Group>
                             </Col>
-                            <Col md={6}>
+                            <Col md={8}>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.titleEn')}</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="titleI18n.en"
+                                                value={modalData.titleI18n.en}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.titleVi')}</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="titleI18n.vi"
+                                                value={modalData.titleI18n.vi}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.author')}</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="author"
+                                                value={modalData.author}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.isbn')}</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="isbn"
+                                                value={modalData.isbn}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.category')}</Form.Label>
+                                            <Form.Select
+                                                name="category"
+                                                value={modalData.category}
+                                                onChange={handleModalChange}
+                                            >
+                                                <option value="">{t('admin.products.modal.selectCategory')}</option>
+                                                {categories.map(cat => (
+                                                    <option key={cat._id} value={cat.name}>
+                                                        {getCategoryLabel(cat.name, t, i18n)}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.price')}</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                step="0.01"
+                                                name="price"
+                                                value={modalData.price}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.stock')}</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                name="stock"
+                                                value={modalData.stock}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.descriptionEn')}</Form.Label>
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={10}
+                                                name="descriptionI18n.en"
+                                                value={modalData.descriptionI18n.en}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>{t('admin.products.modal.descriptionVi')}</Form.Label>
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={10}
+                                                name="descriptionI18n.vi"
+                                                value={modalData.descriptionI18n.vi}
+                                                onChange={handleModalChange}
+                                                required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.titleVi')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="titleI18n.vi"
-                                        value={modalData.titleI18n.vi}
+                                    <Form.Check
+                                        type="checkbox"
+                                        label={t('admin.products.modal.featured')}
+                                        name="featured"
+                                        checked={modalData.featured}
                                         onChange={handleModalChange}
-                                        required
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.author')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="author"
-                                        value={modalData.author}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.category')}</Form.Label>
-                                    <Form.Select
-                                        name="category"
-                                        value={modalData.category}
-                                        onChange={handleModalChange}
-                                    >
-                                        <option value="">{t('admin.products.modal.selectCategory')}</option>
-                                        {categories.map(cat => (
-                                            <option key={cat._id} value={cat.name}>
-                                                {getCategoryLabel(cat.name, t, i18n)}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.isbn')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="isbn"
-                                        value={modalData.isbn}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.price')}</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        step="0.01"
-                                        name="price"
-                                        value={modalData.price}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.stock')}</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        name="stock"
-                                        value={modalData.stock}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.descriptionEn')}</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        name="descriptionI18n.en"
-                                        value={modalData.descriptionI18n.en}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('admin.products.modal.descriptionVi')}</Form.Label>
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        name="descriptionI18n.vi"
-                                        value={modalData.descriptionI18n.vi}
-                                        onChange={handleModalChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Form.Group className="mb-3">
-                            <Form.Check
-                                type="checkbox"
-                                label={t('admin.products.modal.featured')}
-                                name="featured"
-                                checked={modalData.featured}
-                                onChange={handleModalChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('admin.products.modal.coverImage')}</Form.Label>
-                            <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const files = e.target.files;
-                                    if (files && files[0]) {
-                                        setCoverImageFile(files[0]);
-                                    }
-                                }}
-                            />
-                            <Form.Text className="text-muted">
-                                {t('admin.products.modal.coverHint')}
-                            </Form.Text>
-                        </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseModal}>

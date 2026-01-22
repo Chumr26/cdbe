@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Row, Col, Card, Button, Table, Modal, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaMinus, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
@@ -12,6 +12,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import { formatMoney } from '../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../utils/i18n';
+import { resolveAssetUrl } from '../utils/image';
 
 const CartPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -37,11 +38,7 @@ const CartPage: React.FC = () => {
         return fallback;
     };
 
-    useEffect(() => {
-        loadCart();
-    }, []);
-
-    const loadCart = async () => {
+    const loadCart = useCallback(async () => {
         try {
             const response = await cartAPI.getCart();
             setCart(response.data);
@@ -61,7 +58,11 @@ const CartPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        loadCart();
+    }, [loadCart]);
 
     const applyCoupon = async () => {
         if (!couponCode.trim()) return;
@@ -191,8 +192,8 @@ const CartPage: React.FC = () => {
                                                     <div className="d-flex align-items-center">
                                                         <img
                                                             src={
-                                                                item.productId.coverImage?.url ||
-                                                                item.productId.images?.[0] ||
+                                                                resolveAssetUrl(item.productId.coverImage?.url) ||
+                                                                resolveAssetUrl(item.productId.images?.[0]) ||
                                                                 'https://via.placeholder.com/60x80?text=No+Cover'
                                                             }
                                                             alt={itemTitle}

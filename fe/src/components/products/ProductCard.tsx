@@ -10,6 +10,7 @@ import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../../utils/i18n';
 import { getCategoryLabel } from '../../utils/categoryLabel';
+import { resolveAssetUrl } from '../../utils/image';
 
 interface ProductCardProps {
     product: Product;
@@ -28,12 +29,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     // Smart image source selection: API cover > uploaded cover > legacy images > placeholder
     const getImageSource = () => {
         if (product.coverImage?.url) {
-            return product.coverImage.url;
+            return resolveAssetUrl(product.coverImage.url);
         }
         if (product.images && product.images.length > 0) {
-            return product.images[0];
+            return resolveAssetUrl(product.images[0]);
         }
-        return 'https://via.placeholder.com/300x400?text=No+Cover';
+        return 'https://placehold.co/300x500?text=No+Cover';
     };
 
     const handleAddToCart = async () => {

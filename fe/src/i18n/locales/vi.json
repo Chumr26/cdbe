@@ -481,6 +481,7 @@
         "featured": "Sản phẩm nổi bật",
         "coverImage": "Ảnh bìa",
         "coverHint": "Tải ảnh bìa tùy chỉnh hoặc để trống để lấy từ API theo ISBN",
+        "coverUrl": "URL ảnh bìa",
         "save": "Lưu sản phẩm",
         "saving": "Đang lưu...",
         "cancel": "Hủy"

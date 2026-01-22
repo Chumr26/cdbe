@@ -481,6 +481,7 @@
                 "featured": "Featured Product",
                 "coverImage": "Cover Image",
                 "coverHint": "Upload a custom cover image, or leave empty to fetch from API using ISBN",
+                "coverUrl": "Cover URL",
                 "save": "Save Product",
                 "saving": "Saving...",
                 "cancel": "Cancel"
