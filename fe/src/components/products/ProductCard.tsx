@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../../utils/i18n';
+import { getCategoryLabel } from '../../utils/categoryLabel';
 
 interface ProductCardProps {
     product: Product;
@@ -50,44 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         }
     };
 
-    const getCategoryLabel = (rawCategory: string) => {
-        const trimmed = rawCategory.trim();
-        if (!trimmed) return rawCategory;
-
-        const normalized = trimmed
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/_+/g, '-')
-            .replace(/[^a-z0-9-]/g, '');
-
-        const key = (() => {
-            if (trimmed === 'nonFiction') return 'nonFiction';
-            if (trimmed === 'selfHelp') return 'selfHelp';
-
-            switch (normalized) {
-                case 'non-fiction':
-                    return 'nonFiction';
-                case 'self-help':
-                    return 'selfHelp';
-                case 'childrens':
-                case 'children':
-                case 'childrens-books':
-                    return 'children';
-                default:
-                    return normalized;
-            }
-        })();
-
-        const footerKey = `footer.categories.${key}`;
-        if (i18n.exists(footerKey)) return t(footerKey);
-
-        const homeKey = `home.categories.${key}`;
-        if (i18n.exists(homeKey)) return t(homeKey);
-
-        return rawCategory;
-    };
-
-    const categoryLabel = getCategoryLabel(product.category);
+    const categoryLabel = getCategoryLabel(product.category, t, i18n);
 
     return (
         <Card className="h-100 shadow-sm hover-shadow product-card">

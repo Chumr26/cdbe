@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Pagination } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { getCategoryLabel } from '../utils/categoryLabel';
 import { productsAPI } from '../api/products.api';
 import type { Product, ProductFilters } from '../api/products.api';
 import { categoriesAPI } from '../api/categories.api';
@@ -146,7 +147,7 @@ const ProductsPage: React.FC = () => {
                                 <option value="">{t('products.allCategories')}</option>
                                 {categories.map((cat) => (
                                     <option key={cat._id} value={cat.name}>
-                                        {cat.name}
+                                        {getCategoryLabel(cat.name, t, i18n)}
                                     </option>
                                 ))}
                             </Form.Select>

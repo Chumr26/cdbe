@@ -1032,6 +1032,327 @@ async function seedData() {
                     vi: `Where the Wild Things Are là cuốn sách tranh ngắn nhưng giàu chiều sâu cảm xúc. Max, sau khi bị phạt vì quậy phá, tưởng tượng mình ra khơi đến vùng đất của những quái vật hoang dã và trở thành vua của chúng. Những “wild things” gầm gừ và nhe răng, nhưng Max thuần phục chúng chỉ bằng một cái nhìn, cho thấy trí tưởng tượng có thể biến nỗi sợ thành sức mạnh. Sau buổi “vũ hội hoang dã,” Max cảm thấy cô đơn và quyết định trở về nhà, nơi bữa ăn nóng đang chờ. Maurice Sendak diễn tả trọn vẹn cảm xúc tuổi thơ—giận dữ, bướng bỉnh, ngạc nhiên và khát khao được yêu thương—mà không dạy đời. Lời văn tối giản và minh họa biểu cảm tạo khoảng trống để người đọc tự cảm nhận. Cuốn sách tôn vinh trí tưởng tượng và khẳng định rằng tình yêu vẫn ở đó ngay cả sau xung đột. Sự ngắn gọn chính là ma thuật của nó, khiến người đọc muốn đọc đi đọc lại. Đây là tác phẩm kinh điển đoạt huy chương Caldecott, vẫn chạm đến cả trẻ em lẫn người lớn.`
                 }
             },
+            // Vietnamese Books
+            {
+                titleI18n: {
+                    en: "Cricket's Adventures",
+                    vi: 'Dế Mèn Phiêu Lưu Ký'
+                },
+                isbn: '9785612345012',
+                author: 'Tô Hoài',
+                category: 'Children',
+                publisher: 'Kim Dong Publishing House',
+                publicationYear: 1941,
+                pageCount: 208,
+                descriptionI18n: {
+                    en: `A proud young cricket, Dế Mèn, leaves his burrow to see the wider world and learn what it means to be strong and kind. He begins as a boastful hero who enjoys showing off his speed and voice, but a careless prank brings sorrow to a gentle neighbor, the weak Dế Choắt. Shaken by guilt, Dế Mèn sets out on a journey to make amends and grow into a wiser, braver friend to those he meets. Along the way he befriends the loyal Dế Trũi, crosses rivers, faces predators, and witnesses the fragile balance of the insect world. Each adventure offers a new lesson about respect, courage, and responsibility. The story blends lively humor with vivid images of fields, ponds, and village life, while quietly teaching empathy and civic spirit. It is a timeless tale of growing up, learning from mistakes, and choosing compassion over pride.`,
+                    vi: `Dế Mèn, một chú dế trẻ đầy kiêu hãnh, rời hang để nhìn thấy thế giới rộng lớn và hiểu thế nào là mạnh mẽ và tử tế. Ban đầu, cậu khoe khoang giọng hát và sức mạnh, nhưng một trò đùa vô ý đã khiến người hàng xóm yếu ớt là Dế Choắt gặp bi kịch. Day dứt và ân hận, Dế Mèn lên đường chuộc lỗi, dần trở thành người bạn can đảm và biết nghĩ cho người khác. Trên hành trình, cậu kết thân với Dế Trũi trung thành, băng qua sông ngòi, đối mặt kẻ săn mồi, và chứng kiến sự mong manh của thế giới loài côn trùng. Mỗi cuộc phiêu lưu mở ra bài học mới về tôn trọng, dũng cảm và trách nhiệm. Truyện vừa hài hước vừa sinh động, khắc họa đồng ruộng, ao hồ và đời sống làng quê, đồng thời nhẹ nhàng dạy lòng trắc ẩn và tinh thần cộng đồng. Đây là câu chuyện trưởng thành bất hủ về sai lầm, sửa chữa và chọn lòng nhân ái.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'The Southern Forest Land',
+                    vi: 'Đất Rừng Phương Nam'
+                },
+                isbn: '9785612345013',
+                author: 'Đoàn Giỏi',
+                category: 'Children',
+                publisher: 'Tre Publishing House',
+                publicationYear: 1957,
+                pageCount: 320,
+                descriptionI18n: {
+                    en: `Set in the lush waterways of the Mekong Delta, this novel follows young An as he is separated from his family during turbulent times. Guided by kind strangers, he journeys through floating markets, mangrove forests, and wide rivers, learning the rhythms of life in the southern countryside. An meets hunters, fishermen, and brave resistance fighters who protect the land and its people. He witnesses both the beauty of nature and the harshness of conflict, yet hope and solidarity persist in each village he visits. The story celebrates the richness of Southern culture, with vivid descriptions of birds, fish, and the vast forested wetlands. Through An's eyes, readers experience courage, loyalty, and the strength of community. The narrative blends adventure with a gentle coming of age, showing how a child can grow resilient in difficult circumstances. It remains a beloved portrait of Vietnamese landscapes and human kindness, revealing that home is not only a place, but also the bonds formed along the journey.`,
+                    vi: `Lấy bối cảnh vùng sông nước Nam Bộ, tác phẩm kể về cậu bé An bị lạc gia đình trong những năm biến động. Nhờ người dân tốt bụng giúp đỡ, An đi qua chợ nổi, rừng đước, sông ngòi mênh mông và học được nhịp sống bình dị của miền quê phương Nam. Cậu gặp thợ săn, ngư dân và những người kháng chiến can trường luôn bảo vệ đất và dân. An chứng kiến vẻ đẹp thiên nhiên cùng sự khắc nghiệt của chiến tranh, nhưng ở đâu cũng có tình người và hy vọng. Truyện ca ngợi văn hóa Nam Bộ với hình ảnh chim muông, cá tôm và rừng ngập mặn rộng lớn. Qua ánh nhìn của An, người đọc cảm nhận lòng dũng cảm, sự trung thành và sức mạnh cộng đồng. Đây là câu chuyện phiêu lưu pha trưởng thành, cho thấy một đứa trẻ có thể lớn lên kiên cường trong khó khăn. Tác phẩm vẫn là bức tranh sống động về cảnh quan Việt Nam và lòng nhân hậu, nhắc rằng quê hương còn là những mối gắn kết trên đường đời.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Wild Childhood',
+                    vi: 'Tuổi Thơ Dữ Dội'
+                },
+                isbn: '9785612345014',
+                author: 'Phùng Quán',
+                category: 'Children',
+                publisher: 'Kim Dong Publishing House',
+                publicationYear: 1988,
+                pageCount: 560,
+                descriptionI18n: {
+                    en: `This powerful novel tells the story of a group of young scouts in the resistance, children who grow up too quickly during wartime. The boys, led by brave and spirited friends, carry messages, guide soldiers, and protect their villages. They are mischievous and playful, yet they face danger with surprising courage. The narrative balances humor and sorrow as friendships deepen and sacrifices become inevitable. Each character has a distinct voice, from the daring Mừng to the thoughtful Lượm, showing different ways children respond to fear and duty. The book highlights loyalty, idealism, and the longing for peace, while never romanticizing the cost of conflict. Despite the harsh setting, the young heroes keep their dreams, jokes, and compassion alive. The story is both a tribute to youthful bravery and a reminder of the human price of war. It is often praised for its vivid scenes, emotional honesty, and its ability to make readers cherish childhood, even when it is forged under fire.`,
+                    vi: `Tác phẩm kể về những đội viên thiếu niên trong kháng chiến, những đứa trẻ phải lớn nhanh giữa chiến tranh. Các cậu bé mang thư, dẫn đường, bảo vệ làng xóm, vừa tinh nghịch vừa gan dạ trước hiểm nguy. Câu chuyện đan xen tiếng cười và nước mắt khi tình bạn thêm sâu và những hy sinh trở nên không thể tránh khỏi. Mỗi nhân vật đều có cá tính riêng, từ Mừng táo bạo đến Lượm trầm lặng, cho thấy nhiều cách trẻ thơ đối diện với sợ hãi và trách nhiệm. Truyện đề cao lòng trung thành, lý tưởng và khát vọng hòa bình, đồng thời không né tránh cái giá của xung đột. Dù hoàn cảnh khắc nghiệt, các em vẫn giữ ước mơ, sự hồn nhiên và lòng nhân ái. Đây vừa là bản hùng ca về tuổi trẻ dũng cảm, vừa là lời nhắc về mất mát của chiến tranh. Tác phẩm được yêu mến nhờ những cảnh sắc sống động, cảm xúc chân thật và khả năng khiến người đọc trân trọng tuổi thơ, dù tuổi thơ ấy được rèn trong lửa đạn.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Please Give Me a Ticket to Childhood',
+                    vi: 'Cho Tôi Xin Một Vé Đi Tuổi Thơ'
+                },
+                isbn: '9785612345015',
+                author: 'Nguyễn Nhật Ánh',
+                category: 'Children',
+                publisher: 'Tre Publishing House',
+                publicationYear: 2007,
+                pageCount: 224,
+                descriptionI18n: {
+                    en: `Through warm, witty memories, this novel revisits childhood as a place of imagination and quiet rebellion. The narrator, a grown adult, recalls his days with close friends, when games, secrets, and small misunderstandings felt immense. The children invent their own rules for the world, rename everyday objects, and test the limits of adult logic with playful curiosity. Under the humor lies a gentle reflection on family, friendship, and the passage of time. The story captures the innocence of thinking that every day can be an adventure, while also showing how care and guidance shape young hearts. The language is simple and tender, filled with scenes of school, neighborhood alleys, and evening meals. Readers are invited to remember their own first joys and disappointments, and to understand that growing up is both necessary and bittersweet. The book is beloved for its charm, empathy, and its ability to make adults smile while children feel truly seen. It is a nostalgic ticket back to the places where wonder began.`,
+                    vi: `Cuốn sách đưa người đọc trở về tuổi thơ qua những ký ức ấm áp và dí dỏm. Người kể chuyện là một người lớn nhớ lại quãng ngày bên bạn bè thân thiết, khi trò chơi, bí mật và những hiểu lầm nhỏ bỗng trở nên to lớn. Những đứa trẻ tự đặt luật cho thế giới, đặt tên mới cho đồ vật quen thuộc và thử thách logic của người lớn bằng trí tò mò hồn nhiên. Dưới lớp hài hước là suy ngẫm dịu dàng về gia đình, tình bạn và dòng thời gian. Truyện ghi lại sự trong trẻo của cảm giác mỗi ngày đều là một chuyến phiêu lưu, đồng thời cho thấy sự chăm sóc và dạy dỗ đã nuôi dưỡng tâm hồn trẻ nhỏ. Văn phong giản dị, dịu ngọt với cảnh lớp học, ngõ xóm, bữa cơm chiều. Người đọc được mời nhớ lại những niềm vui và hụt hẫng đầu đời, và hiểu rằng lớn lên vừa cần thiết vừa man mác. Tác phẩm được yêu mến nhờ nét duyên, lòng cảm thông, khiến người lớn mỉm cười còn trẻ em thấy mình được thấu hiểu. Đây là tấm vé hoài niệm về nơi phép màu bắt đầu.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'I Saw Yellow Flowers on the Green Grass',
+                    vi: 'Tôi Thấy Hoa Vàng Trên Cỏ Xanh'
+                },
+                isbn: '9785612345016',
+                author: 'Nguyễn Nhật Ánh',
+                category: 'Children',
+                publisher: 'Tre Publishing House',
+                publicationYear: 2010,
+                pageCount: 256,
+                descriptionI18n: {
+                    en: `In a quiet countryside village, brothers Thiều and Tường grow up amid rice fields, summer rains, and the gentle rhythm of rural life. Thiều, the older brother, sometimes feels jealous and clumsy in the face of Tường's kindness and talent, yet he loves him deeply. The story follows their everyday adventures: chasing kites, building forts, and discovering first crushes. As poverty and hardship brush against their family, the boys learn about sacrifice, forgiveness, and the value of shared dreams. A tender friendship with the girl Mận adds warmth and innocence, while moments of misunderstanding reveal how fragile childhood can be. The novel paints a vivid picture of Vietnamese rural life, filled with color, taste, and sound. It balances humor with quiet sadness, showing how small choices can shape a person's heart. By the end, readers are left with a bittersweet glow, a memory of yellow flowers on green grass, and a reminder that love between siblings can endure even through mistakes.`,
+                    vi: `Ở một làng quê yên ả, hai anh em Thiều và Tường lớn lên giữa ruộng lúa, mưa hè và nhịp sống bình dị. Thiều, người anh, đôi lúc ganh tị và vụng về trước sự hiền lành, tài năng của em, nhưng tình thương dành cho Tường vẫn rất sâu đậm. Truyện theo bước những trò chơi hằng ngày: thả diều, dựng lều, khám phá rung động đầu đời. Khi nghèo khó và biến cố chạm vào gia đình, hai anh em học về hy sinh, tha thứ và giá trị của những ước mơ chung. Tình bạn với cô bé Mận mang lại sự ấm áp, còn những hiểu lầm nhỏ cho thấy tuổi thơ mong manh đến mức nào. Tác phẩm vẽ nên bức tranh nông thôn Việt Nam rực rỡ sắc màu, hương vị và âm thanh. Truyện cân bằng tiếng cười với nỗi buồn lặng, cho thấy lựa chọn nhỏ có thể định hình trái tim con người. Kết thúc để lại dư vị bâng khuâng, ký ức hoa vàng trên cỏ xanh và lời nhắc rằng tình anh em có thể bền bỉ dù đi qua sai lầm.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Blue Eyes',
+                    vi: 'Mắt Biếc'
+                },
+                isbn: '9786041123456',
+                author: 'Nguyễn Nhật Ánh',
+                category: 'Romance',
+                publisher: 'Nhà Xuất Bản Trẻ',
+                publicationYear: 1990,
+                pageCount: 320,
+                descriptionI18n: {
+                    en: `Set in a quiet Vietnamese village, this tender romance follows the lifelong affection of a shy boy for a bright-eyed girl who seems both near and impossibly distant. The story traces their childhood bond, the migrations to the city, and the years when hope becomes a habit more than a promise. Through gentle humor and wistful scenes, the novel portrays the ache of first love, the courage to keep caring, and the pain of watching someone choose a different path. Family expectations, small-town gossip, and the temptations of urban life press on each character, shaping decisions that ripple across generations. The narrator's voice is reflective and warm, never bitter, revealing the beauty of devotion even when it is unreturned. A portrait of rural life and enduring feeling, the book invites readers to value the quiet moments that define a heart. It is a story about time, memory, and the complicated grace of loving someone without owning their future.`,
+                    vi: `Lấy bối cảnh một làng quê yên ả, câu chuyện tình cảm này theo chân một cậu bé rụt rè dành trọn đời thương nhớ cho một cô gái có đôi mắt vừa gần gũi vừa xa vời. Tác phẩm đi qua tuổi thơ chung, những lần lên thành phố, và những năm tháng khi hy vọng trở thành thói quen hơn là lời hứa. Bằng giọng kể dịu dàng, hóm hỉnh mà man mác, tiểu thuyết khắc họa nỗi đau của mối tình đầu, sự can đảm để tiếp tục quan tâm, và cảm giác bất lực khi người mình thương chọn một lối rẽ khác. Kỳ vọng gia đình, dư luận xóm làng, cùng sức hút đô thị tác động lên mỗi nhân vật, tạo nên những quyết định lan rộng qua nhiều thế hệ. Người kể chuyện trầm tĩnh và ấm áp, không trách móc, cho thấy vẻ đẹp của sự thủy chung ngay cả khi không được đáp lại. Bức tranh đời sống thôn quê và tình cảm bền bỉ này nhắc người đọc trân trọng những khoảnh khắc âm thầm định hình trái tim. Đó là câu chuyện về thời gian, ký ức, và sự thanh tao phức tạp của việc yêu mà không sở hữu tương lai của ai.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Dumb Luck',
+                    vi: 'Số Đỏ'
+                },
+                isbn: '9786041123457',
+                author: 'Vũ Trọng Phụng',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Văn Học',
+                publicationYear: 1936,
+                pageCount: 360,
+                descriptionI18n: {
+                    en: `This sharp satire follows a penniless urban drifter who rises to fame through a chain of absurd misunderstandings, exposing the vanity and hypocrisy of a society obsessed with status and Western manners. The narrative moves rapidly through salons, newspapers, and sporting clubs, each scene revealing how empty slogans and fashionable trends can overshadow truth. With quick wit and vivid caricature, the novel dissects social climbing, shallow philanthropy, and performative morality. The protagonist's success is accidental, yet the public turns him into a model of virtue, illustrating how reputations are manufactured. Beneath the humor lies a critique of colonial-era cultural confusion, where imported ideas are copied without substance and money can rewrite character. The story's energy, farcical twists, and memorable secondary figures make the satire both entertaining and unsettling. It warns that when a community values appearances over integrity, chance and deceit can become the guiding forces of public life.`,
+                    vi: `Tác phẩm trào phúng sắc sảo này kể về một kẻ lang thang nghèo khổ bất ngờ nổi danh nhờ chuỗi hiểu lầm lố bịch, qua đó lột tả sự phù phiếm và giả dối của một xã hội mê mẩn địa vị và lối sống Tây hóa. Câu chuyện chuyển nhanh qua các salon, tòa báo và câu lạc bộ thể thao, mỗi cảnh cho thấy khẩu hiệu rỗng và xu hướng thời thượng dễ dàng che lấp sự thật. Với bút pháp châm biếm mạnh và các chân dung biếm họa sống động, tiểu thuyết mổ xẻ thói leo thang xã hội, lòng nhân đạo hình thức và đạo đức trình diễn. Thành công của nhân vật chính chỉ là ngẫu nhiên, nhưng đám đông biến anh ta thành biểu tượng mẫu mực, cho thấy danh tiếng có thể được chế tạo dễ dàng. Ẩn dưới tiếng cười là lời phê phán sự lẫn lộn văn hóa thời thuộc địa, khi ý tưởng du nhập bị sao chép thiếu nội dung và tiền bạc có thể viết lại nhân cách. Nhịp kể sôi nổi, các cú ngoặt hài hước cùng dàn nhân vật phụ đáng nhớ khiến tác phẩm vừa giải trí vừa bất an. Nó cảnh báo rằng khi cộng đồng tôn sùng bề ngoài hơn liêm chính, ngẫu nhiên và lừa dối có thể trở thành sức mạnh dẫn dắt đời sống công chúng.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'When the Lights Go Out',
+                    vi: 'Tắt Đèn'
+                },
+                isbn: '9786041123458',
+                author: 'Ngô Tất Tố',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Hội Nhà Văn',
+                publicationYear: 1939,
+                pageCount: 280,
+                descriptionI18n: {
+                    en: `This powerful realist novel depicts a rural woman's struggle to protect her family under crushing taxes and corrupt local authorities. As her household sinks into debt, she navigates a maze of village officials, lenders, and gossip, each demanding payment and compliance. The story shows the quiet courage of a mother forced to make heartbreaking choices, including selling possessions and enduring humiliation to keep her husband and children alive. Through stark detail, the author exposes the cruel machinery of oppression and the way poverty can erode dignity. Yet the heroine's resilience reveals a deep moral strength that refuses to be extinguished. The narrative balances social critique with intimate domestic scenes, portraying the emotional cost of injustice on ordinary lives. Tense, compassionate, and unsentimental, the book remains a landmark portrait of peasant hardship and the enduring hope for fairness in an unjust world.`,
+                    vi: `Tiểu thuyết hiện thực mạnh mẽ này khắc họa cuộc vật lộn của một người phụ nữ nông thôn để bảo vệ gia đình trước gánh thuế nặng nề và bộ máy cường hào. Khi mái nhà chìm sâu vào nợ nần, chị phải đối diện với hàng loạt quan viên, chủ nợ và lời đồn ác ý, tất cả đều đòi tiền và sự phục tùng. Câu chuyện cho thấy lòng can đảm thầm lặng của một người mẹ buộc phải lựa chọn đau đớn, bán đi tài sản và chịu nhục để giữ chồng con. Bằng chi tiết chân thực, tác giả phơi bày cơ chế áp bức tàn nhẫn và cách nghèo đói bào mòn phẩm giá. Tuy vậy, sự bền bỉ của nhân vật chính bộc lộ sức mạnh đạo đức không dễ bị dập tắt. Mạch kể cân bằng giữa phê phán xã hội và cảnh sinh hoạt gia đình, mô tả cái giá tinh thần của bất công lên đời sống bình thường. Căng thẳng, giàu trắc ẩn và không tô vẽ, tác phẩm trở thành bức chân dung tiêu biểu về nỗi khổ nông dân và khát vọng công bằng trong một thế giới bất công.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Chi Pheo',
+                    vi: 'Chí Phèo'
+                },
+                isbn: '9786041123459',
+                author: 'Nam Cao',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Kim Đồng',
+                publicationYear: 1941,
+                pageCount: 190,
+                descriptionI18n: {
+                    en: `This classic portrays a man pushed to the margins of his village until he becomes a feared outcast, then follows his brief return to humanity. Once a poor but honest laborer, he is ruined by abuse of power and returns as a drunken bully, isolated by the community that now defines him only by his rage. The narrative examines how social cruelty and systemic injustice can deform a person's identity, turning a victim into a symbol of menace. A chance encounter awakens his longing for a simple, decent life, revealing the fragile possibility of redemption. Yet the town's unforgiving judgment closes every door, and tragedy follows. With penetrating psychological insight and spare, evocative prose, the story questions who is responsible for moral collapse: the individual or the society that denies compassion. It remains a haunting reflection on dignity, exclusion, and the human need to be recognized as worthy.`,
+                    vi: `Tác phẩm kinh điển này khắc họa một con người bị dồn đến rìa làng quê cho đến khi trở thành kẻ bị sợ hãi, rồi dõi theo khoảnh khắc ngắn ngủi anh tìm lại tính người. Từng là một lao động nghèo nhưng lương thiện, anh bị quyền lực chèn ép và trở về như một kẻ say rượu hung hãn, bị cộng đồng cô lập và chỉ còn được định nghĩa bằng sự dữ dội. Câu chuyện phân tích cách sự tàn nhẫn xã hội và bất công hệ thống có thể biến dạng bản sắc, khiến nạn nhân trở thành biểu tượng đe dọa. Một cuộc gặp tình cờ đánh thức khát vọng sống tử tế, mở ra khả năng cứu rỗi mong manh. Thế nhưng, sự phán xét không khoan dung của làng xóm khép mọi cánh cửa, dẫn đến bi kịch. Với chiều sâu tâm lý sắc lạnh và văn phong cô đọng, tác phẩm đặt câu hỏi về trách nhiệm của sự sa ngã: cá nhân hay xã hội đã từ chối lòng trắc ẩn. Đây là suy tư ám ảnh về phẩm giá, sự loại trừ và nhu cầu được công nhận như một con người đáng giá.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Old Hac',
+                    vi: 'Lão Hạc'
+                },
+                isbn: '9786041123460',
+                author: 'Nam Cao',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Giáo Dục',
+                publicationYear: 1943,
+                pageCount: 160,
+                descriptionI18n: {
+                    en: `Centered on a poor widower and his beloved dog, this poignant tale explores honor, loneliness, and survival in a harsh rural economy. The old man lives with few possessions, saving every coin for his son who has left home to seek a better life. When hardship deepens, he makes a heartbreaking decision that reveals his stubborn integrity and his refusal to burden others. The story is told through a compassionate observer, whose reflections illuminate both the dignity and the despair of the countryside. Through simple scenes—shared meals, quiet conversations, and the care for a loyal animal—the narrative exposes how poverty can force people to choose between pride and hunger. It also celebrates the quiet goodness that persists even when life offers little. The ending is restrained yet devastating, leaving readers to consider the cost of honor in an unforgiving world. It remains a moving meditation on conscience, empathy, and the fragile bonds that keep people human.`,
+                    vi: `Câu chuyện cảm động này xoay quanh một lão góa nghèo và con chó thân thiết của mình, khám phá danh dự, cô đơn và cách sinh tồn trong nền kinh tế nông thôn khắc nghiệt. Lão sống với rất ít của cải, chắt chiu từng đồng cho người con trai đã rời quê tìm cuộc đời tốt hơn. Khi khó khăn chồng chất, lão đưa ra một quyết định đau lòng, bộc lộ sự chính trực cứng cỏi và ý chí không muốn làm phiền người khác. Truyện được kể qua một người quan sát giàu trắc ẩn, qua đó soi rọi cả phẩm giá lẫn tuyệt vọng của làng quê. Những cảnh đời giản dị—bữa ăn chung, câu chuyện thầm lặng, sự chăm sóc một con vật trung thành—phơi bày việc nghèo đói buộc con người chọn giữa lòng tự trọng và cái đói. Đồng thời, tác phẩm tôn vinh lòng tốt bình dị vẫn tồn tại dù cuộc sống khắc nghiệt. Kết thúc tiết chế nhưng đau xót, khiến người đọc suy ngẫm về cái giá của danh dự trong một thế giới thiếu khoan dung. Đây là suy tưởng sâu sắc về lương tâm, sự cảm thông và những mối dây mong manh giữ con người còn là con người.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'The Wife the Villagers Picked',
+                    vi: 'Vợ Nhặt'
+                },
+                isbn: '9786041123461',
+                author: 'Kim Lân',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Văn Học',
+                publicationYear: 1962,
+                pageCount: 128,
+                descriptionI18n: {
+                    en: `Set during the Great Famine of 1945, this short novel follows Tràng, a poor laborer who unexpectedly brings home a wife he “picks up” on a hungry street. The village is stunned, not only by the sudden marriage but also by the desperation that makes such a union possible. Through small, intimate scenes, the story portrays people living on the edge of starvation, yet still capable of tenderness and fragile hope. Tràng's mother greets the new bride with mixed shock and compassion, revealing the deep humanity that survives even in catastrophe. The narrative avoids melodrama, focusing instead on the quiet dignity of ordinary people. A shared bowl of thin porridge becomes a symbol of both hardship and the will to keep living. The novel shows that love, even when born from desperation, can restore a sense of purpose. It remains a moving testimony to resilience and the human need for family amid disaster.`,
+                    vi: `Lấy bối cảnh nạn đói năm 1945, truyện ngắn kể về Tràng, một anh dân nghèo bất ngờ “nhặt” được vợ giữa phố đói. Cả làng sửng sốt, không chỉ vì đám cưới bất ngờ mà còn vì cái đói đã đẩy con người vào những lựa chọn khắc nghiệt. Qua những cảnh đời nhỏ bé, tác phẩm khắc họa con người sống sát bên vực chết đói nhưng vẫn có thể dịu dàng và nuôi giữ hy vọng mong manh. Mẹ Tràng đón nàng dâu mới bằng sự ngỡ ngàng pha thương cảm, bộc lộ lòng nhân hậu tồn tại giữa thảm họa. Truyện không bi lụy mà tập trung vào phẩm giá thầm lặng của người nghèo. Bát cháo cám loãng trở thành biểu tượng của thiếu thốn nhưng cũng là ý chí sống. Tác phẩm cho thấy tình thương, dù nảy sinh từ tuyệt vọng, vẫn có thể đem lại mục đích sống. Đây là lời chứng cảm động về sức chịu đựng và nhu cầu có gia đình giữa tai ương.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Endless Field',
+                    vi: 'Cánh Đồng Bất Tận'
+                },
+                isbn: '9786041123462',
+                author: 'Nguyễn Ngọc Tư',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Trẻ',
+                publicationYear: 2005,
+                pageCount: 200,
+                descriptionI18n: {
+                    en: `This modern classic paints a stark, lyrical portrait of a father and his two children drifting across the Mekong Delta in a small boat. The family lives in isolation after the mother leaves, and the father's bitterness hardens into cruelty. As they move through endless fields and canals, the children witness both the beauty of the southern landscape and the violence hidden in broken hearts. The story is told with a quiet, restrained voice that intensifies its emotional weight. Moments of tenderness appear, but they are fragile, easily damaged by rage and shame. The novel explores themes of abandonment, survival, and the longing for a place to belong. It challenges romanticized images of rural life, showing instead the poverty and emotional hunger that can erode a family. Yet the narrative also offers a subtle path toward empathy, suggesting that understanding can grow even in barren ground. The result is a haunting, compassionate tale about wounds passed across generations.`,
+                    vi: `Tác phẩm hiện đại này vẽ nên bức tranh lạnh mà trữ tình về người cha và hai đứa con lênh đênh trên chiếc ghe nhỏ giữa đồng bằng sông Cửu Long. Gia đình sống biệt lập sau khi người mẹ bỏ đi, và sự cay đắng của người cha dần biến thành bạo lực. Trên những cánh đồng và kênh rạch mênh mông, bọn trẻ vừa chứng kiến vẻ đẹp miền sông nước vừa cảm nhận nỗi đau ẩn trong trái tim tan vỡ. Giọng kể bình tĩnh, tiết chế khiến cảm xúc càng nặng. Những khoảnh khắc dịu dàng vẫn xuất hiện, nhưng mong manh và dễ bị phá vỡ bởi giận dữ và xấu hổ. Truyện chạm đến chủ đề bị bỏ rơi, sinh tồn và khát vọng được thuộc về một nơi chốn. Nó thách thức hình ảnh lãng mạn về nông thôn, cho thấy nghèo khó và đói khát tình thương có thể làm mòn rã gia đình. Dù vậy, câu chuyện vẫn mở ra con đường thấu cảm, gợi ý rằng sự hiểu nhau có thể nảy mầm ngay cả trên mảnh đất cằn. Đây là truyện dài ám ảnh và giàu nhân hậu về những vết thương truyền qua nhiều thế hệ.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Distant Times',
+                    vi: 'Thời Xa Vắng'
+                },
+                isbn: '9786041123463',
+                author: 'Lê Lựu',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Hội Nhà Văn',
+                publicationYear: 1986,
+                pageCount: 360,
+                descriptionI18n: {
+                    en: `Set in the decades after war, this novel chronicles the life of Giang Minh Sài, a man shaped by village expectations, military duty, and a marriage arranged against his heart. The narrative follows his youth, battlefield experiences, and the return to a rural community that no longer feels like home. Sài struggles with guilt, desire, and the quiet pressure to conform, revealing the costs of sacrificing personal happiness to collective ideals. The book paints a detailed social panorama of northern Vietnam, from family rituals to bureaucratic meetings, highlighting how tradition and ideology can constrain individual choice. Its strength lies in psychological depth, showing a man torn between duty and authenticity. The prose is calm and reflective, allowing readers to feel the slow erosion of hope and the yearning for a different life. It is a thoughtful examination of how history can linger inside ordinary people, and how the past continues to shape present identities.`,
+                    vi: `Lấy bối cảnh những thập niên sau chiến tranh, tiểu thuyết theo chân Giang Minh Sài, người đàn ông bị định hình bởi kỳ vọng làng quê, nghĩa vụ quân ngũ và cuộc hôn nhân không từ trái tim. Câu chuyện đi qua tuổi trẻ, chiến trường và ngày trở lại, khi quê nhà đã trở thành một nơi xa lạ. Sài vật lộn giữa mặc cảm, khát vọng và áp lực phải tuân thủ, cho thấy cái giá của việc hy sinh hạnh phúc cá nhân cho lý tưởng tập thể. Tác phẩm phác họa bức tranh xã hội miền Bắc với nghi thức gia đình, cuộc họp cơ quan và những ràng buộc truyền thống lẫn ý thức hệ. Điểm mạnh nằm ở chiều sâu tâm lý, khắc họa một con người bị xé giữa bổn phận và bản ngã. Văn phong bình tĩnh, chiêm nghiệm, khiến người đọc cảm nhận sự bào mòn dần dần của hy vọng và nỗi khao khát sống khác. Đây là suy tư tinh tế về cách lịch sử bám rễ trong đời sống bình thường và định hình bản sắc hiện tại.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'The Sorrow of War',
+                    vi: 'Nỗi Buồn Chiến Tranh'
+                },
+                isbn: '9786041123464',
+                author: 'Bảo Ninh',
+                category: 'History',
+                publisher: 'Nhà Xuất Bản Trẻ',
+                publicationYear: 1990,
+                pageCount: 336,
+                descriptionI18n: {
+                    en: `Told through fragmented memories, this novel follows Kiên, a veteran tasked with collecting the remains of fallen soldiers. His mission becomes a journey through grief, haunted battlefields, and the ruins of youth. The narrative refuses linear heroism, instead showing war as a lasting wound that reshapes love, friendship, and identity. Kiên's recollections move between brutal combat, tender romance, and the loneliness of peace that never quite feels peaceful. The language is lyrical yet raw, capturing how trauma distorts time and memory. The book challenges triumphant narratives by foregrounding loss, survivor's guilt, and the disorientation of returning home. It is not only a war story but also a meditation on art and storytelling—Kiên struggles to write, to find words that can hold the truth of what he witnessed. The result is a haunting, human portrait of a generation marked by conflict and the long shadow it casts over life.`,
+                    vi: `Được kể bằng những mảnh ký ức đứt đoạn, tiểu thuyết theo chân Kiên, một cựu binh làm nhiệm vụ thu gom hài cốt đồng đội. Công việc ấy trở thành hành trình đi qua nỗi đau, chiến trường ám ảnh và những tàn tích của tuổi trẻ. Truyện từ chối kiểu anh hùng tuyến tính, thay vào đó cho thấy chiến tranh như vết thương kéo dài, biến đổi tình yêu, tình bạn và bản sắc. Ký ức của Kiên đan xen giữa những trận đánh khốc liệt, mối tình dịu dàng và sự cô đơn của hòa bình không thật bình yên. Ngôn ngữ giàu chất thơ nhưng trần trụi, diễn tả cách chấn thương làm biến dạng thời gian và ký ức. Tác phẩm thách thức những tường thuật chiến thắng bằng việc đặt mất mát và mặc cảm sống sót vào trung tâm. Đây không chỉ là câu chuyện chiến tranh mà còn là suy tưởng về nghệ thuật và kể chuyện—Kiên loay hoay tìm lời để giữ lại sự thật. Kết quả là bức chân dung ám ảnh về một thế hệ bị chiến tranh khắc dấu và bóng đen kéo dài lên đời sống.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Wharf Without Men',
+                    vi: 'Bến Không Chồng'
+                },
+                isbn: '9786041123465',
+                author: 'Dương Hướng',
+                category: 'History',
+                publisher: 'Nhà Xuất Bản Hội Nhà Văn',
+                publicationYear: 1991,
+                pageCount: 360,
+                descriptionI18n: {
+                    en: `Set in a Northern village across decades of conflict, this novel centers on women who must carry families and traditions when men are absent or lost. The river wharf becomes a symbol of waiting and endurance, as characters navigate love, widowhood, and the weight of community judgment. The story blends wartime hardship with postwar disillusionment, revealing how private lives are reshaped by public history. Through multiple viewpoints, the novel explores desire, sacrifice, and the quiet rebellions of women who refuse to disappear. Its tone is both lyrical and unsentimental, capturing village rituals alongside the loneliness beneath them. The narrative shows how war fractures not only bodies but also relationships, leaving long echoes of grief and resilience. It is a richly textured portrait of rural Vietnam, emphasizing how ordinary people bear the hidden costs of national struggle. The book remains admired for its emotional breadth and its compassionate, unflinching look at the lives left behind.`,
+                    vi: `Lấy bối cảnh một làng quê Bắc Bộ qua nhiều thập niên chiến tranh, tiểu thuyết tập trung vào những người phụ nữ phải gánh gia đình và truyền thống khi đàn ông vắng mặt hoặc hy sinh. Bến sông trở thành biểu tượng của chờ đợi và bền bỉ, nơi các nhân vật đi qua tình yêu, góa bụa và sức nặng của dư luận làng xóm. Câu chuyện kết hợp gian khó thời chiến với nỗi vỡ mộng hậu chiến, cho thấy đời tư bị lịch sử công cộng định hình ra sao. Qua nhiều điểm nhìn, tác phẩm khám phá khát vọng, hy sinh và những phản kháng âm thầm của phụ nữ không chịu bị xóa mờ. Giọng văn vừa trữ tình vừa tỉnh táo, khắc họa nghi lễ làng quê cùng sự cô đơn ẩn dưới chúng. Truyện cho thấy chiến tranh không chỉ tàn phá thân xác mà còn xé rách các mối quan hệ, để lại tiếng vang dài của đau thương và kiên cường. Đây là bức tranh đậm đà về nông thôn Việt Nam, nhấn mạnh cái giá thầm lặng mà người dân thường phải gánh. Tác phẩm được yêu mến vì chiều sâu cảm xúc và cái nhìn nhân hậu nhưng không né tránh.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Footprints of Soldiers',
+                    vi: 'Dấu Chân Người Lính'
+                },
+                isbn: '9786041123466',
+                author: 'Nguyễn Minh Châu',
+                category: 'History',
+                publisher: 'Nhà Xuất Bản Quân Đội Nhân Dân',
+                publicationYear: 1985,
+                pageCount: 320,
+                descriptionI18n: {
+                    en: `This war novel follows a group of soldiers as they move through forests and villages, carrying both their missions and their private doubts. The narrative focuses on the inner lives of the fighters—their memories of home, their fears, and their small acts of kindness amid danger. Rather than glorifying battle, it emphasizes moral complexity and the cost of survival. The landscapes are vivid and physical, yet the real terrain is psychological, as each character wrestles with loyalty, loss, and the meaning of sacrifice. The story explores comradeship as a lifeline, but also shows how war isolates people from the lives they hope to return to. Through quiet moments between firefights, the novel questions what remains of a person after violence, and what traces of humanity can be preserved. It is both a tribute to endurance and a reflective critique of war's lasting imprint.`,
+                    vi: `Tiểu thuyết chiến tranh này theo chân một nhóm người lính băng rừng vượt suối, mang theo nhiệm vụ và những nghi ngại riêng. Trọng tâm đặt vào đời sống nội tâm của họ—ký ức về quê nhà, nỗi sợ, và những hành động tử tế nhỏ bé giữa hiểm nguy. Thay vì ca ngợi chiến trận, tác phẩm nhấn mạnh sự phức tạp đạo đức và cái giá của sinh tồn. Cảnh quan vừa sống động vừa khắc nghiệt, nhưng địa hình thật sự là tâm lý, nơi mỗi nhân vật vật lộn với lòng trung thành, mất mát và ý nghĩa của hy sinh. Tình đồng đội là điểm tựa, song chiến tranh cũng cô lập họ khỏi cuộc đời mà họ mong trở về. Qua những khoảnh khắc lặng giữa tiếng súng, truyện đặt câu hỏi con người còn lại gì sau bạo lực và những dấu vết nhân tính có thể giữ lại hay không. Đây vừa là lời tri ân sức chịu đựng vừa là suy tư thấm thía về dấu ấn lâu dài của chiến tranh.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: "Dang Thuy Tram's Diary",
+                    vi: 'Nhật Ký Đặng Thùy Trâm'
+                },
+                isbn: '9786041123467',
+                author: 'Đặng Thùy Trâm',
+                category: 'Biography',
+                publisher: 'Nhà Xuất Bản Hội Nhà Văn',
+                publicationYear: 2005,
+                pageCount: 300,
+                descriptionI18n: {
+                    en: `This diary records the life of a young doctor serving in wartime, revealing a voice that is earnest, compassionate, and deeply reflective. Written amid shortages and danger, the entries describe medical work under bombardment, the struggle to save lives, and the emotional cost of constant loss. The author writes about friendships, her longing for family, and the moral clarity she seeks in the chaos. Her words mix professional resolve with personal vulnerability, showing both strength and doubt. The diary's power lies in its immediacy: everyday details—rain-soaked trails, exhausted patients, a rare quiet night—become vivid windows into a generation's sacrifice. Readers witness a young woman's growth as she balances duty with the desire for a normal life. The text is not a political manifesto; it is a human document that honors courage and tenderness. It continues to resonate as a testament to empathy in extreme circumstances and the enduring value of care.`,
+                    vi: `Cuốn nhật ký ghi lại đời sống của một nữ bác sĩ trẻ nơi chiến trường, với giọng văn chân thành, giàu trắc ẩn và suy tư. Viết giữa thiếu thốn và nguy hiểm, các trang nhật ký kể về công việc cứu chữa dưới bom đạn, sự kiệt sức kéo dài và cái giá tinh thần của những mất mát liên tiếp. Tác giả nói về tình bạn, nỗi nhớ gia đình và khát vọng giữ gìn sự trong sáng đạo đức giữa hỗn loạn. Lời viết kết hợp quyết tâm nghề nghiệp với sự yếu đuối rất người, cho thấy cả sức mạnh lẫn hoài nghi. Sức mạnh của cuốn nhật ký nằm ở tính trực tiếp: những chi tiết thường ngày—đường mưa lầy lội, bệnh nhân mệt lả, một đêm yên hiếm hoi—trở thành cửa sổ sống động vào sự hy sinh của một thế hệ. Người đọc chứng kiến sự trưởng thành của một cô gái vừa làm tròn nhiệm vụ vừa khao khát đời sống bình thường. Đây không phải khẩu hiệu chính trị, mà là tài liệu nhân bản tôn vinh lòng dũng cảm và sự dịu dàng. Tác phẩm vẫn lay động như lời chứng về sự đồng cảm trong hoàn cảnh khốc liệt và giá trị bền vững của chăm sóc.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Prison Diary',
+                    vi: 'Nhật Ký Trong Tù'
+                },
+                isbn: '9786041123468',
+                author: 'Hồ Chí Minh',
+                category: 'History',
+                publisher: 'Nhà Xuất Bản Chính Trị Quốc Gia',
+                publicationYear: 1943,
+                pageCount: 200,
+                descriptionI18n: {
+                    en: `Written in prison, this collection of poems and notes reflects resilience, discipline, and a clear-eyed view of suffering. The verses describe daily hardships—hunger, cold, illness, and the monotony of confinement—yet they also celebrate the endurance of the human spirit. The voice is calm and observant, turning small moments into lessons about patience and inner freedom. The work balances realism with hope, suggesting that dignity can be preserved even in captivity. The poems use simple imagery—moonlight, mountains, footsteps—to convey a broader philosophy of perseverance. Readers encounter a mind that refuses despair, instead transforming adversity into reflection and resolve. The diary serves both as a personal testimony and a historical record of imprisonment during turbulent times. Its tone is humane and measured, avoiding bitterness while acknowledging pain. For many, it remains a source of inspiration about steadfastness and the capacity to find light in the darkest conditions.`,
+                    vi: `Được viết trong nhà tù, tập thơ và ghi chép này phản chiếu nghị lực, kỷ luật và cái nhìn tỉnh táo trước khổ đau. Những câu thơ mô tả gian khổ hằng ngày—đói rét, bệnh tật, sự đơn điệu của giam cầm—nhưng đồng thời tôn vinh sức chịu đựng của tinh thần con người. Giọng viết bình tĩnh, quan sát, biến những khoảnh khắc nhỏ thành bài học về kiên nhẫn và tự do nội tâm. Tác phẩm cân bằng hiện thực với hy vọng, cho thấy phẩm giá vẫn có thể được giữ vững ngay trong cảnh tù đày. Hình ảnh thơ mộc mạc—ánh trăng, núi non, bước chân—mở ra một triết lý bền bỉ. Người đọc gặp một tâm trí không chịu tuyệt vọng, biết chuyển nghịch cảnh thành suy ngẫm và quyết tâm. Tập nhật ký vừa là lời chứng cá nhân vừa là tư liệu lịch sử về những năm tháng tù ngục. Giọng điệu nhân hậu, chừng mực, không cay đắng nhưng không che giấu đau thương. Với nhiều người, đây là nguồn cảm hứng về sự kiên định và khả năng tìm ánh sáng trong điều kiện tối tăm nhất.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Old Path White Clouds',
+                    vi: 'Đường Xưa Mây Trắng'
+                },
+                isbn: '9786041123469',
+                author: 'Thích Nhất Hạnh',
+                category: 'Non-Fiction',
+                publisher: 'Nhà Xuất Bản Văn Học',
+                publicationYear: 1994,
+                pageCount: 560,
+                descriptionI18n: {
+                    en: `This narrative biography of the Buddha is written in a gentle, story-driven style that brings ancient teachings to life. The book follows Siddhartha's journey from a sheltered prince to an awakened teacher, emphasizing compassion, mindfulness, and the search for understanding. Historical context blends with imaginative scenes, creating a vivid, approachable account of early Buddhist communities. The author avoids dogma, focusing instead on practical insight and the human challenges faced by the Buddha and his followers. Themes of nonviolence, interdependence, and inner freedom run throughout the narrative. The prose is calm and clear, inviting readers into contemplative moments rather than abstract theology. It also highlights the social realities of the time—poverty, caste, and conflict—showing how the Buddha's message responded to suffering. The result is both a spiritual biography and a guide to mindful living, respected for its warmth and accessibility.`,
+                    vi: `Cuốn tiểu sử kể chuyện về Đức Phật được viết bằng giọng văn nhẹ nhàng, giàu tính tự sự, giúp giáo lý cổ xưa trở nên gần gũi. Tác phẩm theo hành trình của Siddhartha từ một hoàng tử được che chở đến bậc giác ngộ, nhấn mạnh lòng từ bi, chánh niệm và khát vọng hiểu biết. Bối cảnh lịch sử hòa quyện với những cảnh tượng giàu tưởng tượng, tạo nên bức tranh sống động về cộng đồng Phật giáo sơ kỳ. Tác giả tránh giáo điều, tập trung vào cái nhìn thực tiễn và những thách thức rất người mà Đức Phật và các đệ tử phải đối diện. Các chủ đề bất bạo động, tương tức và tự do nội tâm xuyên suốt câu chuyện. Văn phong trong sáng, điềm tĩnh, mời người đọc bước vào những khoảnh khắc chiêm niệm thay vì lý thuyết trừu tượng. Sách cũng phản ánh thực tại xã hội thời đó—nghèo đói, giai cấp, xung đột—cho thấy thông điệp của Đức Phật đáp ứng nỗi khổ như thế nào. Kết quả là một tiểu sử tâm linh đồng thời là cẩm nang sống chánh niệm, được trân trọng vì sự ấm áp và dễ tiếp cận.`,
+                }
+            },
+            {
+                titleI18n: {
+                    en: 'Understanding the Heart',
+                    vi: 'Hiểu Về Trái Tim'
+                },
+                isbn: '9786041123470',
+                author: 'Minh Niệm',
+                category: 'Self-Help',
+                publisher: 'Nhà Xuất Bản Trẻ',
+                publicationYear: 2011,
+                pageCount: 320,
+                descriptionI18n: {
+                    en: `This self-help book combines mindfulness and psychology to explore common emotional wounds such as anger, jealousy, fear, and loneliness. It invites readers to observe their feelings without judgment, understand their roots, and respond with compassion. The author uses simple language and relatable examples from daily life, making complex inner work approachable. Rather than promising quick fixes, the book encourages steady practice—breathing, reflection, and mindful listening—to heal the heart. It emphasizes responsibility for one's reactions while also acknowledging the need for kindness toward oneself. The structure is chapter-based, each focusing on a specific emotion or relationship challenge, offering practical guidance and gentle insights. Readers are guided to cultivate gratitude and empathy, and to transform suffering into understanding. The tone is calm and reassuring, like a mentor speaking from lived experience. For many Vietnamese readers, it has become a trusted companion in navigating modern stress and building emotional resilience.`,
+                    vi: `Cuốn sách kỹ năng này kết hợp chánh niệm và tâm lý học để khám phá những vết thương cảm xúc thường gặp như giận dữ, ghen tị, sợ hãi và cô đơn. Tác giả mời người đọc quan sát cảm xúc không phán xét, hiểu nguồn gốc và đáp lại bằng lòng từ bi. Văn phong giản dị, ví dụ gần gũi với đời sống giúp công việc nội tâm trở nên dễ tiếp cận. Thay vì hứa hẹn giải pháp nhanh, sách khuyến khích thực hành đều đặn—hơi thở, chiêm nghiệm và lắng nghe chánh niệm—để chữa lành. Tác phẩm nhấn mạnh trách nhiệm với phản ứng của bản thân, đồng thời ghi nhận nhu cầu đối xử tử tế với chính mình. Mỗi chương tập trung vào một cảm xúc hay thách thức quan hệ, đưa ra hướng dẫn thực tế và gợi ý nhẹ nhàng. Người đọc được dẫn dắt để nuôi dưỡng lòng biết ơn, sự thấu cảm và chuyển hóa khổ đau thành hiểu biết. Giọng điệu điềm tĩnh, như lời người thầy chia sẻ từ trải nghiệm. Với nhiều độc giả Việt Nam, đây là người bạn đồng hành đáng tin trong việc đối diện áp lực hiện đại và xây dựng sức bền cảm xúc.`,
+                }
+            },
         ];
 
         const allProducts = [];

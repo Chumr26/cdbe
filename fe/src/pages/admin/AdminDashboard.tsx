@@ -23,6 +23,7 @@ import ErrorMessage from '../../components/common/ErrorMessage';
 import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../../utils/i18n';
+import { getCategoryLabel } from '../../utils/categoryLabel';
 
 const AdminDashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -413,7 +414,7 @@ const AdminDashboard: React.FC = () => {
                                         <tr key={product._id}>
                                             <td>{getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}</td>
                                             <td>{product.author}</td>
-                                            <td>{product.category}</td>
+                                            <td>{getCategoryLabel(product.category, t, i18n)}</td>
                                             <td>
                                                 <span className="badge bg-danger">{t('admin.dashboard.lowStockTable.left', { count: product.stock })}</span>
                                             </td>

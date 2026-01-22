@@ -10,6 +10,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/currency';
 import { getLocalizedText } from '../../utils/i18n';
+import { getCategoryLabel } from '../../utils/categoryLabel';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -252,7 +253,11 @@ const AdminProducts: React.FC = () => {
                                     <tr key={product._id}>
                                         <td>{getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}</td>
                                         <td>{product.author}</td>
-                                        <td><span className="badge bg-info text-dark">{product.category}</span></td>
+                                        <td>
+                                            <span className="badge bg-info text-dark">
+                                                {getCategoryLabel(product.category, t, i18n)}
+                                            </span>
+                                        </td>
                                         <td>{displayPrice(product)}</td>
                                         <td>
                                             <span className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
@@ -362,7 +367,9 @@ const AdminProducts: React.FC = () => {
                                     >
                                         <option value="">{t('admin.products.modal.selectCategory')}</option>
                                         {categories.map(cat => (
-                                            <option key={cat._id} value={cat.name}>{cat.name}</option>
+                                            <option key={cat._id} value={cat.name}>
+                                                {getCategoryLabel(cat.name, t, i18n)}
+                                            </option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>

@@ -140,7 +140,10 @@
       "science": "Khoa học",
       "technology": "Công nghệ",
       "selfHelp": "Self-Help",
-      "history": "Lịch sử"
+      "history": "Lịch sử",
+      "biography": "Tiểu sử",
+      "romance": "Lãng mạn",
+      "thriller": "Giật gân"
     }
   },
   "products": {
@@ -347,7 +350,10 @@
       "nonFiction": "Phi hư cấu",
       "selfHelp": "Kỹ năng",
       "children": "Thiếu nhi",
-      "academic": "Học thuật"
+      "academic": "Học thuật",
+      "biography": "Tiểu sử",
+      "romance": "Lãng mạn",
+      "thriller": "Giật gân"
     },
     "customerService": {
       "title": "Hỗ trợ khách hàng",

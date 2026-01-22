@@ -13,6 +13,7 @@ import ProductCard from '../components/products/ProductCard';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../utils/currency';
 import { getLocalizedText } from '../utils/i18n';
+import { getCategoryLabel } from '../utils/categoryLabel';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -234,6 +235,7 @@ const ProductDetailPage: React.FC = () => {
 
     const title = getLocalizedText(product.titleI18n, i18n.language) || product.title || '';
     const description = getLocalizedText(product.descriptionI18n, i18n.language) || product.description || '';
+    const categoryLabel = getCategoryLabel(product.category, t, i18n);
 
     return (
         <Container className="py-3">
@@ -276,7 +278,7 @@ const ProductDetailPage: React.FC = () => {
                 <Col md={6} lg={7}>
                     {/* Category and Featured Badges */}
                     <div className="mb-2">
-                        <Badge bg="secondary" className="me-2">{product.category}</Badge>
+                        <Badge bg="secondary" className="me-2">{categoryLabel}</Badge>
                         {product.featured && <Badge bg="warning" text="dark">{t('productDetail.featured')}</Badge>}
                     </div>
 
@@ -397,7 +399,7 @@ const ProductDetailPage: React.FC = () => {
 
                                     <dt className="col-sm-4 text-muted mb-1">{t('productDetail.details.category')}</dt>
                                     <dd className="col-sm-8 mb-1">
-                                        <Badge bg="secondary">{product.category}</Badge>
+                                        <Badge bg="secondary">{categoryLabel}</Badge>
                                     </dd>
                                 </dl>
                             </div>
@@ -540,7 +542,7 @@ const ProductDetailPage: React.FC = () => {
             {/* Related Books Section */}
             {relatedProducts.length > 0 && (
                 <div className="mt-4">
-                    <h4 className="mb-3">{t('productDetail.relatedTitle', { category: product.category })}</h4>
+                    <h4 className="mb-3">{t('productDetail.relatedTitle', { category: categoryLabel })}</h4>
                     <Row>
                         {relatedProducts.map((relatedProduct) => (
                             <Col key={relatedProduct._id} xs={12} sm={6} md={4} lg={3} className="mb-3">
