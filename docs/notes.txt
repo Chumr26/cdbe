@@ -15,11 +15,12 @@ autofill account in the login page do not consistent with the database when ther
 report
 book title localiztion
 do the same for description
-
 after these refactor what should i do to make the semantic search work again
 book description extent
+
 i want the book description to be real so that it work on the semantic seach, how can i do it?
-add vietnamese books
+add 20 popular vietnamese books to the seed script
+add embedding generation on create/update in product.controller.js so it stays current.
 admin dashboard error
 use icon for pagination
 
@@ -28,3 +29,14 @@ docs: add image, list cloud deployment steps, links
 avatar
 slide
 
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent" `
+    -H "Content-Type: application/json" `
+    -H "x-goog-api-key: ${GEMINI_API_KEY}" `
+    -d '{`
+        "model": "models/gemini-embedding-001",`
+        "content": {`
+        "parts": [{`
+            "text": "What is the meaning of life?"`
+        }]`
+        }`
+    }'`
