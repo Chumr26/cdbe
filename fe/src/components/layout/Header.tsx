@@ -121,7 +121,7 @@ const Header: React.FC = () => {
                                     </NavDropdown>
 
                                     <NavDropdown
-                                        title={t('nav.language')}
+                                        title={t('nav.languages')}
                                         id="language-dropdown"
                                         align="end"
                                     >
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
                                 <>
                                     <Nav.Link as={Link} to="/login">{t('nav.login')}</Nav.Link>
                                     <NavDropdown
-                                        title={t('nav.language')}
+                                        title={t('nav.languages')}
                                         id="language-dropdown"
                                         align="end"
                                     >

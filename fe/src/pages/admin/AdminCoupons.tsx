@@ -38,20 +38,49 @@ const AdminCoupons: React.FC = () => {
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [couponToDisable, setCouponToDisable] = useState<Coupon | null>(null);
 
-  const [form, setForm] = useState<CouponFormState>({
-    code: '',
-    name: '',
-    description: '',
-    type: 'percent',
-    value: '',
-    maxDiscountAmount: '',
-    minSubtotal: '',
-    startsAt: '',
-    endsAt: '',
-    usageLimitTotal: '',
-    usageLimitPerUser: '',
-    isActive: true,
-  });
+  const toDateInputValue = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toISOString().slice(0, 10);
+  };
+
+  const buildFormState = (coupon: Coupon | null): CouponFormState => {
+    if (coupon) {
+      return {
+        code: coupon.code || '',
+        name: coupon.name || '',
+        description: coupon.description || '',
+        type: coupon.type,
+        value: coupon.value?.toString() ?? '',
+        maxDiscountAmount: coupon.maxDiscountAmount?.toString() ?? '',
+        minSubtotal: coupon.minSubtotal?.toString() ?? '',
+        startsAt: toDateInputValue(coupon.startsAt),
+        endsAt: toDateInputValue(coupon.endsAt),
+        usageLimitTotal: coupon.usageLimitTotal?.toString() ?? '',
+        usageLimitPerUser: coupon.usageLimitPerUser?.toString() ?? '',
+        isActive: coupon.isActive,
+      };
+    }
+
+    return {
+      code: '',
+      name: '',
+      description: '',
+      type: 'percent',
+      value: '',
+      maxDiscountAmount: '',
+      minSubtotal: '',
+      startsAt: '',
+      endsAt: '',
+      usageLimitTotal: '',
+      usageLimitPerUser: '',
+      isActive: true,
+    };
+  };
+
+  const [form, setForm] = useState<CouponFormState>(buildFormState(null));
+  const [initialForm, setInitialForm] = useState<CouponFormState>(buildFormState(null));
 
   const fetchCoupons = async (page = 1) => {
     setLoading(true);
@@ -75,55 +104,25 @@ const AdminCoupons: React.FC = () => {
 
   const formatPrice = (price: number) => formatMoney(price, 'VND');
 
-  const toDateInputValue = (value?: string) => {
-    if (!value) return '';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return '';
-    return d.toISOString().slice(0, 10);
-  };
-
   const handleShowModal = (coupon: Coupon | null = null) => {
     setEditingCoupon(coupon);
     setModalError('');
-
-    if (coupon) {
-      setForm({
-        code: coupon.code || '',
-        name: coupon.name || '',
-        description: coupon.description || '',
-        type: coupon.type,
-        value: coupon.value?.toString() ?? '',
-        maxDiscountAmount: coupon.maxDiscountAmount?.toString() ?? '',
-        minSubtotal: coupon.minSubtotal?.toString() ?? '',
-        startsAt: toDateInputValue(coupon.startsAt),
-        endsAt: toDateInputValue(coupon.endsAt),
-        usageLimitTotal: coupon.usageLimitTotal?.toString() ?? '',
-        usageLimitPerUser: coupon.usageLimitPerUser?.toString() ?? '',
-        isActive: coupon.isActive,
-      });
-    } else {
-      setForm({
-        code: '',
-        name: '',
-        description: '',
-        type: 'percent',
-        value: '',
-        maxDiscountAmount: '',
-        minSubtotal: '',
-        startsAt: '',
-        endsAt: '',
-        usageLimitTotal: '',
-        usageLimitPerUser: '',
-        isActive: true,
-      });
-    }
-
+    const nextForm = buildFormState(coupon);
+    setForm(nextForm);
+    setInitialForm(nextForm);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
+    setForm(initialForm);
     setShowModal(false);
     setEditingCoupon(null);
+    setModalError('');
+  };
+
+  const handleResetModal = () => {
+    setForm(initialForm);
+    setModalError('');
   };
 
   const handleChange = (
@@ -166,7 +165,7 @@ const AdminCoupons: React.FC = () => {
       }
 
       await fetchCoupons(currentPage);
-      handleCloseModal();
+      setInitialForm(form);
     } catch (err: unknown) {
       type AxiosLikeError = { response?: { data?: { message?: string } }; message?: string };
       const e = err as AxiosLikeError;
@@ -192,6 +191,8 @@ const AdminCoupons: React.FC = () => {
       setError('Failed to disable coupon');
     }
   };
+
+  const isFormDirty = JSON.stringify(form) !== JSON.stringify(initialForm);
 
   if (loading && !coupons.length) return <LoadingSpinner fullPage />;
 
@@ -460,10 +461,10 @@ const AdminCoupons: React.FC = () => {
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal} disabled={saving}>
+            <Button variant="secondary" onClick={handleResetModal} disabled={saving || !isFormDirty}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" disabled={saving}>
+            <Button type="submit" variant="primary" disabled={saving || !isFormDirty}>
               {saving ? 'Saving...' : 'Save'}
             </Button>
           </Modal.Footer>

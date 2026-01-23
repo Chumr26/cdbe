@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Row, Col, Card, Table, Button, Modal, Form, Pagination, Alert } from 'react-bootstrap';
+import {
+    Container,
+    Row,
+    Col,
+    Card,
+    Table,
+    Button,
+    Modal,
+    Form,
+    Pagination,
+    Alert,
+} from 'react-bootstrap';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import { productsAPI } from '../../api/products.api';
@@ -40,7 +51,7 @@ const AdminProducts: React.FC = () => {
     const [modalData, setModalData] = useState({
         titleI18n: {
             en: '',
-            vi: ''
+            vi: '',
         },
         author: '',
         category: '',
@@ -48,34 +59,46 @@ const AdminProducts: React.FC = () => {
         stock: '',
         descriptionI18n: {
             en: '',
-            vi: ''
+            vi: '',
         },
         isbn: '',
-        featured: false
+        featured: false,
     });
+    const [initialModalData, setInitialModalData] = useState(modalData);
     const [modalError, setModalError] = useState('');
     const [saving, setSaving] = useState(false);
     const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
     const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+    const [coverImageChanged, setCoverImageChanged] = useState(false);
 
     // Delete Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(
+        null,
+    );
 
-    const fetchProducts = useCallback(async (page = 1) => {
-        setLoading(true);
-        try {
-            const response = await productsAPI.getProducts({ page, limit: 10, sort: 'createdAt', order: 'desc' });
-            setProducts(response.data);
-            setTotalPages(response.pages);
-            setTotalItems(response.total);
-            setCurrentPage(response.page);
-        } catch {
-            setError(t('admin.products.loadError'));
-        } finally {
-            setLoading(false);
-        }
-    }, [t]);
+    const fetchProducts = useCallback(
+        async (page = 1) => {
+            setLoading(true);
+            try {
+                const response = await productsAPI.getProducts({
+                    page,
+                    limit: 20,
+                    sort: 'createdAt',
+                    order: 'desc',
+                });
+                setProducts(response.data);
+                setTotalPages(response.pages);
+                setTotalItems(response.total);
+                setCurrentPage(response.page);
+            } catch {
+                setError(t('admin.products.loadError'));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [t],
+    );
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -109,72 +132,106 @@ const AdminProducts: React.FC = () => {
         fetchProducts(page);
     };
 
-    const handleShowModal = (product: Product | null = null) => {
-        setEditingProduct(product);
+    const buildModalData = (product: Product | null) => {
         if (product) {
-            setModalData({
+            return {
                 titleI18n: {
                     en: product.titleI18n?.en || product.title || '',
-                    vi: product.titleI18n?.vi || product.title || ''
+                    vi: product.titleI18n?.vi || product.title || '',
                 },
                 author: product.author,
                 category: product.category,
                 price: product.price.toString(),
                 stock: product.stock.toString(),
                 descriptionI18n: {
-                    en: product.descriptionI18n?.en || product.description || '',
-                    vi: product.descriptionI18n?.vi || product.description || ''
+                    en:
+                        product.descriptionI18n?.en ||
+                        product.description ||
+                        '',
+                    vi:
+                        product.descriptionI18n?.vi ||
+                        product.description ||
+                        '',
                 },
                 isbn: product.isbn || '',
-                featured: product.featured
-            });
-        } else {
-            // New product defaults
-            setModalData({
-                titleI18n: {
-                    en: '',
-                    vi: ''
-                },
-                author: '',
-                category: categories.length > 0 ? categories[0].name : '', // Default to first category if available
-                price: '',
-                stock: '',
-                descriptionI18n: {
-                    en: '',
-                    vi: ''
-                },
-                isbn: '',
-                featured: false
-            });
+                featured: product.featured,
+            };
         }
+
+        return {
+            titleI18n: {
+                en: '',
+                vi: '',
+            },
+            author: '',
+            category: categories.length > 0 ? categories[0].name : '',
+            price: '',
+            stock: '',
+            descriptionI18n: {
+                en: '',
+                vi: '',
+            },
+            isbn: '',
+            featured: false,
+        };
+    };
+
+    const handleShowModal = (product: Product | null = null) => {
+        setEditingProduct(product);
+        const nextModalData = buildModalData(product);
+        setModalData(nextModalData);
+        setInitialModalData(nextModalData);
         setModalError('');
         setCoverImageFile(null);
+        setCoverPreviewUrl(null);
+        setCoverImageChanged(false);
         setShowModal(true);
     };
 
     const handleCloseModal = () => {
+        setModalData(initialModalData);
+        setCoverImageFile(null);
+        setCoverPreviewUrl(null);
+        setCoverImageChanged(false);
+        setModalError('');
         setShowModal(false);
         setEditingProduct(null);
     };
 
-    const handleModalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleResetModal = () => {
+        setModalData(initialModalData);
+        setCoverImageFile(null);
+        setCoverPreviewUrl(null);
+        setCoverImageChanged(false);
+        setModalError('');
+    };
+
+    const handleModalChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
+    ) => {
         const target = e.target as HTMLInputElement; // Type assertion to access checked property safely
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value =
+            target.type === 'checkbox' ? target.checked : target.value;
         if (target.name.includes('.')) {
-            const [parentKey, childKey] = target.name.split('.') as ['titleI18n' | 'descriptionI18n', 'en' | 'vi'];
+            const [parentKey, childKey] = target.name.split('.') as [
+                'titleI18n' | 'descriptionI18n',
+                'en' | 'vi',
+            ];
             setModalData((prev) => ({
                 ...prev,
                 [parentKey]: {
                     ...prev[parentKey],
-                    [childKey]: value
-                }
+                    [childKey]: value,
+                },
             }));
             return;
         }
 
         setModalData({
             ...modalData,
-            [target.name]: value
+            [target.name]: value,
         });
     };
 
@@ -201,14 +258,21 @@ const AdminProducts: React.FC = () => {
                 formData.append('coverImage', coverImageFile);
             }
 
-            if (editingProduct) {
-                await productsAPI.updateProduct(editingProduct._id, formData);
-            } else {
-                await productsAPI.createProduct(formData);
-            }
+            const response = editingProduct
+                ? await productsAPI.updateProduct(editingProduct._id, formData)
+                : await productsAPI.createProduct(formData);
+
+            const savedProduct = response.data;
+
+            setEditingProduct(savedProduct);
+            const nextModalData = buildModalData(savedProduct);
+            setModalData(nextModalData);
+            setInitialModalData(nextModalData);
+            setCoverImageFile(null);
+            setCoverPreviewUrl(null);
+            setCoverImageChanged(false);
 
             fetchProducts(currentPage);
-            handleCloseModal();
         } catch (err: unknown) {
             setModalError(getErrorMessage(err, t('admin.products.saveError')));
         } finally {
@@ -236,6 +300,14 @@ const AdminProducts: React.FC = () => {
     };
 
     const displayPrice = (p: Product) => formatMoney(p.price, 'USD');
+    const isModalDirty =
+        coverImageChanged ||
+        JSON.stringify(modalData) !== JSON.stringify(initialModalData);
+    const coverUrl =
+        coverPreviewUrl ||
+        resolveAssetUrl(editingProduct?.coverImage?.url) ||
+        resolveAssetUrl(editingProduct?.images?.[0]) ||
+        'https://placehold.co/300x400?text=No+Cover';
 
     if (loading && !products.length) return <LoadingSpinner fullPage />;
 
@@ -265,26 +337,52 @@ const AdminProducts: React.FC = () => {
                         </thead>
                         <tbody>
                             {products.length > 0 ? (
-                                products.map(product => (
+                                products.map((product) => (
                                     <tr key={product._id}>
-                                        <td>{getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}</td>
+                                        <td>
+                                            {getLocalizedText(
+                                                product.titleI18n,
+                                                i18n.language,
+                                            ) ||
+                                                product.title ||
+                                                ''}
+                                        </td>
                                         <td>{product.author}</td>
                                         <td>
                                             <span className="badge bg-info text-dark">
-                                                {getCategoryLabel(product.category, t, i18n)}
+                                                {getCategoryLabel(
+                                                    product.category,
+                                                    t,
+                                                    i18n,
+                                                )}
                                             </span>
                                         </td>
                                         <td>{displayPrice(product)}</td>
                                         <td>
-                                            <span className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
+                                            <span
+                                                className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}
+                                            >
                                                 {product.stock}
                                             </span>
                                         </td>
                                         <td>
-                                            <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowModal(product)}>
+                                            <Button
+                                                variant="outline-primary"
+                                                size="sm"
+                                                className="me-2"
+                                                onClick={() =>
+                                                    handleShowModal(product)
+                                                }
+                                            >
                                                 <FaEdit />
                                             </Button>
-                                            <Button variant="outline-danger" size="sm" onClick={() => handleShowDelete(product)}>
+                                            <Button
+                                                variant="outline-danger"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleShowDelete(product)
+                                                }
+                                            >
                                                 <FaTrash />
                                             </Button>
                                         </td>
@@ -292,18 +390,30 @@ const AdminProducts: React.FC = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-4">{t('admin.products.table.empty')}</td>
+                                    <td
+                                        colSpan={6}
+                                        className="text-center py-4"
+                                    >
+                                        {t('admin.products.table.empty')}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-between align-items-center">
-                    <div>{t('admin.products.pagination', { shown: products.length, total: totalItems })}</div>
+                    <div>
+                        {t('admin.products.pagination', {
+                            shown: products.length,
+                            total: totalItems,
+                        })}
+                    </div>
                     {totalPages > 1 && (
                         <Pagination className="mb-0">
                             <Pagination.Prev
-                                onClick={() => handlePageChange(currentPage - 1)}
+                                onClick={() =>
+                                    handlePageChange(currentPage - 1)
+                                }
                                 disabled={currentPage === 1}
                             />
                             {[...Array(totalPages)].map((_, i) => (
@@ -316,7 +426,9 @@ const AdminProducts: React.FC = () => {
                                 </Pagination.Item>
                             ))}
                             <Pagination.Next
-                                onClick={() => handlePageChange(currentPage + 1)}
+                                onClick={() =>
+                                    handlePageChange(currentPage + 1)
+                                }
                                 disabled={currentPage === totalPages}
                             />
                         </Pagination>
@@ -327,36 +439,51 @@ const AdminProducts: React.FC = () => {
             {/* Create/Edit Modal */}
             <Modal show={showModal} onHide={handleCloseModal} size="xl">
                 <Modal.Header closeButton>
-                    <Modal.Title>{editingProduct ? t('admin.products.modal.editTitle') : t('admin.products.modal.createTitle')}</Modal.Title>
+                    <Modal.Title>
+                        {editingProduct
+                            ? t('admin.products.modal.editTitle')
+                            : t('admin.products.modal.createTitle')}
+                    </Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={handleSaveProduct}>
                     <Modal.Body>
-                        {modalError && <Alert variant="danger">{modalError}</Alert>}
+                        {modalError && (
+                            <Alert variant="danger">{modalError}</Alert>
+                        )}
                         <Row className="g-4">
                             <Col md={4}>
-                                <div className="border rounded bg-light d-flex align-items-center justify-content-center p-3" style={{ minHeight: '360px' }}>
+                                <div
+                                    className="border rounded bg-light d-flex align-items-center justify-content-center p-3"
+                                    style={{ minHeight: '360px' }}
+                                >
                                     <img
-                                        src={
-                                            coverPreviewUrl ||
-                                            resolveAssetUrl(editingProduct?.coverImage?.url) ||
-                                            resolveAssetUrl(editingProduct?.images?.[0]) ||
-                                            'https://via.placeholder.com/300x400?text=No+Cover'
+                                        src={coverUrl}
+                                        alt={
+                                            modalData.titleI18n.en ||
+                                            modalData.titleI18n.vi ||
+                                            'Cover'
                                         }
-                                        alt={modalData.titleI18n.en || modalData.titleI18n.vi || 'Cover'}
                                         className="img-fluid rounded"
-                                        style={{ maxHeight: '360px', objectFit: 'contain' }}
+                                        style={{
+                                            maxHeight: '360px',
+                                            objectFit: 'contain',
+                                        }}
                                     />
                                 </div>
                                 <Form.Group className="mt-3">
-                                    <Form.Label>{t('admin.products.modal.coverImage')}</Form.Label>
+                                    <Form.Label>
+                                        {t('admin.products.modal.coverImage')}
+                                    </Form.Label>
                                     <Form.Control
                                         type="file"
                                         accept="image/*"
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                            const files = e.target.files;
-                                            if (files && files[0]) {
-                                                setCoverImageFile(files[0]);
-                                            }
+                                        disabled={saving}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => {
+                                            const file = e.target.files?.[0] ?? null;
+                                            setCoverImageFile(file);
+                                            setCoverImageChanged(Boolean(file));
                                         }}
                                     />
                                     <Form.Text className="text-muted">
@@ -364,16 +491,14 @@ const AdminProducts: React.FC = () => {
                                     </Form.Text>
                                 </Form.Group>
                                 <Form.Group className="mt-3">
-                                    <Form.Label>{t('admin.products.modal.coverUrl')}</Form.Label>
+                                    <Form.Label>
+                                        {t('admin.products.modal.coverUrl')}
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
+                                        disabled
                                         readOnly
-                                        value={
-                                            coverPreviewUrl ||
-                                            resolveAssetUrl(editingProduct?.coverImage?.url) ||
-                                            resolveAssetUrl(editingProduct?.images?.[0]) ||
-                                            ''
-                                        }
+                                        value={coverUrl}
                                     />
                                 </Form.Group>
                             </Col>
@@ -381,7 +506,11 @@ const AdminProducts: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.titleEn')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.titleEn',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="titleI18n.en"
@@ -393,7 +522,11 @@ const AdminProducts: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.titleVi')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.titleVi',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="titleI18n.vi"
@@ -407,7 +540,11 @@ const AdminProducts: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.author')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.author',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="author"
@@ -419,7 +556,9 @@ const AdminProducts: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.isbn')}</Form.Label>
+                                            <Form.Label>
+                                                {t('admin.products.modal.isbn')}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="isbn"
@@ -433,16 +572,31 @@ const AdminProducts: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.category')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.category',
+                                                )}
+                                            </Form.Label>
                                             <Form.Select
                                                 name="category"
                                                 value={modalData.category}
                                                 onChange={handleModalChange}
                                             >
-                                                <option value="">{t('admin.products.modal.selectCategory')}</option>
-                                                {categories.map(cat => (
-                                                    <option key={cat._id} value={cat.name}>
-                                                        {getCategoryLabel(cat.name, t, i18n)}
+                                                <option value="">
+                                                    {t(
+                                                        'admin.products.modal.selectCategory',
+                                                    )}
+                                                </option>
+                                                {categories.map((cat) => (
+                                                    <option
+                                                        key={cat._id}
+                                                        value={cat.name}
+                                                    >
+                                                        {getCategoryLabel(
+                                                            cat.name,
+                                                            t,
+                                                            i18n,
+                                                        )}
                                                     </option>
                                                 ))}
                                             </Form.Select>
@@ -450,7 +604,11 @@ const AdminProducts: React.FC = () => {
                                     </Col>
                                     <Col md={3}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.price')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.price',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="number"
                                                 step="0.01"
@@ -463,7 +621,11 @@ const AdminProducts: React.FC = () => {
                                     </Col>
                                     <Col md={3}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.stock')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.stock',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 type="number"
                                                 name="stock"
@@ -477,12 +639,18 @@ const AdminProducts: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.descriptionEn')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.descriptionEn',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 as="textarea"
                                                 rows={10}
                                                 name="descriptionI18n.en"
-                                                value={modalData.descriptionI18n.en}
+                                                value={
+                                                    modalData.descriptionI18n.en
+                                                }
                                                 onChange={handleModalChange}
                                                 required
                                             />
@@ -490,12 +658,18 @@ const AdminProducts: React.FC = () => {
                                     </Col>
                                     <Col md={6}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>{t('admin.products.modal.descriptionVi')}</Form.Label>
+                                            <Form.Label>
+                                                {t(
+                                                    'admin.products.modal.descriptionVi',
+                                                )}
+                                            </Form.Label>
                                             <Form.Control
                                                 as="textarea"
                                                 rows={10}
                                                 name="descriptionI18n.vi"
-                                                value={modalData.descriptionI18n.vi}
+                                                value={
+                                                    modalData.descriptionI18n.vi
+                                                }
                                                 onChange={handleModalChange}
                                                 required
                                             />
@@ -505,7 +679,9 @@ const AdminProducts: React.FC = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Check
                                         type="checkbox"
-                                        label={t('admin.products.modal.featured')}
+                                        label={t(
+                                            'admin.products.modal.featured',
+                                        )}
                                         name="featured"
                                         checked={modalData.featured}
                                         onChange={handleModalChange}
@@ -515,26 +691,51 @@ const AdminProducts: React.FC = () => {
                         </Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseModal}>
+                        <Button
+                            variant="secondary"
+                            onClick={handleResetModal}
+                            disabled={saving || !isModalDirty}
+                        >
                             {t('admin.products.modal.cancel')}
                         </Button>
-                        <Button variant="primary" type="submit" disabled={saving}>
-                            {saving ? t('admin.products.modal.saving') : t('admin.products.modal.save')}
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={saving || !isModalDirty}
+                        >
+                            {saving
+                                ? t('admin.products.modal.saving')
+                                : t('admin.products.modal.save')}
                         </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>
 
             {/* Delete Confirmation Modal */}
-            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+            <Modal
+                show={showDeleteModal}
+                onHide={() => setShowDeleteModal(false)}
+            >
                 <Modal.Header closeButton>
-                    <Modal.Title>{t('admin.products.delete.title')}</Modal.Title>
+                    <Modal.Title>
+                        {t('admin.products.delete.title')}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {t('admin.products.delete.body', { title: productToDelete ? getLocalizedText(productToDelete.titleI18n, i18n.language) : '' })}
+                    {t('admin.products.delete.body', {
+                        title: productToDelete
+                            ? getLocalizedText(
+                                productToDelete.titleI18n,
+                                i18n.language,
+                            )
+                            : '',
+                    })}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                    <Button
+                        variant="secondary"
+                        onClick={() => setShowDeleteModal(false)}
+                    >
                         {t('admin.products.delete.cancel')}
                     </Button>
                     <Button variant="danger" onClick={handleDeleteProduct}>

@@ -24,7 +24,8 @@
         "account": "Account",
         "description": "Description",
         "descriptionEn": "Description (EN)",
-        "descriptionVi": "Description (VI)"
+        "descriptionVi": "Description (VI)",
+        "languages": "Languages"
     },
     "search": {
         "placeholder": "Find similar meaning, not exact words"
@@ -471,13 +472,17 @@
                 "editTitle": "Edit Product",
                 "createTitle": "Add New Product",
                 "title": "Title",
+                "titleEn": "Title (EN)",
+                "titleVi": "Title (VI)",
                 "author": "Author",
                 "category": "Category",
                 "selectCategory": "Select Category",
                 "isbn": "ISBN",
-                "price": "Price",
+                "price": "Price($)",
                 "stock": "Stock",
                 "description": "Description",
+                "descriptionEn": "Description (EN)",
+                "descriptionVi": "Description (VI)",
                 "featured": "Featured Product",
                 "coverImage": "Cover Image",
                 "coverHint": "Upload a custom cover image, or leave empty to fetch from API using ISBN",
@@ -498,6 +503,10 @@
             "loadError": "Failed to load orders",
             "updateStatusError": "Failed to update status",
             "updatePaymentStatusError": "Failed to update payment status",
+            "paymentStatus": {
+                "completed": "Completed",
+                "failed": "Failed"
+            },
             "filter": {
                 "all": "All Statuses",
                 "pending": "Pending",

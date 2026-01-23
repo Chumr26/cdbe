@@ -20,7 +20,7 @@
     "dashboard": "Bảng điều khiển",
     "logout": "Đăng xuất",
     "account": "Tài khoản",
-    "language": "Ngôn ngữ"
+    "languages": "Ngôn ngữ"
   },
   "search": {
     "placeholder": "Tìm theo ý nghĩa, không chỉ theo từ khóa"
@@ -473,14 +473,14 @@
         "category": "Danh mục",
         "selectCategory": "Chọn danh mục",
         "isbn": "ISBN",
-        "price": "Giá",
+        "price": "Giá($)",
         "stock": "Tồn kho",
         "description": "Mô tả",
         "descriptionEn": "Mô tả (EN)",
         "descriptionVi": "Mô tả (VI)",
         "featured": "Sản phẩm nổi bật",
         "coverImage": "Ảnh bìa",
-        "coverHint": "Tải ảnh bìa tùy chỉnh hoặc để trống để lấy từ API theo ISBN",
+        "coverHint": "Tải ảnh bìa hoặc để trống để lấy từ API theo ISBN",
         "coverUrl": "URL ảnh bìa",
         "save": "Lưu sản phẩm",
         "saving": "Đang lưu...",
@@ -498,6 +498,10 @@
       "loadError": "Không thể tải đơn hàng",
       "updateStatusError": "Không thể cập nhật trạng thái",
       "updatePaymentStatusError": "Không thể cập nhật trạng thái thanh toán",
+      "paymentStatus": {
+        "completed": "Hoàn tất",
+        "failed": "Thất bại"
+      },
       "filter": {
         "all": "Tất cả trạng thái",
         "pending": "Chờ xử lý",

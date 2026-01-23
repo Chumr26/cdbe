@@ -40,11 +40,14 @@ const AdminOrders: React.FC = () => {
     const [paymentStatusToUpdate, setPaymentStatusToUpdate] = useState('');
     const [updatingPaymentStatus, setUpdatingPaymentStatus] = useState(false);
     const [modalError, setModalError] = useState('');
+    const [initialOrderStatus, setInitialOrderStatus] = useState('');
+    const [initialPaymentStatus, setInitialPaymentStatus] = useState('');
+    const [savingUpdates, setSavingUpdates] = useState(false);
 
     const fetchOrders = useCallback(async (page = 1, status = '') => {
         setLoading(true);
         try {
-            const response = await adminAPI.getOrders(page, 10, status);
+            const response = await adminAPI.getOrders(page, 20, status);
             setOrders(response.data);
             setTotalPages(response.pages);
             setTotalItems(response.total);
@@ -69,42 +72,58 @@ const AdminOrders: React.FC = () => {
         setSelectedOrder(order);
         setStatusToUpdate(order.orderStatus);
         setPaymentStatusToUpdate(order.paymentStatus);
+        setInitialOrderStatus(order.orderStatus);
+        setInitialPaymentStatus(order.paymentStatus);
         setModalError('');
         setShowModal(true);
     };
 
-    const handleUpdateStatus = async () => {
-        if (!selectedOrder) return;
-        setUpdating(true);
-        try {
-            await adminAPI.updateOrderStatus(selectedOrder._id, statusToUpdate);
-            // Refresh
-            fetchOrders(currentPage, statusFilter);
-            setShowModal(false);
-            setSelectedOrder(null);
-        } catch (err: unknown) {
-            setModalError(getErrorMessage(err, t('admin.orders.updateStatusError')));
-        } finally {
-            setUpdating(false);
-        }
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setSelectedOrder(null);
+        setStatusToUpdate('');
+        setPaymentStatusToUpdate('');
+        setInitialOrderStatus('');
+        setInitialPaymentStatus('');
+        setModalError('');
     };
 
-    const handleUpdatePaymentStatus = async () => {
+
+    const handleSaveUpdates = async () => {
         if (!selectedOrder) return;
-        if ((selectedOrder.paymentMethod ?? 'payos') !== 'cod') return;
 
+        const isCod = (selectedOrder.paymentMethod ?? 'payos') === 'cod';
+        const nextStatus = statusToUpdate;
+        const nextPaymentStatus = paymentStatusToUpdate;
+
+        setSavingUpdates(true);
+        setUpdating(true);
         setUpdatingPaymentStatus(true);
-        try {
-            const response = await adminAPI.updateCodPaymentStatus(
-                selectedOrder._id,
-                paymentStatusToUpdate as 'pending' | 'completed' | 'failed'
-            );
+        setModalError('');
 
-            setSelectedOrder(response.data);
+        try {
+            if (isStatusDirty) {
+                await adminAPI.updateOrderStatus(selectedOrder._id, nextStatus);
+                setInitialOrderStatus(nextStatus);
+            }
+
+            if (isCod && isPaymentDirty) {
+                const response = await adminAPI.updateCodPaymentStatus(
+                    selectedOrder._id,
+                    nextPaymentStatus as 'pending' | 'completed' | 'failed'
+                );
+                setSelectedOrder(response.data);
+                setPaymentStatusToUpdate(response.data.paymentStatus);
+                setInitialPaymentStatus(response.data.paymentStatus);
+            }
+
             fetchOrders(currentPage, statusFilter);
         } catch (err: unknown) {
-            setModalError(getErrorMessage(err, t('admin.orders.updatePaymentStatusError')));
+            const fallback = isStatusDirty ? t('admin.orders.updateStatusError') : t('admin.orders.updatePaymentStatusError');
+            setModalError(getErrorMessage(err, fallback));
         } finally {
+            setSavingUpdates(false);
+            setUpdating(false);
             setUpdatingPaymentStatus(false);
         }
     };
@@ -137,6 +156,23 @@ const AdminOrders: React.FC = () => {
                 return status;
         }
     };
+
+    const getPaymentStatusLabel = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return t('admin.orders.filter.pending');
+            case 'completed':
+                return t('admin.orders.paymentStatus.completed');
+            case 'failed':
+                return t('admin.orders.paymentStatus.failed');
+            default:
+                return status;
+        }
+    };
+
+    const isStatusDirty = statusToUpdate !== '' && statusToUpdate !== initialOrderStatus;
+    const isPaymentDirty = paymentStatusToUpdate !== '' && paymentStatusToUpdate !== initialPaymentStatus;
+    const isModalDirty = isStatusDirty || isPaymentDirty;
 
     if (loading && !orders.length) return <LoadingSpinner fullPage />;
 
@@ -232,7 +268,7 @@ const AdminOrders: React.FC = () => {
             </Card>
 
             {/* View/Update Modal */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+            <Modal show={showModal} onHide={handleCloseModal} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>{t('admin.orders.modal.title')}</Modal.Title>
                 </Modal.Header>
@@ -288,9 +324,9 @@ const AdminOrders: React.FC = () => {
                             </Table>
 
                             <Form.Group>
-                                <Form.Label className="fw-bold">{t('admin.orders.modal.updateOrderStatus')}</Form.Label>
-                                <Row className="g-2 align-items-center">
-                                    <Col xs={12} md>
+                                <Row className="g-2">
+                                    <Col xs={12} md={6}>
+                                        <Form.Label className="fw-bold">{t('admin.orders.modal.updateOrderStatus')}</Form.Label>
                                         <Dropdown onSelect={(eventKey) => eventKey && setStatusToUpdate(eventKey)}>
                                             <Dropdown.Toggle variant="outline-secondary" className="w-100">
                                                 {getOrderStatusLabel(statusToUpdate)}
@@ -304,47 +340,35 @@ const AdminOrders: React.FC = () => {
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </Col>
-                                    <Col xs={12} md="auto">
-                                        <Button variant="primary" onClick={handleUpdateStatus} disabled={updating}>
-                                            {updating ? t('admin.orders.modal.updating') : t('admin.orders.modal.update')}
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </Form.Group>
-
-                            {(selectedOrder.paymentMethod ?? 'payos') === 'cod' && (
-                                <Form.Group className="mt-3">
-                                    <Form.Label className="fw-bold">{t('admin.orders.modal.updateCodPaymentStatus')}</Form.Label>
-                                    <Row className="g-2 align-items-center">
-                                        <Col xs={12} md>
+                                    {(selectedOrder.paymentMethod ?? 'payos') === 'cod' && (
+                                        <Col xs={12} md={6}>
+                                            <Form.Label className="fw-bold">{t('admin.orders.modal.updateCodPaymentStatus')}</Form.Label>
                                             <Dropdown onSelect={(eventKey) => eventKey && setPaymentStatusToUpdate(eventKey)}>
                                                 <Dropdown.Toggle variant="outline-secondary" className="w-100">
-                                                    {paymentStatusToUpdate || 'Pending'}
+                                                    {getPaymentStatusLabel(paymentStatusToUpdate || 'pending')}
                                                 </Dropdown.Toggle>
                                                 <Dropdown.Menu className="w-100">
-                                                    <Dropdown.Item eventKey="pending">Pending</Dropdown.Item>
-                                                    <Dropdown.Item eventKey="completed">Completed</Dropdown.Item>
-                                                    <Dropdown.Item eventKey="failed">Failed</Dropdown.Item>
+                                                    <Dropdown.Item eventKey="pending">{getPaymentStatusLabel('pending')}</Dropdown.Item>
+                                                    <Dropdown.Item eventKey="completed">{getPaymentStatusLabel('completed')}</Dropdown.Item>
+                                                    <Dropdown.Item eventKey="failed">{getPaymentStatusLabel('failed')}</Dropdown.Item>
                                                 </Dropdown.Menu>
                                             </Dropdown>
                                         </Col>
-                                        <Col xs={12} md="auto">
-                                            <Button
-                                                variant="secondary"
-                                                onClick={handleUpdatePaymentStatus}
-                                                disabled={updatingPaymentStatus}
-                                            >
-                                                {updatingPaymentStatus ? t('admin.orders.modal.updating') : t('admin.orders.modal.updatePayment')}
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                </Form.Group>
-                            )}
+                                    )}
+                                </Row>
+                            </Form.Group>
                         </>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>{t('admin.common.close')}</Button>
+                    <Button variant="secondary" onClick={handleCloseModal}>{t('admin.common.close')}</Button>
+                    <Button
+                        variant="primary"
+                        onClick={handleSaveUpdates}
+                        disabled={savingUpdates || updating || updatingPaymentStatus || !isModalDirty}
+                    >
+                        {savingUpdates ? t('admin.orders.modal.updating') : t('admin.orders.modal.update')}
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </Container>

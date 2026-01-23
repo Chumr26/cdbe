@@ -266,7 +266,7 @@ const ProductDetailPage: React.FC = () => {
                             src={
                                 resolveAssetUrl(product.coverImage?.url) ||
                                 resolveAssetUrl(product.images?.[0]) ||
-                                'https://via.placeholder.com/400x600?text=No+Cover'
+                                'https://placehold.co/400x600?text=No+Cover'
                             }
                             alt={title}
                             className="img-fluid rounded shadow"
