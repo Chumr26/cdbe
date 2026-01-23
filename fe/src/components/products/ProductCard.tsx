@@ -57,12 +57,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return (
         <Card className="h-100 shadow-sm hover-shadow product-card">
             <div className="position-relative">
-                <Card.Img
-                    variant="top"
-                    src={getImageSource()}
-                    alt={title}
-                    style={{ height: '400px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
-                />
+                <Link to={`/products/${product._id}`} className="d-block product-card__image-wrapper">
+                    <Card.Img
+                        variant="top"
+                        src={getImageSource()}
+                        alt={title}
+                        className="product-card__image"
+                        style={{ height: '400px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
+                    />
+                </Link>
                 {product.featured && (
                     <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
                         {t('productCard.featured')}

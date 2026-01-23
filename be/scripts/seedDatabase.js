@@ -376,6 +376,23 @@ async function seedData() {
                     vi: `Holden Caulfield bị đuổi khỏi trường và lang thang ở New York trong vài ngày đầy bất an, cố tránh về nhà và né thế giới người lớn mà cậu không tin tưởng. Giọng kể vừa hài hước vừa phòng vệ, che giấu nỗi buồn và tổn thương bằng mỉa mai. Cậu chán ghét sự “giả tạo” nhưng lại khao khát kết nối chân thành và một nơi giữ được sự trong trẻo. Câu chuyện theo dấu những cuộc gặp với thầy giáo, người lạ, bạn cũ và đặc biệt là em gái Phoebe—điểm tựa cảm xúc của Holden. Bên dưới sự lang thang là một bức chân dung thiếu niên vật lộn với mất mát, chấn thương và nỗi sợ trưởng thành. Ngôn ngữ của Salinger tái hiện nhịp nghĩ tuổi mới lớn: vụn vỡ, mâu thuẫn nhưng rất thành thật. Tác phẩm không giải quyết nỗi đau một cách gọn gàng; nó nhìn tuổi trẻ bằng sự cảm thông và cho thấy sự chuyển tiếp sang người lớn đầy mơ hồ và nhạy cảm. The Catcher in the Rye nổi bật vì giọng kể độc đáo, sự trung thực và cách từ chối đơn giản hóa tuổi trưởng thành.`
                 }
             },
+            {
+                titleI18n: {
+                    en: 'Journey to the West',
+                    vi: 'Tây Du Ký'
+                },
+                isbn: '9786042106782',
+                author: 'Ngô Thừa Ân',
+                category: 'Fiction',
+                publisher: 'Nhà Xuất Bản Văn Học',
+                publicationYear: 1994,
+                pageCount: 1100,
+                language: 'Vietnamese',
+                descriptionI18n: {
+                    en: `Journey to the West is a classic Chinese epic about the monk Xuanzang's pilgrimage to India to obtain sacred scriptures, protected by the clever Monkey King Sun Wukong and his companions. The narrative blends adventure, satire, and myth, following the group through trials involving demons, moral tests, and spiritual lessons. Sun Wukong's rebellious wit and immense powers make him an enduring cultural icon, while the journey itself symbolizes discipline, redemption, and enlightenment. Each episode mixes humor with allegory, portraying the struggle between desire and duty. The novel's imaginative world-building introduced generations of readers to a vibrant cosmos of gods, immortals, and monsters. Beyond its entertainment, the story reflects Buddhist and Daoist themes about self-mastery and compassion. It remains a cornerstone of East Asian literature and a template for later fantasy and adventure narratives.`,
+                    vi: `Tây Du Ký là thiên anh hùng ca kinh điển kể về hành trình thỉnh kinh của Đường Tăng sang Tây Trúc, được bảo vệ bởi Tôn Ngộ Không cùng các đồng đội. Câu chuyện kết hợp phiêu lưu, trào phúng và huyền thoại, dẫn dắt nhóm qua hàng loạt thử thách với yêu quái, cám dỗ và bài học tâm linh. Tôn Ngộ Không thông minh, ngỗ nghịch nhưng giàu nghĩa khí trở thành biểu tượng văn hóa, còn hành trình tượng trưng cho kỷ luật, chuộc lỗi và giác ngộ. Mỗi hồi vừa hài hước vừa mang tính ngụ ngôn, phản ánh cuộc đấu tranh giữa dục vọng và bổn phận. Thế giới tưởng tượng phong phú với thần tiên, quái vật và phép thuật khiến tác phẩm sống động qua nhiều thế hệ. Không chỉ giải trí, truyện còn gửi gắm tư tưởng Phật–Đạo về tự chủ và lòng từ bi, trở thành nền tảng của văn học kỳ ảo phương Đông.`
+                }
+            },
 
             // Technology
             {

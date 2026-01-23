@@ -1,0 +1,13 @@
+
+.product-card__image-wrapper {
+	overflow: hidden;
+}
+
+.product-card__image {
+	transition: transform 0.2s ease-in-out;
+	transform-origin: center;
+}
+
+.product-card:hover .product-card__image {
+	transform: scale(1.05);
+}

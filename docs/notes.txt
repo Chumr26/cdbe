@@ -20,7 +20,6 @@ book description extent
 i want the book description to be real so that it work on the semantic seach, how can i do it?
 add 20 popular vietnamese books to the seed script
 localize categories
-
 cover clickable
 currency
 add embedding generation on create/update in product.controller.js so it stays current.
