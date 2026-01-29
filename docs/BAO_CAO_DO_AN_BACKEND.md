@@ -49,7 +49,7 @@ Do thời gian và kinh nghiệm còn hạn chế, báo cáo có thể còn thi�
 7. [Thiết kế API (REST) & Swagger](#7-thiết-kế-api-rest--swagger)
 8. [Bảo mật và kiểm soát truy cập](#8-bảo-mật-và-kiểm-soát-truy-cập)
 9. [Tích hợp thanh toán PayOS](#9-tích-hợp-thanh-toán-payos)
-10. [Kiểm thử](#10-kiểm-thử)
+10. [Semantic Search (Gemini API + MongoDB Atlas)](#10-semantic-search-gemini-api--mongodb-atlas)
 11. [Triển khai & vận hành](#11-triển-khai--vận-hành)
 12. [Kết quả đạt được](#12-kết-quả-đạt-được)
 13. [Hạn chế & hướng phát triển](#13-hạn-chế--hướng-phát-triển)
@@ -608,37 +608,56 @@ sequenceDiagram
 
 ---
 
-## 10. Kiểm thử
+## 10. Semantic Search (Gemini API + MongoDB Atlas)
 
-### 10.1. Kiểm thử thủ công bằng Swagger/Postman
-- Dùng Swagger để thử nhanh request/response.
-- Dùng Postman/Thunder Client để kiểm thử theo bộ test case.
+### 10.1. Giới thiệu
+Hệ thống tích hợp **Gemini API** kết hợp **MongoDB Atlas** để xây dựng **tìm kiếm ngữ nghĩa (semantic search)** cho sách. Thay vì chỉ khớp từ khoá, semantic search hiểu ý định và ngữ cảnh, giúp người dùng tìm thấy kết quả liên quan về nghĩa (ví dụ: “sách về khởi nghiệp” có thể trả về các tựa sách về startup, kinh doanh, tư duy tăng trưởng dù không chứa đúng từ khoá).
 
-Các test nên thực hiện:
-- Auth: register/login/me/forgot/reset/verify.
-- Products/Categories: CRUD (admin), list/search (public).
-- Cart: add/update/remove/clear.
-- Orders: create/list/detail/cancel.
-- Coupons: validate/available.
-- Payment: create link + mô phỏng webhook.
+### 10.2. Giải thích khái niệm
+Semantic search dựa trên **embedding**:
+- Mỗi sản phẩm được biểu diễn bằng một vector số (embedding) từ nội dung như `title`, `author`, `description`, `category`.
+- Truy vấn người dùng cũng được chuyển thành embedding.
 
-### 10.2. Health check
-- `GET /api/health` trả về trạng thái và uptime.
+Lợi ích:
+- Trả về kết quả “đúng ý” dù không trùng từ khoá.
+- Cải thiện trải nghiệm khám phá sách.
+- Cho phép mở rộng tìm kiếm theo ngữ cảnh và đồng nghĩa.
 
-### 10.3. Danh sách test case (gợi ý)
+### 10.3. Luồng hoạt động (diagram)
 
-| ID | Nhóm | Mục tiêu | Dữ liệu vào | Kết quả mong đợi |
-|---|---|---|---|---|
-| TC01 | Auth | Đăng ký hợp lệ | email, password, firstName, lastName | 201 + token |
-| TC02 | Auth | Đăng nhập sai mật khẩu | email đúng, password sai | 401 |
-| TC03 | Products | Lấy sản phẩm (pagination) | page=1, limit=10 | 200 + list |
-| TC04 | Cart | Thêm sản phẩm vào giỏ | productId, quantity | 200 + cart updated |
-| TC05 | Orders | Tạo đơn từ giỏ | shippingAddress, paymentMethod | 201 + order |
-| TC06 | Payment | Tạo payment link PayOS | orderId | 200 + checkoutUrl |
-| TC07 | Payment | Webhook PayOS success | payload hợp lệ | 200 + order paymentStatus=completed |
-| TC08 | Reviews | Tạo review khi chưa mua | rating, comment | 403 |
-| TC09 | Reviews | Tạo review khi đã mua completed | rating, comment | 201 + review, cập nhật rating/numReviews |
-| TC10 | Admin | Admin xem dashboard | Authorization admin | 200 + stats |
+```mermaid
+sequenceDiagram
+   participant U as User
+   participant FE as Frontend
+   participant API as Backend API
+   participant G as Gemini API
+   participant DB as MongoDB Atlas
+
+   U->>FE: Nhập truy vấn tìm kiếm
+   FE->>API: GET /api/products/semantic-search?q=...
+   API->>G: Tạo embedding cho query
+   G-->>API: queryEmbedding
+   API->>DB: Truy vấn vector + filter (category/price...)
+   DB-->>API: Danh sách sản phẩm + score
+   API-->>FE: Kết quả đã xếp hạng
+```
+
+### 10.4. Cách triển khai
+**(1) Chuẩn bị dữ liệu & embeddings**
+- Sử dụng model **gemini-embedding-001** để tạo embedding cho từng sản phẩm từ các trường chính.
+- Lưu embedding vào MongoDB Atlas (trong `products` hoặc collection riêng).
+- Script hỗ trợ: `scripts/backfillProductEmbeddings.js`.
+
+**(2) Truy vấn runtime**
+- Nhận query từ client.
+- Gọi Gemini API tạo embedding cho query.
+- Thực hiện truy vấn vector trong MongoDB Atlas và tính score.
+- Trả về danh sách sản phẩm theo thứ tự điểm tương đồng.
+
+### 10.5. Thành phần chính
+- **Gemini Embeddings**: sinh vector cho sản phẩm và truy vấn.
+- **MongoDB Atlas Vector Search**: lưu trữ và truy vấn vector.
+- **API endpoint**: phục vụ semantic search (ví dụ: `GET /api/products/semantic-search`).
 
 ---
 

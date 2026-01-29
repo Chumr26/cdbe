@@ -25,7 +25,9 @@ currency
 add embedding generation on create/update in product.controller.js so it stays current.
 use icon for pagination
 
+fix coupon currency exchanges
+
 Ai assistant
-docs: add image, list cloud deployment steps, links
+docs: add image, list cloud deployment steps, links, jwt ẽplain
 avatar
 slide
