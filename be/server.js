@@ -137,5 +137,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📄 Swagger docs available at http://localhost:${PORT}/api-docs`);
 });
