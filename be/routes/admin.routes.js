@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+  createUser,
   getAllUsers,
   getUser,
   updateUser,
@@ -58,6 +59,7 @@ router.use(authorize('admin'));
  *       403:
  *         description: Admin access required
  */
+router.post('/users', createUser);
 router.get('/users', getAllUsers);
 
 /**

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FaCheckCircle } from 'react-icons/fa';
 import axios from 'axios';
 import { authAPI } from '../api/auth.api';
 import { useTranslation } from 'react-i18next';
@@ -61,16 +62,16 @@ const ResetPasswordPage: React.FC = () => {
 
     if (success) {
         return (
-            <Container className="py-5">
+            <Container className="py-4 py-lg-5 auth-shell">
                 <div className="d-flex justify-content-center">
-                    <Card style={{ width: '100%', maxWidth: '400px' }} className="shadow-sm">
+                    <Card style={{ width: '100%', maxWidth: '440px' }} className="border-0 surface-card auth-card">
                         <Card.Body className="p-4 text-center">
                             <div className="mb-4">
-                                <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
+                                <FaCheckCircle className="text-success" size={52} />
                             </div>
                             <h3>{t('auth.reset.successTitle')}</h3>
                             <p className="text-muted">{t('auth.reset.successSubtitle')}</p>
-                            <Link to="/login" className="btn btn-primary w-100">
+                            <Link to="/login" className="btn btn-primary w-100 rounded-3 fw-semibold">
                                 {t('auth.reset.loginNow')}
                             </Link>
                         </Card.Body>
@@ -81,12 +82,12 @@ const ResetPasswordPage: React.FC = () => {
     }
 
     return (
-        <Container className="py-5">
+        <Container className="py-4 py-lg-5 auth-shell">
             <div className="d-flex justify-content-center">
-                <Card style={{ width: '100%', maxWidth: '400px' }} className="shadow-sm">
+                <Card style={{ width: '100%', maxWidth: '440px' }} className="border-0 surface-card auth-card">
                     <Card.Body className="p-4">
                         <div className="text-center mb-4">
-                            <h2 className="mb-1">{t('auth.reset.title')}</h2>
+                            <h2 className="mb-1 fw-bold">{t('auth.reset.title')}</h2>
                             <p className="text-muted">{t('auth.reset.subtitle')}</p>
                         </div>
 
@@ -100,6 +101,7 @@ const ResetPasswordPage: React.FC = () => {
                                     placeholder={t('auth.reset.newPasswordPlaceholder')}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    className="focus-ring"
                                     required
                                     minLength={6}
                                 />
@@ -112,6 +114,7 @@ const ResetPasswordPage: React.FC = () => {
                                     placeholder={t('auth.reset.confirmPasswordPlaceholder')}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="focus-ring"
                                     required
                                     minLength={6}
                                 />
@@ -120,7 +123,7 @@ const ResetPasswordPage: React.FC = () => {
                             <Button
                                 variant="primary"
                                 type="submit"
-                                className="w-100"
+                                className="w-100 rounded-3 fw-semibold"
                                 disabled={submitting}
                             >
                                 {submitting ? t('auth.reset.submitting') : t('auth.reset.submit')}

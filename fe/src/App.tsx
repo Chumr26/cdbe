@@ -17,6 +17,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminShell from './components/admin/AdminShell';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
@@ -85,42 +86,16 @@ function App() {
                             path="/admin"
                             element={
                                 <ProtectedRoute adminOnly>
-                                    <AdminDashboard />
+                                    <AdminShell />
                                 </ProtectedRoute>
                             }
-                        />
-                        <Route
-                            path="/admin/products"
-                            element={
-                                <ProtectedRoute adminOnly>
-                                    <AdminProducts />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/orders"
-                            element={
-                                <ProtectedRoute adminOnly>
-                                    <AdminOrders />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/users"
-                            element={
-                                <ProtectedRoute adminOnly>
-                                    <AdminUsers />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/coupons"
-                            element={
-                                <ProtectedRoute adminOnly>
-                                    <AdminCoupons />
-                                </ProtectedRoute>
-                            }
-                        />
+                        >
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="products" element={<AdminProducts />} />
+                            <Route path="orders" element={<AdminOrders />} />
+                            <Route path="users" element={<AdminUsers />} />
+                            <Route path="coupons" element={<AdminCoupons />} />
+                        </Route>
 
                         {/* Catch-all */}
                         <Route path="*" element={<NotFoundPage />} />

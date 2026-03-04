@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    Container,
     Row,
     Col,
-    Card,
     Table,
     Button,
     Modal,
     Form,
-    Pagination,
     Alert,
 } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import { productsAPI } from '../../api/products.api';
 import type { Product } from '../../api/products.api';
@@ -23,6 +20,10 @@ import { formatMoney } from '../../utils/currency';
 import { getLocalizedText } from '../../utils/i18n';
 import { getCategoryLabel } from '../../utils/categoryLabel';
 import { resolveAssetUrl } from '../../utils/image';
+import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import AdminDataSection from '../../components/admin/AdminDataSection';
+import AdminPagination from '../../components/admin/AdminPagination';
+import AdminToolbar from '../../components/admin/AdminToolbar';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -73,9 +74,7 @@ const AdminProducts: React.FC = () => {
 
     // Delete Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [productToDelete, setProductToDelete] = useState<Product | null>(
-        null,
-    );
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
     const fetchProducts = useCallback(
         async (page = 1) => {
@@ -91,6 +90,7 @@ const AdminProducts: React.FC = () => {
                 setTotalPages(response.pages);
                 setTotalItems(response.total);
                 setCurrentPage(response.page);
+                setSelectedProductIds([]);
             } catch {
                 setError(t('admin.products.loadError'));
             } finally {
@@ -280,20 +280,47 @@ const AdminProducts: React.FC = () => {
         }
     };
 
-    const handleShowDelete = (product: Product) => {
-        setProductToDelete(product);
+    const handleShowDeleteSelected = () => {
+        if (!selectedProductIds.length) return;
         setShowDeleteModal(true);
     };
 
+    const toggleProductSelection = (productId: string) => {
+        setSelectedProductIds((prev) =>
+            prev.includes(productId)
+                ? prev.filter((id) => id !== productId)
+                : [...prev, productId],
+        );
+    };
+
+    const toggleSelectAllVisible = () => {
+        const visibleIds = products.map((product) => product._id);
+        const allSelected =
+            visibleIds.length > 0 &&
+            visibleIds.every((id) => selectedProductIds.includes(id));
+
+        setSelectedProductIds((prev) => {
+            if (allSelected) {
+                return prev.filter((id) => !visibleIds.includes(id));
+            }
+            const next = new Set([...prev, ...visibleIds]);
+            return Array.from(next);
+        });
+    };
+
     const handleDeleteProduct = async () => {
-        if (!productToDelete) return;
+        if (!selectedProductIds.length) return;
 
         try {
-            await productsAPI.deleteProduct(productToDelete._id);
-            // Refresh list
+            await Promise.all(
+                selectedProductIds.map((productId) =>
+                    productsAPI.deleteProduct(productId),
+                ),
+            );
+
             fetchProducts(currentPage);
             setShowDeleteModal(false);
-            setProductToDelete(null);
+            setSelectedProductIds([]);
         } catch {
             setError(t('admin.products.deleteError'));
         }
@@ -303,6 +330,9 @@ const AdminProducts: React.FC = () => {
     const isModalDirty =
         coverImageChanged ||
         JSON.stringify(modalData) !== JSON.stringify(initialModalData);
+    const allVisibleSelected =
+        products.length > 0 &&
+        products.every((product) => selectedProductIds.includes(product._id));
     const coverUrl =
         coverPreviewUrl ||
         resolveAssetUrl(editingProduct?.coverImage?.url) ||
@@ -312,132 +342,173 @@ const AdminProducts: React.FC = () => {
     if (loading && !products.length) return <LoadingSpinner fullPage />;
 
     return (
-        <Container className="py-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>{t('admin.products.title')}</h2>
-                <Button variant="primary" onClick={() => handleShowModal()}>
-                    <FaPlus className="me-2" /> {t('admin.products.addNew')}
-                </Button>
-            </div>
+        <div className="admin-page">
+            <AdminPageHeader title={t('admin.products.title')} />
+
+            <AdminToolbar
+                left={
+                    selectedProductIds.length > 0 ? (
+                        <Button
+                            variant="outline-danger"
+                            className="rounded-3 fw-semibold"
+                            onClick={handleShowDeleteSelected}
+                        >
+                            <FaTrash className="me-2" />
+                            {t('admin.products.delete.selected', {
+                                count: selectedProductIds.length,
+                            })}
+                        </Button>
+                    ) : null
+                }
+                right={
+                    <Button variant="primary" className="rounded-3 fw-semibold" onClick={() => handleShowModal()}>
+                        <FaPlus className="me-2" /> {t('admin.products.addNew')}
+                    </Button>
+                }
+            />
 
             {error && <Alert variant="danger">{error}</Alert>}
 
-            <Card className="shadow-sm">
-                <Card.Body className="p-0">
-                    <Table responsive hover className="align-middle mb-0">
-                        <thead className="bg-light">
+            <AdminDataSection
+                desktop={
+                    <Table responsive hover className="align-middle mb-0 admin-table">
+                        <thead>
                             <tr>
+                                <th className="admin-table__checkbox-cell">
+                                    <Form.Check
+                                        type="checkbox"
+                                        checked={allVisibleSelected}
+                                        onChange={toggleSelectAllVisible}
+                                        onClick={(event) => event.stopPropagation()}
+                                        aria-label={t('admin.products.table.selectAll')}
+                                    />
+                                </th>
                                 <th>{t('admin.products.table.title')}</th>
                                 <th>{t('admin.products.table.author')}</th>
                                 <th>{t('admin.products.table.category')}</th>
                                 <th>{t('admin.products.table.price')}</th>
                                 <th>{t('admin.products.table.stock')}</th>
-                                <th>{t('admin.products.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {products.length > 0 ? (
                                 products.map((product) => (
-                                    <tr key={product._id}>
+                                    <tr
+                                        key={product._id}
+                                        className={`admin-table__row--selectable ${selectedProductIds.includes(product._id) ? 'admin-table__row--selected' : ''}`}
+                                        onClick={() => handleShowModal(product)}
+                                    >
+                                        <td
+                                            className="admin-table__checkbox-cell"
+                                            onClick={(event) => event.stopPropagation()}
+                                        >
+                                            <Form.Check
+                                                type="checkbox"
+                                                checked={selectedProductIds.includes(product._id)}
+                                                onChange={() => toggleProductSelection(product._id)}
+                                                aria-label={t('admin.products.table.selectProduct')}
+                                            />
+                                        </td>
                                         <td>
-                                            {getLocalizedText(
-                                                product.titleI18n,
-                                                i18n.language,
-                                            ) ||
-                                                product.title ||
-                                                ''}
+                                            {getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}
                                         </td>
                                         <td>{product.author}</td>
                                         <td>
                                             <span className="badge bg-info text-dark">
-                                                {getCategoryLabel(
-                                                    product.category,
-                                                    t,
-                                                    i18n,
-                                                )}
+                                                {getCategoryLabel(product.category, t, i18n)}
                                             </span>
                                         </td>
                                         <td>{displayPrice(product)}</td>
                                         <td>
-                                            <span
-                                                className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}
-                                            >
+                                            <span className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
                                                 {product.stock}
                                             </span>
-                                        </td>
-                                        <td>
-                                            <Button
-                                                variant="outline-primary"
-                                                size="sm"
-                                                className="me-2"
-                                                onClick={() =>
-                                                    handleShowModal(product)
-                                                }
-                                            >
-                                                <FaEdit />
-                                            </Button>
-                                            <Button
-                                                variant="outline-danger"
-                                                size="sm"
-                                                onClick={() =>
-                                                    handleShowDelete(product)
-                                                }
-                                            >
-                                                <FaTrash />
-                                            </Button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td
-                                        colSpan={6}
-                                        className="text-center py-4"
-                                    >
+                                    <td colSpan={6} className="text-center py-4">
                                         {t('admin.products.table.empty')}
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </Table>
-                </Card.Body>
-                <Card.Footer className="d-flex justify-content-between align-items-center">
-                    <div>
-                        {t('admin.products.pagination', {
-                            shown: products.length,
-                            total: totalItems,
-                        })}
-                    </div>
-                    {totalPages > 1 && (
-                        <Pagination className="mb-0">
-                            <Pagination.Prev
-                                onClick={() =>
-                                    handlePageChange(currentPage - 1)
-                                }
-                                disabled={currentPage === 1}
-                            />
-                            {[...Array(totalPages)].map((_, i) => (
-                                <Pagination.Item
-                                    key={i + 1}
-                                    active={i + 1 === currentPage}
-                                    onClick={() => handlePageChange(i + 1)}
+                }
+                mobile={
+                    products.length > 0 ? (
+                        products.map((product) => (
+                            <div
+                                key={product._id}
+                                className={`admin-mobile-card admin-mobile-card--selectable ${selectedProductIds.includes(product._id) ? 'admin-mobile-card--selected' : ''}`}
+                                onClick={() => handleShowModal(product)}
+                            >
+                                <div
+                                    className="admin-mobile-card__row"
+                                    onClick={(event) => event.stopPropagation()}
                                 >
-                                    {i + 1}
-                                </Pagination.Item>
-                            ))}
-                            <Pagination.Next
-                                onClick={() =>
-                                    handlePageChange(currentPage + 1)
-                                }
-                                disabled={currentPage === totalPages}
-                            />
-                        </Pagination>
-                    )}
-                </Card.Footer>
-            </Card>
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.select')}</span>
+                                    <span className="admin-mobile-card__value">
+                                        <Form.Check
+                                            type="checkbox"
+                                            checked={selectedProductIds.includes(product._id)}
+                                            onChange={() => toggleProductSelection(product._id)}
+                                            aria-label={t('admin.products.table.selectProduct')}
+                                        />
+                                    </span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.title')}</span>
+                                    <span className="admin-mobile-card__value">
+                                        {getLocalizedText(product.titleI18n, i18n.language) || product.title || ''}
+                                    </span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.author')}</span>
+                                    <span className="admin-mobile-card__value">{product.author}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.category')}</span>
+                                    <span className="admin-mobile-card__value">{getCategoryLabel(product.category, t, i18n)}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.price')}</span>
+                                    <span className="admin-mobile-card__value">{displayPrice(product)}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.products.table.stock')}</span>
+                                    <span className="admin-mobile-card__value">
+                                        <span className={`badge ${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
+                                            {product.stock}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-4">{t('admin.products.table.empty')}</div>
+                    )
+                }
+                footer={
+                    <>
+                        <div>
+                            {t('admin.products.pagination', {
+                                shown: products.length,
+                                total: totalItems,
+                            })}
+                        </div>
+                        <AdminPagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                    </>
+                }
+            />
 
             {/* Create/Edit Modal */}
-            <Modal show={showModal} onHide={handleCloseModal} size="xl">
+            <Modal show={showModal} onHide={handleCloseModal} size="xl" centered dialogClassName="admin-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {editingProduct
@@ -478,6 +549,7 @@ const AdminProducts: React.FC = () => {
                                         type="file"
                                         accept="image/*"
                                         disabled={saving}
+                                        className="focus-ring"
                                         onChange={(
                                             e: React.ChangeEvent<HTMLInputElement>,
                                         ) => {
@@ -516,6 +588,7 @@ const AdminProducts: React.FC = () => {
                                                 name="titleI18n.en"
                                                 value={modalData.titleI18n.en}
                                                 onChange={handleModalChange}
+                                                className="focus-ring"
                                                 required
                                             />
                                         </Form.Group>
@@ -532,6 +605,7 @@ const AdminProducts: React.FC = () => {
                                                 name="titleI18n.vi"
                                                 value={modalData.titleI18n.vi}
                                                 onChange={handleModalChange}
+                                                className="focus-ring"
                                                 required
                                             />
                                         </Form.Group>
@@ -715,6 +789,7 @@ const AdminProducts: React.FC = () => {
             <Modal
                 show={showDeleteModal}
                 onHide={() => setShowDeleteModal(false)}
+                dialogClassName="admin-modal"
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
@@ -722,13 +797,8 @@ const AdminProducts: React.FC = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {t('admin.products.delete.body', {
-                        title: productToDelete
-                            ? getLocalizedText(
-                                productToDelete.titleI18n,
-                                i18n.language,
-                            )
-                            : '',
+                    {t('admin.products.delete.bodySelected', {
+                        count: selectedProductIds.length,
                     })}
                 </Modal.Body>
                 <Modal.Footer>
@@ -739,11 +809,11 @@ const AdminProducts: React.FC = () => {
                         {t('admin.products.delete.cancel')}
                     </Button>
                     <Button variant="danger" onClick={handleDeleteProduct}>
-                        {t('admin.products.delete.confirm')}
+                        {t('admin.products.delete.confirmSelected')}
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </Container>
+        </div>
     );
 };
 

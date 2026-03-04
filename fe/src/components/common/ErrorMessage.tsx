@@ -9,7 +9,7 @@ interface ErrorMessageProps {
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, variant = 'danger', onClose }) => {
     return (
-        <Alert variant={variant} dismissible={!!onClose} onClose={onClose} className="my-3">
+        <Alert variant={variant} dismissible={!!onClose} onClose={onClose} className="my-3 rounded-3 border-0 shadow-sm">
             {message}
         </Alert>
     );

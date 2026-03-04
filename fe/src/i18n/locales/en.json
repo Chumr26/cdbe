@@ -13,6 +13,8 @@
     "nav": {
         "home": "Home",
         "products": "Products",
+        "login": "Login",
+        "cart": "Cart",
         "title": "Title",
         "titleEn": "Title (EN)",
         "titleVi": "Title (VI)",
@@ -138,7 +140,56 @@
         "ctaTitle": "Start Your Reading Journey Today",
         "ctaSubtitle": "Join thousands of book lovers and discover your next great read.",
         "signUpNow": "Sign Up Now",
+        "exploreCatalog": "Explore Catalog",
         "addToCartError": "Failed to add to cart",
+        "stats": {
+            "titles": "Curated titles",
+            "readers": "Happy readers",
+            "rating": "Average rating",
+            "support": "Customer support"
+        },
+        "valueSectionTitle": "Why readers choose us",
+        "valueSectionSubtitle": "Everything you need for a seamless and enjoyable book shopping experience.",
+        "valueProps": {
+            "curated": {
+                "title": "Carefully curated selection",
+                "description": "From bestsellers to hidden gems, every title is selected for quality and relevance."
+            },
+            "fastDelivery": {
+                "title": "Fast and reliable delivery",
+                "description": "Receive your books quickly with secure packaging and real-time order updates."
+            },
+            "securePayment": {
+                "title": "Safe checkout experience",
+                "description": "Shop with confidence using trusted payment methods and protected transactions."
+            }
+        },
+        "howItWorksTitle": "How it works",
+        "howItWorksSubtitle": "Get your next read in three simple steps.",
+        "howItWorks": {
+            "discover": {
+                "title": "Discover",
+                "description": "Browse by category, explore featured books, and find what matches your interests."
+            },
+            "choose": {
+                "title": "Choose",
+                "description": "Check details, compare options, and add your favorite books to cart in one click."
+            },
+            "checkout": {
+                "title": "Checkout",
+                "description": "Complete payment securely and track your order from confirmation to delivery."
+            }
+        },
+        "testimonialsTitle": "Loved by our readers",
+        "testimonialsSubtitle": "Real feedback from people growing their personal library with us.",
+        "testimonials": {
+            "quote1": "The recommendations are excellent and delivery is always on time. It feels like a bookstore built for readers.",
+            "author1": "— Emma R., Avid Reader",
+            "quote2": "I found several hard-to-find titles here. The browsing experience is smooth and the checkout is super easy.",
+            "author2": "— Daniel T., University Student",
+            "quote3": "Great pricing, clean design, and reliable support whenever I need help with an order.",
+            "author3": "— Sophia L., Book Club Member"
+        },
         "categories": {
             "fiction": "Fiction",
             "nonFiction": "Non-Fiction",
@@ -399,6 +450,14 @@
         }
     },
     "admin": {
+        "nav": {
+            "panel": "Admin Panel",
+            "dashboard": "Dashboard",
+            "products": "Products",
+            "orders": "Orders",
+            "users": "Users",
+            "coupons": "Coupons"
+        },
         "common": {
             "noData": "No data",
             "unknown": "Unknown",
@@ -406,6 +465,7 @@
         },
         "dashboard": {
             "title": "Dashboard",
+            "loadError": "Failed to load analytics dashboard",
             "lastDays": "Last {{days}} days",
             "manageProducts": "Manage Products",
             "manageOrders": "Manage Orders",
@@ -421,6 +481,11 @@
             "totalNewUsers": "Total new users: {{count}}",
             "orderStatusDistribution": "Order Status Distribution",
             "paymentStatusDistribution": "Payment Status Distribution",
+            "range": {
+                "week": "Last 7 days",
+                "month": "Last 30 days",
+                "year": "Last 365 days"
+            },
             "dailyTrends": "Daily Trends",
             "dailyTotals": "Total: {{orders}} orders · {{revenue}} revenue · {{newUsers}} new users",
             "table": {
@@ -459,6 +524,9 @@
             "saveError": "Failed to save product",
             "deleteError": "Failed to delete product",
             "table": {
+                "select": "Select",
+                "selectAll": "Select all products",
+                "selectProduct": "Select product",
                 "title": "Title",
                 "author": "Author",
                 "category": "Category",
@@ -494,7 +562,10 @@
             "delete": {
                 "title": "Confirm Delete",
                 "body": "Are you sure you want to delete the product {{title}}? This action cannot be undone.",
+                "bodySelected": "Are you sure you want to delete {{count}} selected products? This action cannot be undone.",
                 "confirm": "Delete Product",
+                "confirmSelected": "Delete Selected",
+                "selected": "Remove ({{count}})",
                 "cancel": "Cancel"
             }
         },
@@ -516,6 +587,9 @@
                 "cancelled": "Cancelled"
             },
             "table": {
+                "select": "Select",
+                "selectAll": "Select all orders",
+                "selectOrder": "Select order",
                 "order": "Order #",
                 "customer": "Customer",
                 "date": "Date",
@@ -547,6 +621,110 @@
                 "updating": "Updating...",
                 "updateCodPaymentStatus": "Update COD Payment Status",
                 "updatePayment": "Update Payment"
+            }
+        },
+        "users": {
+            "title": "User Management",
+            "addNew": "Add New User",
+            "loadError": "Failed to load users",
+            "saveError": "Failed to create user",
+            "deleteError": "Failed to delete user",
+            "table": {
+                "select": "Select",
+                "selectAll": "Select all users",
+                "selectUser": "Select user",
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "joinedDate": "Joined Date",
+                "actions": "Actions",
+                "empty": "No users found"
+            },
+            "role": {
+                "admin": "ADMIN",
+                "customer": "CUSTOMER"
+            },
+            "pagination": "Showing {{shown}} of {{total}} users",
+            "delete": {
+                "title": "Confirm Delete",
+                "body": "Are you sure you want to delete user {{email}}? This action cannot be undone.",
+                "bodySelected": "Are you sure you want to delete {{count}} selected users? This action cannot be undone.",
+                "cancel": "Cancel",
+                "confirm": "Delete User",
+                "confirmSelected": "Delete Selected",
+                "selected": "Remove ({{count}})"
+            },
+            "modal": {
+                "createTitle": "Create User",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email",
+                "password": "Password",
+                "phone": "Phone Number (Optional)",
+                "role": "Role",
+                "cancel": "Cancel",
+                "save": "Create User",
+                "saving": "Creating..."
+            }
+        },
+        "coupons": {
+            "title": "Coupon Management",
+            "addNew": "Add New Coupon",
+            "loadError": "Failed to load coupons",
+            "saveError": "Failed to save coupon",
+            "disableError": "Failed to disable coupon",
+            "type": {
+                "percent": "Percent",
+                "fixed": "Fixed"
+            },
+            "status": {
+                "active": "ACTIVE",
+                "inactive": "INACTIVE"
+            },
+            "max": "Max: {{amount}}",
+            "table": {
+                "select": "Select",
+                "selectAll": "Select all coupons",
+                "selectCoupon": "Select coupon",
+                "code": "Code",
+                "type": "Type",
+                "value": "Value",
+                "minSubtotal": "Min Subtotal",
+                "status": "Status",
+                "actions": "Actions",
+                "empty": "No coupons found"
+            },
+            "pagination": "Showing {{shown}} of {{total}} coupons",
+            "modal": {
+                "editTitle": "Edit Coupon",
+                "createTitle": "Create Coupon",
+                "code": "Code",
+                "codePlaceholder": "WELCOME10",
+                "name": "Name",
+                "namePlaceholder": "Optional display name",
+                "description": "Description",
+                "descriptionPlaceholder": "Optional description",
+                "type": "Type",
+                "value": "Value",
+                "maxDiscountAmount": "Max Discount Amount (optional)",
+                "minSubtotal": "Min Subtotal (optional)",
+                "startsAt": "Starts At (optional)",
+                "endsAt": "Ends At (optional)",
+                "usageLimitTotal": "Usage Limit Total (optional)",
+                "usageLimitPerUser": "Usage Limit Per User (optional)",
+                "active": "Active",
+                "cancel": "Cancel",
+                "save": "Save",
+                "saving": "Saving..."
+            },
+            "disable": {
+                "title": "Disable Coupon",
+                "body": "Disable coupon {{code}}? Customers will no longer be able to apply it.",
+                "bodySelected": "Disable {{count}} selected coupons? Existing redemptions stay recorded.",
+                "cancel": "Cancel",
+                "confirm": "Disable",
+                "confirmSelected": "Disable Selected",
+                "selected": "Remove ({{count}})"
             }
         }
     },

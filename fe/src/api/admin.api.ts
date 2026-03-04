@@ -98,6 +98,15 @@ export interface UserResponse {
   data: User;
 }
 
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  role?: User['role'];
+}
+
 export interface OrdersResponse {
   success: boolean;
   count: number;
@@ -140,6 +149,11 @@ export const adminAPI = {
 
   getUser: async (id: string): Promise<UserResponse> => {
     const response = await api.get(`/admin/users/${id}`);
+    return response.data;
+  },
+
+  createUser: async (userData: CreateUserRequest): Promise<UserResponse> => {
+    const response = await api.post('/admin/users', userData);
     return response.data;
   },
 

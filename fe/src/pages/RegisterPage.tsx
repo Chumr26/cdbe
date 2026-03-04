@@ -79,12 +79,13 @@ const RegisterPage: React.FC = () => {
     };
 
     return (
-        <Container className="py-5">
+        <Container className="py-4 py-lg-5 auth-shell">
             <Row className="justify-content-center">
                 <Col md={8} lg={6}>
-                    <Card className="shadow">
+                    <Card className="border-0 surface-card auth-card">
                         <Card.Body className="p-4">
-                            <h2 className="text-center mb-4">{t('auth.register.title')}</h2>
+                            <h2 className="text-center mb-2 fw-bold">{t('auth.register.title')}</h2>
+                            <p className="text-center text-muted mb-4">Create your account to checkout faster and track orders</p>
                             {error && <Alert variant="danger">{error}</Alert>}
                             {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
@@ -100,6 +101,7 @@ const RegisterPage: React.FC = () => {
                                                     placeholder={t('auth.register.firstNamePlaceholder')}
                                                     value={formData.firstName}
                                                     onChange={handleChange}
+                                                    className="focus-ring"
                                                     required
                                                 />
                                             </Form.Group>
@@ -113,6 +115,7 @@ const RegisterPage: React.FC = () => {
                                                     placeholder={t('auth.register.lastNamePlaceholder')}
                                                     value={formData.lastName}
                                                     onChange={handleChange}
+                                                    className="focus-ring"
                                                     required
                                                 />
                                             </Form.Group>
@@ -127,6 +130,7 @@ const RegisterPage: React.FC = () => {
                                             placeholder={t('auth.register.emailPlaceholder')}
                                             value={formData.email}
                                             onChange={handleChange}
+                                            className="focus-ring"
                                             required
                                         />
                                     </Form.Group>
@@ -139,6 +143,7 @@ const RegisterPage: React.FC = () => {
                                             placeholder={t('auth.register.phonePlaceholder')}
                                             value={formData.phoneNumber}
                                             onChange={handleChange}
+                                            className="focus-ring"
                                         />
                                     </Form.Group>
 
@@ -150,6 +155,7 @@ const RegisterPage: React.FC = () => {
                                             placeholder={t('auth.register.passwordPlaceholder')}
                                             value={formData.password}
                                             onChange={handleChange}
+                                            className="focus-ring"
                                             required
                                         />
                                     </Form.Group>
@@ -162,11 +168,12 @@ const RegisterPage: React.FC = () => {
                                             placeholder={t('auth.register.confirmPasswordPlaceholder')}
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
+                                            className="focus-ring"
                                             required
                                         />
                                     </Form.Group>
 
-                                    <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+                                    <Button variant="primary" type="submit" className="w-100 rounded-3 fw-semibold" disabled={loading}>
                                         {loading ? t('auth.register.submitting') : t('auth.register.submit')}
                                     </Button>
                                 </Form>

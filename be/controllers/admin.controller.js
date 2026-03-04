@@ -4,6 +4,45 @@ const Order = require('../models/Order.model');
 const Product = require('../models/Product.model');
 const Coupon = require('../models/Coupon.model');
 
+// @desc    Create user
+// @route   POST /api/admin/users
+// @access  Private/Admin
+exports.createUser = asyncHandler(async (req, res) => {
+  const { email, password, firstName, lastName, phoneNumber, role } = req.body;
+
+  if (!email || !password || !firstName || !lastName) {
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide firstName, lastName, email, and password'
+    });
+  }
+
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const userExists = await User.findOne({ email: normalizedEmail });
+
+  if (userExists) {
+    return res.status(400).json({
+      success: false,
+      message: 'User already exists with this email'
+    });
+  }
+
+  const user = await User.create({
+    email: normalizedEmail,
+    password,
+    firstName,
+    lastName,
+    phoneNumber,
+    role: role || 'customer',
+    isEmailVerified: true
+  });
+
+  res.status(201).json({
+    success: true,
+    data: user
+  });
+});
+
 // @desc    Get all users
 // @route   GET /api/admin/users
 // @access  Private/Admin

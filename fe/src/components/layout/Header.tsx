@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, Container, NavDropdown, Form, Button } from 'react-bootstrap';
-import { FaShoppingCart, FaUser, FaSearch, FaBook } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaSearch, FaBook, FaHome, FaBookOpen, FaGlobe, FaSignInAlt } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -11,6 +11,7 @@ const Header: React.FC = () => {
     const { cartCount, isBouncing } = useCart();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchFocused, setSearchFocused] = useState(false);
     const { t, i18n } = useTranslation();
 
     const handleLogout = () => {
@@ -43,70 +44,75 @@ const Header: React.FC = () => {
                 `}
             </style>
             <Navbar
-                bg="dark"
-                variant="dark"
+                variant="light"
                 expand="lg"
                 fixed="top"
-                className="shadow-sm py-2"
+                className={`site-navbar py-2 ${searchFocused ? 'header-search-focused' : ''}`}
             >
-                <Container className="px-4">
-                    {/* Brand Section - Left */}
-                    <Navbar.Brand as={Link} to="/" className="fw-bold me-4">
-                        <FaBook className="me-2" />
+                <Container className="px-3 px-lg-4">
+                    <Navbar.Brand as={Link} to="/" className="site-brand fw-bold me-4">
+                        <FaBook className="me-2" size={18} />
                         Bookstore
                     </Navbar.Brand>
 
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
                     <Navbar.Collapse id="basic-navbar-nav">
-                        {/* Left Navigation */}
-                        <Nav className="me-auto">
-                            <Nav.Link as={Link} to="/">{t('nav.home')}</Nav.Link>
-                            <Nav.Link as={Link} to="/products">{t('nav.products')}</Nav.Link>
-                        </Nav>
-
-                        {/* Center Search Box */}
                         <Form
-                            className="d-flex mx-auto my-2 my-lg-0"
-                            style={{ maxWidth: '500px', width: '100%' }}
+                            className="site-search d-flex my-2 my-lg-0 order-0 order-lg-1"
                             onSubmit={handleSearch}
+                            onFocus={() => setSearchFocused(true)}
+                            onBlur={(e) => {
+                                if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                                    setSearchFocused(false);
+                                }
+                            }}
                         >
                             <Form.Control
                                 type="search"
                                 placeholder={t('search.placeholder')}
-                                className="me-2"
+                                className="me-2 focus-ring"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
-                            <Button variant="outline-light" type="submit" className="d-flex align-items-center px-3">
+                            <Button variant="primary" type="submit" className="d-flex align-items-center px-3">
                                 <FaSearch />
                             </Button>
                         </Form>
 
-                        {/* Right Navigation */}
-                        <Nav className="ms-auto align-items-center">
+                        <Nav className="me-auto order-1 order-lg-0">
+                            <Nav.Link as={Link} to="/" className="site-nav-link">
+                                <FaHome size={14} />
+                                <span className="site-nav-text">{t('nav.home')}</span>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/products" className="site-nav-link">
+                                <FaBookOpen size={14} />
+                                <span className="site-nav-text">{t('nav.products')}</span>
+                            </Nav.Link>
+                        </Nav>
+
+                        <Nav className="ms-auto header-right-nav order-2">
                             {isAuthenticated ? (
                                 <>
-                                    <Nav.Link as={Link} to="/cart" className="position-relative">
+                                    <Nav.Link as={Link} to="/cart" className="position-relative site-nav-link">
                                         <FaShoppingCart size={18} />
+                                        <span className="site-nav-text">{t('nav.cart')}</span>
                                         {cartCount > 0 && (
-                                            <h6
-                                                className={`position-absolute text-primary ${isBouncing ? 'cart-bounce' : ''}`}
-                                                style={{ top: 0, right: '30%' }}
-                                            >
+                                            <span className={`cart-count-badge ${isBouncing ? 'cart-bounce' : ''}`}>
                                                 {cartCount}
-                                            </h6>
+                                            </span>
                                         )}
                                     </Nav.Link>
                                     <NavDropdown
                                         title={
-                                            <>
+                                            <span className="site-nav-link">
                                                 <FaUser size={16} className="me-2" />
-                                                {user?.firstName || t('nav.account')}
-                                            </>
+                                                <span className="site-nav-text">{user?.firstName || t('nav.account')}</span>
+                                            </span>
                                         }
                                         id="user-dropdown"
                                         align="end"
+                                        className="site-dropdown"
                                     >
                                         <NavDropdown.Item as={Link} to="/profile">{t('nav.profile')}</NavDropdown.Item>
                                         <NavDropdown.Item as={Link} to="/orders">{t('nav.myOrders')}</NavDropdown.Item>
@@ -121,9 +127,15 @@ const Header: React.FC = () => {
                                     </NavDropdown>
 
                                     <NavDropdown
-                                        title={t('nav.languages')}
+                                        title={
+                                            <span className="site-nav-link">
+                                                <FaGlobe size={14} className="me-1" />
+                                                <span className="site-nav-text">{t('nav.languages')}</span>
+                                            </span>
+                                        }
                                         id="language-dropdown"
                                         align="end"
+                                        className="site-dropdown"
                                     >
                                         <NavDropdown.Item
                                             active={i18n.language?.startsWith('vi')}
@@ -141,11 +153,20 @@ const Header: React.FC = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Nav.Link as={Link} to="/login">{t('nav.login')}</Nav.Link>
+                                    <Nav.Link as={Link} to="/login" className="site-nav-link">
+                                        <FaSignInAlt size={14} />
+                                        <span className="site-nav-text">{t('nav.login')}</span>
+                                    </Nav.Link>
                                     <NavDropdown
-                                        title={t('nav.languages')}
+                                        title={
+                                            <span className="site-nav-link">
+                                                <FaGlobe size={14} className="me-1" />
+                                                <span className="site-nav-text">{t('nav.languages')}</span>
+                                            </span>
+                                        }
                                         id="language-dropdown"
                                         align="end"
+                                        className="site-dropdown"
                                     >
                                         <NavDropdown.Item
                                             active={i18n.language?.startsWith('vi')}

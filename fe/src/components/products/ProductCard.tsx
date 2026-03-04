@@ -17,7 +17,7 @@ interface ProductCardProps {
     onAddToCart?: (productId: string) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
     const { t, i18n } = useTranslation();
     const { isInCart, addToCart } = useCart();
     const { isAuthenticated } = useAuth();
@@ -45,7 +45,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         if (!inCart) {
             try {
-                await addToCart(product._id, 1);
+                if (onAddToCart) {
+                    await onAddToCart(product._id);
+                } else {
+                    await addToCart(product._id, 1);
+                }
             } catch {
                 // Error handling is done in CartContext
             }
@@ -55,7 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const categoryLabel = getCategoryLabel(product.category, t, i18n);
 
     return (
-        <Card className="h-100 shadow-sm hover-shadow product-card">
+        <Card className="h-100 product-card surface-card border-0">
             <div className="position-relative">
                 <Link to={`/products/${product._id}`} className="d-block product-card__image-wrapper">
                     <Card.Img
@@ -63,46 +67,46 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         src={getImageSource()}
                         alt={title}
                         className="product-card__image"
-                        style={{ height: '400px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
+                        style={{ height: '360px' }}
                     />
                 </Link>
                 {product.featured && (
-                    <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
+                    <Badge bg="warning" className="position-absolute top-0 end-0 m-2 status-chip text-dark">
                         {t('productCard.featured')}
                     </Badge>
                 )}
                 {product.stock === 0 && (
-                    <Badge bg="danger" className="position-absolute top-0 start-0 m-2">
+                    <Badge bg="danger" className="position-absolute top-0 start-0 m-2 status-chip">
                         {t('productCard.outOfStock')}
                     </Badge>
                 )}
             </div>
             <Card.Body className="d-flex flex-column">
-                <Card.Title className="text-truncate" title={title}>
-                    <Link to={`/products/${product._id}`} className="text-decoration-none text-dark">
+                <Card.Title className="text-truncate fs-6 fw-semibold" title={title}>
+                    <Link to={`/products/${product._id}`} className="product-card__title">
                         {title}
                     </Link>
                 </Card.Title>
-                <Card.Subtitle className="mb-2 text-muted text-truncate">
+                <Card.Subtitle className="mb-2 text-muted text-truncate small">
                     {t('productCard.by', { author: product.author })}
                 </Card.Subtitle>
-                <div className="mb-2">
-                    <Badge bg="secondary" className="me-1">{categoryLabel}</Badge>
-                    <span className="text-warning">
+                <div className="mb-2 d-flex justify-content-between align-items-center gap-2">
+                    <Badge bg="light" text="dark" className="border fw-medium">{categoryLabel}</Badge>
+                    <span className="text-warning small fw-semibold">
                         <FaStar /> {product.rating.toFixed(1)} ({product.numReviews})
                     </span>
                 </div>
-                <Card.Text className="text-truncate" style={{ maxHeight: '3em' }}>
+                <Card.Text className="text-muted small product-card__description">
                     {description}
                 </Card.Text>
                 <div className="mt-auto">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h5 className="mb-0 text-primary">{formatMoney(product.price, 'USD')}</h5>
+                        <h5 className="mb-0 text-primary fw-bold">{formatMoney(product.price, 'USD')}</h5>
                         <small className="text-muted">{t('productCard.stock', { count: product.stock })}</small>
                     </div>
                     <Button
-                        variant={inCart ? "secondary" : "primary"}
-                        className="w-100"
+                        variant={inCart ? 'secondary' : 'primary'}
+                        className="w-100 rounded-3 fw-semibold"
                         onClick={handleAddToCart}
                         disabled={product.stock === 0 || inCart}
                     >

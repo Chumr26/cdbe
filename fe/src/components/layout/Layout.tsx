@@ -10,9 +10,9 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <CartProvider>
-            <div className="d-flex flex-column min-vh-100">
+            <div className="d-flex flex-column min-vh-100 app-shell">
                 <Header />
-                <main className="flex-grow-1" style={{ paddingTop: '56px' }}>
+                <main className="flex-grow-1 app-main">
                     {children}
                 </main>
                 <Footer />

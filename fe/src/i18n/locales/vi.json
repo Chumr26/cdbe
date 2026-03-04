@@ -13,6 +13,7 @@
   "nav": {
     "home": "Trang chủ",
     "products": "Sản phẩm",
+    "cart": "Giỏ hàng",
     "login": "Đăng nhập",
     "signUp": "Đăng ký",
     "profile": "Hồ sơ",
@@ -133,7 +134,56 @@
     "ctaTitle": "Bắt đầu hành trình đọc sách hôm nay",
     "ctaSubtitle": "Tham gia cùng hàng ngàn người yêu sách và tìm cuốn sách tuyệt vời tiếp theo.",
     "signUpNow": "Đăng ký ngay",
+    "exploreCatalog": "Khám phá danh mục",
     "addToCartError": "Không thể thêm vào giỏ hàng",
+    "stats": {
+      "titles": "Đầu sách tuyển chọn",
+      "readers": "Độc giả hài lòng",
+      "rating": "Đánh giá trung bình",
+      "support": "Hỗ trợ khách hàng"
+    },
+    "valueSectionTitle": "Vì sao độc giả chọn chúng tôi",
+    "valueSectionSubtitle": "Mọi thứ bạn cần để mua sách trực tuyến nhanh, thuận tiện và đáng tin cậy.",
+    "valueProps": {
+      "curated": {
+        "title": "Danh mục chọn lọc kỹ lưỡng",
+        "description": "Từ sách bán chạy đến những tựa sách giá trị, mỗi cuốn đều được tuyển chọn về chất lượng và tính phù hợp."
+      },
+      "fastDelivery": {
+        "title": "Giao hàng nhanh và ổn định",
+        "description": "Nhận sách sớm với đóng gói an toàn và cập nhật trạng thái đơn hàng minh bạch."
+      },
+      "securePayment": {
+        "title": "Thanh toán an toàn",
+        "description": "An tâm mua sắm với phương thức thanh toán tin cậy và giao dịch được bảo vệ."
+      }
+    },
+    "howItWorksTitle": "Cách hoạt động",
+    "howItWorksSubtitle": "Nhận cuốn sách tiếp theo của bạn chỉ với 3 bước đơn giản.",
+    "howItWorks": {
+      "discover": {
+        "title": "Khám phá",
+        "description": "Duyệt theo danh mục, xem sách nổi bật và tìm những gì phù hợp với sở thích của bạn."
+      },
+      "choose": {
+        "title": "Lựa chọn",
+        "description": "Xem chi tiết, so sánh và thêm sách yêu thích vào giỏ chỉ với một lần nhấn."
+      },
+      "checkout": {
+        "title": "Thanh toán",
+        "description": "Hoàn tất thanh toán bảo mật và theo dõi đơn hàng từ xác nhận đến giao tận tay."
+      }
+    },
+    "testimonialsTitle": "Độc giả nói gì về chúng tôi",
+    "testimonialsSubtitle": "Phản hồi thực tế từ những người đang xây dựng tủ sách của họ cùng Bookstore.",
+    "testimonials": {
+      "quote1": "Gợi ý sách rất chuẩn và giao hàng luôn đúng hẹn. Cảm giác như một nhà sách được làm riêng cho người đọc.",
+      "author1": "— Emma R., Người yêu sách",
+      "quote2": "Mình tìm được nhiều đầu sách khó kiếm ở đây. Trải nghiệm duyệt sách mượt và thanh toán rất nhanh.",
+      "author2": "— Daniel T., Sinh viên đại học",
+      "quote3": "Giá tốt, giao diện đẹp và hỗ trợ rất nhiệt tình mỗi khi mình cần xử lý đơn hàng.",
+      "author3": "— Sophia L., Thành viên CLB sách"
+    },
     "categories": {
       "fiction": "Tiểu thuyết",
       "nonFiction": "Phi hư cấu",
@@ -394,6 +444,14 @@
     }
   },
   "admin": {
+    "nav": {
+      "panel": "Bảng quản trị",
+      "dashboard": "Bảng điều khiển",
+      "products": "Sản phẩm",
+      "orders": "Đơn hàng",
+      "users": "Người dùng",
+      "coupons": "Mã giảm giá"
+    },
     "common": {
       "noData": "Không có dữ liệu",
       "unknown": "Không rõ",
@@ -401,6 +459,7 @@
     },
     "dashboard": {
       "title": "Bảng điều khiển",
+      "loadError": "Không thể tải bảng phân tích",
       "lastDays": "{{days}} ngày gần nhất",
       "manageProducts": "Quản lý sản phẩm",
       "manageOrders": "Quản lý đơn hàng",
@@ -416,6 +475,11 @@
       "totalNewUsers": "Tổng người dùng mới: {{count}}",
       "orderStatusDistribution": "Phân bố trạng thái đơn hàng",
       "paymentStatusDistribution": "Phân bố trạng thái thanh toán",
+      "range": {
+        "week": "7 ngày gần nhất",
+        "month": "30 ngày gần nhất",
+        "year": "365 ngày gần nhất"
+      },
       "dailyTrends": "Xu hướng theo ngày",
       "dailyTotals": "Tổng: {{orders}} đơn · {{revenue}} doanh thu · {{newUsers}} người dùng mới",
       "table": {
@@ -454,6 +518,9 @@
       "saveError": "Không thể lưu sản phẩm",
       "deleteError": "Không thể xóa sản phẩm",
       "table": {
+        "select": "Chọn",
+        "selectAll": "Chọn tất cả sản phẩm",
+        "selectProduct": "Chọn sản phẩm",
         "title": "Tên",
         "author": "Tác giả",
         "category": "Danh mục",
@@ -489,7 +556,10 @@
       "delete": {
         "title": "Xác nhận xóa",
         "body": "Bạn có chắc muốn xóa sản phẩm {{title}}? Hành động này không thể hoàn tác.",
+        "bodySelected": "Bạn có chắc muốn xóa {{count}} sản phẩm đã chọn? Hành động này không thể hoàn tác.",
         "confirm": "Xóa sản phẩm",
+        "confirmSelected": "Xóa đã chọn",
+        "selected": "Xóa ({{count}})",
         "cancel": "Hủy"
       }
     },
@@ -511,6 +581,9 @@
         "cancelled": "Đã hủy"
       },
       "table": {
+        "select": "Chọn",
+        "selectAll": "Chọn tất cả đơn hàng",
+        "selectOrder": "Chọn đơn hàng",
         "order": "Mã đơn",
         "customer": "Khách hàng",
         "date": "Ngày",
@@ -542,6 +615,110 @@
         "updating": "Đang cập nhật...",
         "updateCodPaymentStatus": "Cập nhật trạng thái thanh toán COD",
         "updatePayment": "Cập nhật thanh toán"
+      }
+    },
+    "users": {
+      "title": "Quản lý người dùng",
+      "addNew": "Thêm người dùng",
+      "loadError": "Không thể tải người dùng",
+      "saveError": "Không thể tạo người dùng",
+      "deleteError": "Không thể xóa người dùng",
+      "table": {
+        "select": "Chọn",
+        "selectAll": "Chọn tất cả người dùng",
+        "selectUser": "Chọn người dùng",
+        "name": "Tên",
+        "email": "Email",
+        "role": "Vai trò",
+        "joinedDate": "Ngày tham gia",
+        "actions": "Thao tác",
+        "empty": "Không có người dùng"
+      },
+      "role": {
+        "admin": "QUẢN TRỊ",
+        "customer": "KHÁCH HÀNG"
+      },
+      "pagination": "Hiển thị {{shown}} / {{total}} người dùng",
+      "delete": {
+        "title": "Xác nhận xóa",
+        "body": "Bạn có chắc muốn xóa người dùng {{email}}? Hành động này không thể hoàn tác.",
+        "bodySelected": "Bạn có chắc muốn xóa {{count}} người dùng đã chọn? Hành động này không thể hoàn tác.",
+        "cancel": "Hủy",
+        "confirm": "Xóa người dùng",
+        "confirmSelected": "Xóa đã chọn",
+        "selected": "Xóa ({{count}})"
+      },
+      "modal": {
+        "createTitle": "Tạo người dùng",
+        "firstName": "Họ",
+        "lastName": "Tên",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "phone": "Số điện thoại (Tùy chọn)",
+        "role": "Vai trò",
+        "cancel": "Hủy",
+        "save": "Tạo người dùng",
+        "saving": "Đang tạo..."
+      }
+    },
+    "coupons": {
+      "title": "Quản lý mã giảm giá",
+      "addNew": "Thêm mã giảm giá",
+      "loadError": "Không thể tải mã giảm giá",
+      "saveError": "Không thể lưu mã giảm giá",
+      "disableError": "Không thể vô hiệu hóa mã giảm giá",
+      "type": {
+        "percent": "Phần trăm",
+        "fixed": "Cố định"
+      },
+      "status": {
+        "active": "HOẠT ĐỘNG",
+        "inactive": "KHÔNG HOẠT ĐỘNG"
+      },
+      "max": "Tối đa: {{amount}}",
+      "table": {
+        "select": "Chọn",
+        "selectAll": "Chọn tất cả mã giảm giá",
+        "selectCoupon": "Chọn mã giảm giá",
+        "code": "Mã",
+        "type": "Loại",
+        "value": "Giá trị",
+        "minSubtotal": "Đơn tối thiểu",
+        "status": "Trạng thái",
+        "actions": "Thao tác",
+        "empty": "Không có mã giảm giá"
+      },
+      "pagination": "Hiển thị {{shown}} / {{total}} mã giảm giá",
+      "modal": {
+        "editTitle": "Sửa mã giảm giá",
+        "createTitle": "Tạo mã giảm giá",
+        "code": "Mã",
+        "codePlaceholder": "WELCOME10",
+        "name": "Tên",
+        "namePlaceholder": "Tên hiển thị (tùy chọn)",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Mô tả (tùy chọn)",
+        "type": "Loại",
+        "value": "Giá trị",
+        "maxDiscountAmount": "Giảm tối đa (tùy chọn)",
+        "minSubtotal": "Đơn tối thiểu (tùy chọn)",
+        "startsAt": "Bắt đầu (tùy chọn)",
+        "endsAt": "Kết thúc (tùy chọn)",
+        "usageLimitTotal": "Giới hạn tổng (tùy chọn)",
+        "usageLimitPerUser": "Giới hạn mỗi người dùng (tùy chọn)",
+        "active": "Hoạt động",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "saving": "Đang lưu..."
+      },
+      "disable": {
+        "title": "Vô hiệu hóa mã giảm giá",
+        "body": "Vô hiệu hóa mã {{code}}? Khách hàng sẽ không thể áp dụng mã này nữa.",
+        "bodySelected": "Vô hiệu hóa {{count}} mã giảm giá đã chọn? Lịch sử sử dụng vẫn được giữ lại.",
+        "cancel": "Hủy",
+        "confirm": "Vô hiệu hóa",
+        "confirmSelected": "Vô hiệu hóa đã chọn",
+        "selected": "Xóa ({{count}})"
       }
     }
   },

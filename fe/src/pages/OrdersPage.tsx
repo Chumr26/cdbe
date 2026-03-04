@@ -80,23 +80,23 @@ const OrdersPage: React.FC = () => {
     if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
 
     return (
-        <Container className="py-5">
-            <h1 className="mb-4">{t('orders.title')}</h1>
+        <Container className="py-4 py-lg-5">
+            <h1 className="section-title mb-4">{t('orders.title')}</h1>
 
             {orders.length === 0 ? (
-                <Card className="text-center py-5">
+                <Card className="text-center py-5 border-0 surface-card">
                     <Card.Body>
                         <h3>{t('orders.emptyTitle')}</h3>
                         <p className="text-muted">{t('orders.emptySubtitle')}</p>
                         <Link to="/products">
-                            <Button variant="primary">{t('orders.browseProducts')}</Button>
+                            <Button variant="primary" className="rounded-3 fw-semibold px-4">{t('orders.browseProducts')}</Button>
                         </Link>
                     </Card.Body>
                 </Card>
             ) : (
                 orders.map((order) => (
-                    <Card key={order._id} className="mb-3">
-                        <Card.Header className="bg-light">
+                    <Card key={order._id} className="mb-3 border-0 surface-card">
+                        <Card.Header className="bg-transparent border-0 pb-0">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong>Order #{order.orderNumber}</strong>
@@ -114,7 +114,7 @@ const OrdersPage: React.FC = () => {
                             </div>
                         </Card.Header>
                         <Card.Body>
-                            <Table responsive className="mb-0">
+                            <Table responsive className="mb-0 admin-table">
                                 <thead>
                                     <tr>
                                         <th>{t('orders.table.product')}</th>
@@ -146,6 +146,7 @@ const OrdersPage: React.FC = () => {
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
+                                        className="rounded-3"
                                         onClick={() => handleCancelOrder(order._id)}
                                     >
                                         {t('orders.cancel')}

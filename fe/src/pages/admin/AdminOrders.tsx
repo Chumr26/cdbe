@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Pagination, Alert, Badge, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaEdit } from 'react-icons/fa';
+import { Table, Button, Modal, Form, Alert, Badge, Row, Col, Dropdown } from 'react-bootstrap';
 import axios from 'axios';
 import { adminAPI } from '../../api/admin.api';
 import type { Order } from '../../api/orders.api';
@@ -8,6 +7,10 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/currency';
 import { getLocalizedText } from '../../utils/i18n';
+import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import AdminDataSection from '../../components/admin/AdminDataSection';
+import AdminPagination from '../../components/admin/AdminPagination';
+import AdminToolbar from '../../components/admin/AdminToolbar';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -31,6 +34,7 @@ const AdminOrders: React.FC = () => {
 
     // Filter state
     const [statusFilter, setStatusFilter] = useState('');
+    const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 
     // Modal state
     const [showModal, setShowModal] = useState(false);
@@ -52,6 +56,7 @@ const AdminOrders: React.FC = () => {
             setTotalPages(response.pages);
             setTotalItems(response.total);
             setCurrentPage(response.page);
+            setSelectedOrderIds([]);
         } catch {
             setError(t('admin.orders.loadError'));
         } finally {
@@ -66,6 +71,29 @@ const AdminOrders: React.FC = () => {
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setStatusFilter(e.target.value);
         setCurrentPage(1); // Reset to page 1 on filter change
+    };
+
+    const toggleOrderSelection = (orderId: string) => {
+        setSelectedOrderIds((prev) =>
+            prev.includes(orderId)
+                ? prev.filter((id) => id !== orderId)
+                : [...prev, orderId],
+        );
+    };
+
+    const toggleSelectAllVisible = () => {
+        const visibleIds = orders.map((order) => order._id);
+        const allSelected =
+            visibleIds.length > 0 &&
+            visibleIds.every((id) => selectedOrderIds.includes(id));
+
+        setSelectedOrderIds((prev) => {
+            if (allSelected) {
+                return prev.filter((id) => !visibleIds.includes(id));
+            }
+            const next = new Set([...prev, ...visibleIds]);
+            return Array.from(next);
+        });
     };
 
     const handleShowModal = (order: Order) => {
@@ -173,46 +201,76 @@ const AdminOrders: React.FC = () => {
     const isStatusDirty = statusToUpdate !== '' && statusToUpdate !== initialOrderStatus;
     const isPaymentDirty = paymentStatusToUpdate !== '' && paymentStatusToUpdate !== initialPaymentStatus;
     const isModalDirty = isStatusDirty || isPaymentDirty;
+    const allVisibleSelected =
+        orders.length > 0 &&
+        orders.every((order) => selectedOrderIds.includes(order._id));
 
     if (loading && !orders.length) return <LoadingSpinner fullPage />;
 
     return (
-        <Container className="py-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>{t('admin.orders.title')}</h2>
-                <Form.Select
-                    style={{ width: '200px' }}
-                    value={statusFilter}
-                    onChange={handleFilterChange}
-                >
-                    <option value="">{t('admin.orders.filter.all')}</option>
-                    <option value="pending">{t('admin.orders.filter.pending')}</option>
-                    <option value="processing">{t('admin.orders.filter.processing')}</option>
-                    <option value="shipped">{t('admin.orders.filter.shipped')}</option>
-                    <option value="delivered">{t('admin.orders.filter.delivered')}</option>
-                    <option value="cancelled">{t('admin.orders.filter.cancelled')}</option>
-                </Form.Select>
-            </div>
+        <div className="admin-page">
+            <AdminPageHeader title={t('admin.orders.title')} />
+
+            <AdminToolbar
+                left={
+                    <Form.Select
+                        style={{ width: '220px' }}
+                        value={statusFilter}
+                        onChange={handleFilterChange}
+                        className="focus-ring"
+                    >
+                        <option value="">{t('admin.orders.filter.all')}</option>
+                        <option value="pending">{t('admin.orders.filter.pending')}</option>
+                        <option value="processing">{t('admin.orders.filter.processing')}</option>
+                        <option value="shipped">{t('admin.orders.filter.shipped')}</option>
+                        <option value="delivered">{t('admin.orders.filter.delivered')}</option>
+                        <option value="cancelled">{t('admin.orders.filter.cancelled')}</option>
+                    </Form.Select>
+                }
+            />
 
             {error && <Alert variant="danger">{error}</Alert>}
 
-            <Card className="shadow-sm">
-                <Card.Body className="p-0">
-                    <Table responsive hover className="align-middle mb-0">
-                        <thead className="bg-light">
+            <AdminDataSection
+                desktop={
+                    <Table responsive hover className="align-middle mb-0 admin-table">
+                        <thead>
                             <tr>
+                                <th className="admin-table__checkbox-cell">
+                                    <Form.Check
+                                        type="checkbox"
+                                        checked={allVisibleSelected}
+                                        onChange={toggleSelectAllVisible}
+                                        onClick={(event) => event.stopPropagation()}
+                                        aria-label={t('admin.orders.table.selectAll')}
+                                    />
+                                </th>
                                 <th>{t('admin.orders.table.order')}</th>
                                 <th>{t('admin.orders.table.customer')}</th>
                                 <th>{t('admin.orders.table.date')}</th>
                                 <th>{t('admin.orders.table.total')}</th>
                                 <th>{t('admin.orders.table.status')}</th>
-                                <th>{t('admin.orders.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {orders.length > 0 ? (
                                 orders.map(order => (
-                                    <tr key={order._id}>
+                                    <tr
+                                        key={order._id}
+                                        className={`admin-table__row--selectable ${selectedOrderIds.includes(order._id) ? 'admin-table__row--selected' : ''}`}
+                                        onClick={() => handleShowModal(order)}
+                                    >
+                                        <td
+                                            className="admin-table__checkbox-cell"
+                                            onClick={(event) => event.stopPropagation()}
+                                        >
+                                            <Form.Check
+                                                type="checkbox"
+                                                checked={selectedOrderIds.includes(order._id)}
+                                                onChange={() => toggleOrderSelection(order._id)}
+                                                aria-label={t('admin.orders.table.selectOrder')}
+                                            />
+                                        </td>
                                         <td>{order.orderNumber || order._id.substring(0, 8).toUpperCase()}</td>
                                         <td>
                                             {order.shippingAddress.firstName} {order.shippingAddress.lastName}
@@ -226,11 +284,6 @@ const AdminOrders: React.FC = () => {
                                                 {order.orderStatus.toUpperCase()}
                                             </Badge>
                                         </td>
-                                        <td>
-                                            <Button variant="outline-primary" size="sm" onClick={() => handleShowModal(order)}>
-                                                <FaEdit /> {t('admin.orders.table.details')}
-                                            </Button>
-                                        </td>
                                     </tr>
                                 ))
                             ) : (
@@ -240,35 +293,71 @@ const AdminOrders: React.FC = () => {
                             )}
                         </tbody>
                     </Table>
-                </Card.Body>
-                <Card.Footer className="d-flex justify-content-between align-items-center">
-                    <div>{t('admin.orders.pagination', { shown: orders.length, total: totalItems })}</div>
-                    {totalPages > 1 && (
-                        <Pagination className="mb-0">
-                            <Pagination.Prev
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                            />
-                            {[...Array(totalPages)].map((_, i) => (
-                                <Pagination.Item
-                                    key={i + 1}
-                                    active={i + 1 === currentPage}
-                                    onClick={() => setCurrentPage(i + 1)}
+                }
+                mobile={
+                    orders.length > 0 ? (
+                        orders.map((order) => (
+                            <div
+                                key={order._id}
+                                className={`admin-mobile-card admin-mobile-card--selectable ${selectedOrderIds.includes(order._id) ? 'admin-mobile-card--selected' : ''}`}
+                                onClick={() => handleShowModal(order)}
+                            >
+                                <div
+                                    className="admin-mobile-card__row"
+                                    onClick={(event) => event.stopPropagation()}
                                 >
-                                    {i + 1}
-                                </Pagination.Item>
-                            ))}
-                            <Pagination.Next
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                            />
-                        </Pagination>
-                    )}
-                </Card.Footer>
-            </Card>
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.select')}</span>
+                                    <span className="admin-mobile-card__value">
+                                        <Form.Check
+                                            type="checkbox"
+                                            checked={selectedOrderIds.includes(order._id)}
+                                            onChange={() => toggleOrderSelection(order._id)}
+                                            aria-label={t('admin.orders.table.selectOrder')}
+                                        />
+                                    </span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.order')}</span>
+                                    <span className="admin-mobile-card__value">{order.orderNumber || order._id.substring(0, 8).toUpperCase()}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.customer')}</span>
+                                    <span className="admin-mobile-card__value">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.date')}</span>
+                                    <span className="admin-mobile-card__value">{new Date(order.createdAt).toLocaleDateString(locale)}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.total')}</span>
+                                    <span className="admin-mobile-card__value">{formatMoney(order.total, 'VND')}</span>
+                                </div>
+                                <div className="admin-mobile-card__row">
+                                    <span className="admin-mobile-card__label">{t('admin.orders.table.status')}</span>
+                                    <span className="admin-mobile-card__value">
+                                        <Badge bg={getStatusBadge(order.orderStatus)}>{order.orderStatus.toUpperCase()}</Badge>
+                                    </span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-4">{t('admin.orders.table.empty')}</div>
+                    )
+                }
+                footer={
+                    <>
+                        <div>{t('admin.orders.pagination', { shown: orders.length, total: totalItems })}</div>
+                        <AdminPagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                        />
+                    </>
+                }
+            />
 
             {/* View/Update Modal */}
-            <Modal show={showModal} onHide={handleCloseModal} size="lg">
+            <Modal show={showModal} onHide={handleCloseModal} size="lg" centered dialogClassName="admin-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>{t('admin.orders.modal.title')}</Modal.Title>
                 </Modal.Header>
@@ -371,7 +460,7 @@ const AdminOrders: React.FC = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </Container>
+        </div>
     );
 };
 

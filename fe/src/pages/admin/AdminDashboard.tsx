@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Row, Col, Card, Badge, Form } from 'react-bootstrap';
 import { FaUsers, FaShoppingCart, FaDollarSign, FaBoxOpen } from 'react-icons/fa';
 import {
     ResponsiveContainer,
@@ -24,6 +24,15 @@ import { formatMoney } from '../../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../../utils/i18n';
 import { getCategoryLabel } from '../../utils/categoryLabel';
+import AdminPageHeader from '../../components/admin/AdminPageHeader';
+
+type AnalyticsRangeKey = 'week' | 'month' | 'year';
+
+const RANGE_TO_DAYS: Record<AnalyticsRangeKey, number> = {
+    week: 7,
+    month: 30,
+    year: 365,
+};
 
 const AdminDashboard: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -31,25 +40,28 @@ const AdminDashboard: React.FC = () => {
     const [analytics, setAnalytics] = useState<AdvancedAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedRange, setSelectedRange] = useState<AnalyticsRangeKey>('month');
 
-    useEffect(() => {
-        loadDashboard();
-    }, []);
-
-    const loadDashboard = async () => {
+    const loadDashboard = useCallback(async (range: AnalyticsRangeKey) => {
+        setLoading(true);
+        setError('');
         try {
             const [dashboardResponse, analyticsResponse] = await Promise.all([
                 adminAPI.getDashboard(),
-                adminAPI.getAdvancedAnalytics(30),
+                adminAPI.getAdvancedAnalytics(RANGE_TO_DAYS[range]),
             ]);
             setStats(dashboardResponse.data);
             setAnalytics(analyticsResponse.data);
         } catch {
-            setError('Failed to load analytics dashboard');
+            setError(t('admin.dashboard.loadError'));
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        loadDashboard(selectedRange);
+    }, [loadDashboard, selectedRange]);
 
     const formatPrice = (price: number) => formatMoney(price, 'VND');
 
@@ -100,76 +112,61 @@ const AdminDashboard: React.FC = () => {
     };
 
     if (loading) return <LoadingSpinner fullPage />;
-    if (error) return <Container className="py-5"><ErrorMessage message={error} /></Container>;
+    if (error) return <div className="admin-page"><ErrorMessage message={error} /></div>;
     if (!stats || !analytics) return null;
 
     return (
-        <Container className="py-5">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 className="mb-1">{t('admin.dashboard.title')}</h1>
-                    <div className="text-muted">{t('admin.dashboard.lastDays', { days: analytics.rangeDays })}</div>
-                </div>
-            </div>
-
-            {/* Quick Links */}
-            <Row className="mb-4">
-                <Col md={3}>
-                    <Button variant="outline-primary" className="w-100 py-3" onClick={() => window.location.href = '/admin/products'}>
-                        <FaBoxOpen className="me-2" /> {t('admin.dashboard.manageProducts')}
-                    </Button>
-                </Col>
-                <Col md={3}>
-                    <Button variant="outline-success" className="w-100 py-3" onClick={() => window.location.href = '/admin/orders'}>
-                        <FaShoppingCart className="me-2" /> {t('admin.dashboard.manageOrders')}
-                    </Button>
-                </Col>
-                <Col md={3}>
-                    <Button variant="outline-info" className="w-100 py-3" onClick={() => window.location.href = '/admin/users'}>
-                        <FaUsers className="me-2" /> {t('admin.dashboard.manageUsers')}
-                    </Button>
-                </Col>
-                <Col md={3}>
-                    <Button variant="outline-warning" className="w-100 py-3" onClick={() => window.location.href = '/admin/coupons'}>
-                        <FaDollarSign className="me-2" /> {t('admin.dashboard.manageCoupons')}
-                    </Button>
-                </Col>
-            </Row>
+        <div className="admin-page admin-dashboard">
+            <AdminPageHeader
+                title={t('admin.dashboard.title')}
+                actions={
+                    <Form.Select
+                        style={{ width: '220px' }}
+                        value={selectedRange}
+                        onChange={(event) => setSelectedRange(event.target.value as AnalyticsRangeKey)}
+                        className="focus-ring"
+                    >
+                        <option value="week">{t('admin.dashboard.range.week')}</option>
+                        <option value="month">{t('admin.dashboard.range.month')}</option>
+                        <option value="year">{t('admin.dashboard.range.year')}</option>
+                    </Form.Select>
+                }
+            />
 
             <Row className="g-4 mb-4">
                 <Col md={3}>
-                    <Card className="text-center shadow-sm">
+                    <Card className="text-center border-0 surface-card admin-kpi-card">
                         <Card.Body>
-                            <FaUsers size={40} className="text-primary mb-2" />
-                            <h3>{analytics.totals.newUsers}</h3>
-                            <p className="text-muted mb-0">{t('admin.dashboard.newUsers')}</p>
+                            <FaUsers size={34} className="text-primary admin-kpi-card__icon" />
+                            <h3 className="admin-kpi-card__value">{analytics.totals.newUsers}</h3>
+                            <p className="text-muted mb-0 admin-kpi-card__label">{t('admin.dashboard.newUsers')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
                 <Col md={3}>
-                    <Card className="text-center shadow-sm">
+                    <Card className="text-center border-0 surface-card admin-kpi-card">
                         <Card.Body>
-                            <FaShoppingCart size={40} className="text-success mb-2" />
-                            <h3>{analytics.totals.totalOrders}</h3>
-                            <p className="text-muted mb-0">{t('admin.dashboard.orders')}</p>
+                            <FaShoppingCart size={34} className="text-success admin-kpi-card__icon" />
+                            <h3 className="admin-kpi-card__value">{analytics.totals.totalOrders}</h3>
+                            <p className="text-muted mb-0 admin-kpi-card__label">{t('admin.dashboard.orders')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
                 <Col md={3}>
-                    <Card className="text-center shadow-sm">
+                    <Card className="text-center border-0 surface-card admin-kpi-card">
                         <Card.Body>
-                            <FaDollarSign size={40} className="text-warning mb-2" />
-                            <h3>{formatPrice(analytics.totals.revenue)}</h3>
-                            <p className="text-muted mb-0">{t('admin.dashboard.revenue')}</p>
+                            <FaDollarSign size={34} className="text-warning admin-kpi-card__icon" />
+                            <h3 className="admin-kpi-card__value">{formatPrice(analytics.totals.revenue)}</h3>
+                            <p className="text-muted mb-0 admin-kpi-card__label">{t('admin.dashboard.revenue')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
                 <Col md={3}>
-                    <Card className="text-center shadow-sm">
+                    <Card className="text-center border-0 surface-card admin-kpi-card">
                         <Card.Body>
-                            <FaBoxOpen size={40} className="text-danger mb-2" />
-                            <h3>{formatPrice(analytics.totals.avgOrderValue)}</h3>
-                            <p className="text-muted mb-0">{t('admin.dashboard.avgOrderValue')}</p>
+                            <FaBoxOpen size={34} className="text-danger admin-kpi-card__icon" />
+                            <h3 className="admin-kpi-card__value">{formatPrice(analytics.totals.avgOrderValue)}</h3>
+                            <p className="text-muted mb-0 admin-kpi-card__label">{t('admin.dashboard.avgOrderValue')}</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -177,11 +174,11 @@ const AdminDashboard: React.FC = () => {
 
             <Row className="g-4 mb-4">
                 <Col lg={8}>
-                    <Card className="shadow-sm h-100">
-                        <Card.Header className="bg-light">
+                    <Card className="border-0 surface-card h-100 admin-dashboard-chart-card">
+                        <Card.Header className="bg-transparent border-0 pb-0">
                             <h5 className="mb-0">{t('admin.dashboard.revenueOrdersTrend')}</h5>
                         </Card.Header>
-                        <Card.Body style={{ height: 320 }}>
+                        <Card.Body className="admin-dashboard-chart-body">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={analytics.timeSeries} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                                     <CartesianGrid stroke={chartTheme.grid} strokeDasharray="3 3" />
@@ -221,11 +218,11 @@ const AdminDashboard: React.FC = () => {
                     </Card>
                 </Col>
                 <Col lg={4}>
-                    <Card className="shadow-sm h-100">
-                        <Card.Header className="bg-light">
+                    <Card className="border-0 surface-card h-100 admin-dashboard-chart-card">
+                        <Card.Header className="bg-transparent border-0 pb-0">
                             <h5 className="mb-0">{t('admin.dashboard.orderStatus')}</h5>
                         </Card.Header>
-                        <Card.Body style={{ height: 320 }}>
+                        <Card.Body className="admin-dashboard-chart-body">
                             {orderStatusPieData.length === 0 ? (
                                 <div className="text-muted">{t('admin.common.noData')}</div>
                             ) : (
@@ -255,14 +252,14 @@ const AdminDashboard: React.FC = () => {
 
             <Row className="g-4 mb-4">
                 <Col lg={12}>
-                    <Card className="shadow-sm">
-                        <Card.Header className="bg-light d-flex justify-content-between align-items-center">
+                    <Card className="border-0 surface-card admin-dashboard-chart-card">
+                        <Card.Header className="bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
                             <h5 className="mb-0">{t('admin.dashboard.newUsersPerDay')}</h5>
                             {timeSeriesTotals && (
                                 <div className="text-muted">{t('admin.dashboard.totalNewUsers', { count: timeSeriesTotals.newUsers })}</div>
                             )}
                         </Card.Header>
-                        <Card.Body style={{ height: 280 }}>
+                        <Card.Body className="admin-dashboard-chart-body admin-dashboard-chart-body--short">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={analytics.timeSeries} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                                     <CartesianGrid stroke={chartTheme.grid} strokeDasharray="3 3" />
@@ -283,8 +280,8 @@ const AdminDashboard: React.FC = () => {
 
             <Row className="g-4 mb-4">
                 <Col md={6}>
-                    <Card className="shadow-sm h-100">
-                        <Card.Header className="bg-light">
+                    <Card className="border-0 surface-card h-100">
+                        <Card.Header className="bg-transparent border-0 pb-0">
                             <h5 className="mb-0">{t('admin.dashboard.orderStatusDistribution')}</h5>
                         </Card.Header>
                         <Card.Body>
@@ -303,8 +300,8 @@ const AdminDashboard: React.FC = () => {
                     </Card>
                 </Col>
                 <Col md={6}>
-                    <Card className="shadow-sm h-100">
-                        <Card.Header className="bg-light">
+                    <Card className="border-0 surface-card h-100">
+                        <Card.Header className="bg-transparent border-0 pb-0">
                             <h5 className="mb-0">{t('admin.dashboard.paymentStatusDistribution')}</h5>
                         </Card.Header>
                         <Card.Body>
@@ -324,8 +321,8 @@ const AdminDashboard: React.FC = () => {
                 </Col>
             </Row>
 
-            <Card className="shadow-sm mb-4">
-                <Card.Header className="bg-light d-flex justify-content-between align-items-center">
+            <Card className="border-0 surface-card mb-4">
+                <Card.Header className="bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
                     <h5 className="mb-0">{t('admin.dashboard.dailyTrends')}</h5>
                     {timeSeriesTotals && (
                         <div className="text-muted">
@@ -335,7 +332,7 @@ const AdminDashboard: React.FC = () => {
                 </Card.Header>
                 <Card.Body>
                     <div className="table-responsive">
-                        <table className="table table-hover mb-0">
+                        <table className="table table-hover mb-0 admin-table">
                             <thead>
                                 <tr>
                                     <th>{t('admin.dashboard.table.date')}</th>
@@ -345,7 +342,7 @@ const AdminDashboard: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {analytics.timeSeries.map((p) => (
+                                {analytics.timeSeries.slice(0, 5).map((p) => (
                                     <tr key={p.date}>
                                         <td>{p.date}</td>
                                         <td>{p.orders}</td>
@@ -359,8 +356,8 @@ const AdminDashboard: React.FC = () => {
                 </Card.Body>
             </Card>
 
-            <Card className="shadow-sm mb-4">
-                <Card.Header className="bg-light">
+            <Card className="border-0 surface-card mb-4">
+                <Card.Header className="bg-transparent border-0 pb-0">
                     <h5 className="mb-0">{t('admin.dashboard.topProducts')}</h5>
                 </Card.Header>
                 <Card.Body>
@@ -368,7 +365,7 @@ const AdminDashboard: React.FC = () => {
                         <div className="text-muted">{t('admin.dashboard.noCompletedSales')}</div>
                     ) : (
                         <div className="table-responsive">
-                            <table className="table table-hover mb-0">
+                            <table className="table table-hover mb-0 admin-table">
                                 <thead>
                                     <tr>
                                         <th>{t('admin.dashboard.topProductsTable.title')}</th>
@@ -394,7 +391,7 @@ const AdminDashboard: React.FC = () => {
             </Card>
 
             {stats.lowStockProducts && stats.lowStockProducts.length > 0 && (
-                <Card className="shadow-sm">
+                <Card className="border-0 surface-card">
                     <Card.Header className="bg-warning text-dark">
                         <h5 className="mb-0">{t('admin.dashboard.lowStockAlert')}</h5>
                     </Card.Header>
@@ -426,7 +423,7 @@ const AdminDashboard: React.FC = () => {
                     </Card.Body>
                 </Card>
             )}
-        </Container>
+        </div>
     );
 };
 

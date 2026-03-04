@@ -22,8 +22,8 @@ const PaymentResult = () => {
     const orderLabel = useMemo(() => (orderId ? `#${orderId.slice(-6)}` : ''), [orderId]);
 
     return (
-        <Container className="py-5 d-flex justify-content-center">
-            <Card className="text-center shadow-lg p-5" style={{ maxWidth: '500px', width: '100%' }}>
+        <Container className="py-4 py-lg-5 d-flex justify-content-center">
+            <Card className="text-center border-0 surface-card p-4 p-md-5" style={{ maxWidth: '540px', width: '100%' }}>
                 <Card.Body>
                     {status === 'success' ? (
                         <>
@@ -33,10 +33,10 @@ const PaymentResult = () => {
                                 {t('paymentResult.successMessage', { order: orderLabel })}
                             </p>
                             <div className="d-grid gap-2">
-                                <Link to="/orders" className="btn btn-primary">
+                                <Link to="/orders" className="btn btn-primary rounded-3 fw-semibold">
                                     {t('paymentResult.viewOrders')}
                                 </Link>
-                                <Link to="/" className="btn btn-outline-secondary">
+                                <Link to="/" className="btn btn-outline-secondary rounded-3">
                                     {t('paymentResult.continueShopping')}
                                 </Link>
                             </div>
@@ -49,10 +49,10 @@ const PaymentResult = () => {
                                 {t('paymentResult.cancelledMessage')}
                             </p>
                             <div className="d-grid gap-2">
-                                <Link to="/checkout" className="btn btn-primary">
+                                <Link to="/checkout" className="btn btn-primary rounded-3 fw-semibold">
                                     {t('paymentResult.retry')}
                                 </Link>
-                                <Link to="/" className="btn btn-outline-secondary">
+                                <Link to="/" className="btn btn-outline-secondary rounded-3">
                                     {t('paymentResult.backHome')}
                                 </Link>
                             </div>
@@ -65,10 +65,10 @@ const PaymentResult = () => {
                                 {t('paymentResult.failedMessage')}
                             </p>
                             <div className="d-grid gap-2">
-                                <Link to="/checkout" className="btn btn-primary">
+                                <Link to="/checkout" className="btn btn-primary rounded-3 fw-semibold">
                                     {t('paymentResult.retry')}
                                 </Link>
-                                <Link to="/" className="btn btn-outline-secondary">
+                                <Link to="/" className="btn btn-outline-secondary rounded-3">
                                     {t('paymentResult.contactSupport')}
                                 </Link>
                             </div>

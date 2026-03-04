@@ -11,8 +11,6 @@ import type { Category } from '../api/categories.api';
 import ProductCard from '../components/products/ProductCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
-import { cartAPI } from '../api/cart.api';
-import { useAuth } from '../context/AuthContext';
 
 const getErrorMessage = (err: unknown, fallback: string) => {
     if (axios.isAxiosError(err)) {
@@ -32,7 +30,6 @@ const ProductsPage: React.FC = () => {
     const [error, setError] = useState('');
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const { isAuthenticated } = useAuth();
 
     const [filters, setFilters] = useState<ProductFilters>({
         page: 1,
@@ -113,36 +110,38 @@ const ProductsPage: React.FC = () => {
         window.scrollTo(0, 0);
     };
 
-    const handleAddToCart = async (productId: string) => {
-        if (!isAuthenticated) {
-            window.location.href = '/login';
-            return;
-        }
-
-        try {
-            await cartAPI.addToCart(productId, 1);
-            alert('Product added to cart!');
-        } catch (err: unknown) {
-            alert(getErrorMessage(err, 'Failed to add to cart'));
-        }
-    };
-
     return (
-        <Container className="py-4">
-            <h1 className="mb-4">{t('products.browseTitle')}</h1>
+        <Container className="py-4 py-lg-5">
+            <div className="mb-4">
+                <h1 className="section-title mb-2">{t('products.browseTitle')}</h1>
+                <p className="text-muted mb-0">{t('search.placeholder')}</p>
+            </div>
 
-            <Row>
-                {/* Filters Sidebar */}
-                <Col md={3} className="mb-4">
-                    <div className="bg-light p-3 rounded">
-                        <h5 className="mb-3">{t('products.filters')}</h5>
+            <div className="surface-card p-3 p-lg-4 products-filter-top mb-4">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <h5 className="mb-0 fw-semibold">{t('products.filters')}</h5>
+                    <Button variant="outline-secondary" className="rounded-3 fw-semibold px-3" onClick={() => {
+                        setFilters({
+                            page: 1,
+                            limit: 12,
+                            search: '',
+                            category: '',
+                            sort: 'createdAt',
+                            order: 'desc',
+                        });
+                    }}>
+                        {t('products.clearFilters')}
+                    </Button>
+                </div>
 
-                        {/* Category */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('products.category')}</Form.Label>
+                <Row className="g-3 products-filter-top__controls">
+                    <Col sm={6} lg={3}>
+                        <Form.Group>
+                            <Form.Label className="text-muted small fw-semibold text-uppercase">{t('products.category')}</Form.Label>
                             <Form.Select
                                 value={filters.category}
                                 onChange={(e) => handleFilterChange('category', e.target.value)}
+                                className="focus-ring"
                             >
                                 <option value="">{t('products.allCategories')}</option>
                                 {categories.map((cat) => (
@@ -152,33 +151,41 @@ const ProductsPage: React.FC = () => {
                                 ))}
                             </Form.Select>
                         </Form.Group>
+                    </Col>
 
-                        {/* Price Range */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('products.minPrice')}</Form.Label>
+                    <Col sm={6} lg={2}>
+                        <Form.Group>
+                            <Form.Label className="text-muted small fw-semibold text-uppercase">{t('products.minPrice')}</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Min"
                                 value={filters.minPrice || ''}
                                 onChange={(e) => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
+                                className="focus-ring"
                             />
                         </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('products.maxPrice')}</Form.Label>
+                    </Col>
+
+                    <Col sm={6} lg={2}>
+                        <Form.Group>
+                            <Form.Label className="text-muted small fw-semibold text-uppercase">{t('products.maxPrice')}</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Max"
                                 value={filters.maxPrice || ''}
                                 onChange={(e) => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
+                                className="focus-ring"
                             />
                         </Form.Group>
+                    </Col>
 
-                        {/* Sort */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('products.sortBy')}</Form.Label>
+                    <Col sm={6} lg={3}>
+                        <Form.Group>
+                            <Form.Label className="text-muted small fw-semibold text-uppercase">{t('products.sortBy')}</Form.Label>
                             <Form.Select
                                 value={filters.sort}
                                 onChange={(e) => handleFilterChange('sort', e.target.value)}
+                                className="focus-ring"
                             >
                                 <option value="createdAt">{t('products.newest')}</option>
                                 <option value="price">{t('products.price')}</option>
@@ -186,87 +193,73 @@ const ProductsPage: React.FC = () => {
                                 <option value="title">{t('products.title')}</option>
                             </Form.Select>
                         </Form.Group>
+                    </Col>
 
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('products.order')}</Form.Label>
+                    <Col sm={6} lg={2}>
+                        <Form.Group>
+                            <Form.Label className="text-muted small fw-semibold text-uppercase">{t('products.order')}</Form.Label>
                             <Form.Select
                                 value={filters.order}
                                 onChange={(e) => handleFilterChange('order', e.target.value as 'asc' | 'desc')}
+                                className="focus-ring"
                             >
                                 <option value="asc">{t('products.ascending')}</option>
                                 <option value="desc">{t('products.descending')}</option>
                             </Form.Select>
                         </Form.Group>
+                    </Col>
+                </Row>
+            </div>
 
-                        <Button variant="secondary" className="w-100" onClick={() => {
-                            setFilters({
-                                page: 1,
-                                limit: 12,
-                                search: '',
-                                category: '',
-                                sort: 'createdAt',
-                                order: 'desc',
-                            });
-                        }}>
-                            {t('products.clearFilters')}
-                        </Button>
+            {loading ? (
+                <LoadingSpinner />
+            ) : error ? (
+                <ErrorMessage message={error} />
+            ) : (
+                <>
+                    <div className="d-flex justify-content-between align-items-center mb-3 p-3 surface-card">
+                        <p className="text-muted mb-0">
+                            {t('products.showing', { count: products.length })}
+                        </p>
                     </div>
-                </Col>
 
-                {/* Products Grid */}
-                <Col md={9}>
-                    {loading ? (
-                        <LoadingSpinner />
-                    ) : error ? (
-                        <ErrorMessage message={error} />
-                    ) : (
-                        <>
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <p className="text-muted mb-0">
-                                    {t('products.showing', { count: products.length })}
-                                </p>
-                            </div>
+                    <Row xs={1} sm={2} lg={3} className="g-4">
+                        {products.map((product) => (
+                            <Col key={product._id}>
+                                <ProductCard product={product} />
+                            </Col>
+                        ))}
+                    </Row>
 
-                            <Row xs={1} sm={2} lg={3} className="g-4">
-                                {products.map((product) => (
-                                    <Col key={product._id}>
-                                        <ProductCard product={product} onAddToCart={handleAddToCart} />
-                                    </Col>
-                                ))}
-                            </Row>
-
-                            {products.length === 0 && (
-                                <div className="text-center py-5">
-                                    <p className="text-muted">{t('products.empty')}</p>
-                                </div>
-                            )}
-
-                            {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="d-flex justify-content-center mt-4">
-                                    <Pagination>
-                                        <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-                                        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-
-                                        {[...Array(totalPages)].map((_, idx) => (
-                                            <Pagination.Item
-                                                key={idx + 1}
-                                                active={idx + 1 === currentPage}
-                                                onClick={() => handlePageChange(idx + 1)}
-                                            >
-                                                {idx + 1}
-                                            </Pagination.Item>
-                                        ))}
-
-                                        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-                                        <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
-                                    </Pagination>
-                                </div>
-                            )}
-                        </>
+                    {products.length === 0 && (
+                        <div className="text-center py-5 surface-card">
+                            <p className="text-muted">{t('products.empty')}</p>
+                        </div>
                     )}
-                </Col>
-            </Row>
+
+                    {totalPages > 1 && (
+                        <div className="d-flex justify-content-center mt-4 products-pagination">
+                            <Pagination className="mb-0">
+                                <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+                                <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+
+                                {[...Array(totalPages)].map((_, idx) => (
+                                    <Pagination.Item
+                                        key={idx + 1}
+                                        active={idx + 1 === currentPage}
+                                        onClick={() => handlePageChange(idx + 1)}
+                                    >
+                                        {idx + 1}
+                                    </Pagination.Item>
+                                ))}
+
+                                <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+                                <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
+            )}
         </Container>
     );
 };

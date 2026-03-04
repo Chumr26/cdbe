@@ -13,9 +13,11 @@ import { formatMoney } from '../utils/currency';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedText } from '../utils/i18n';
 import { resolveAssetUrl } from '../utils/image';
+import { useCart } from '../context/CartContext';
 
 const CartPage: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { refreshCart } = useCart();
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -73,6 +75,7 @@ const CartPage: React.FC = () => {
             const response = await cartAPI.applyCoupon(couponCode.trim());
             setCart(response.data);
             setCouponCode(response.data.coupon?.code || couponCode.trim().toUpperCase());
+            await refreshCart();
         } catch (err: unknown) {
             setCouponError(getErrorMessage(err, t('cart.applyCouponError')));
         } finally {
@@ -88,6 +91,7 @@ const CartPage: React.FC = () => {
             const response = await cartAPI.removeCoupon();
             setCart(response.data);
             setCouponCode('');
+            await refreshCart();
         } catch (err: unknown) {
             setCouponError(getErrorMessage(err, t('cart.removeCouponError')));
         } finally {
@@ -101,6 +105,7 @@ const CartPage: React.FC = () => {
         try {
             const response = await cartAPI.updateCartItem(productId, newQuantity);
             setCart(response.data);
+            await refreshCart();
         } catch (err: unknown) {
             alert(getErrorMessage(err, t('cart.updateQuantityError')));
         }
@@ -117,6 +122,7 @@ const CartPage: React.FC = () => {
         try {
             const response = await cartAPI.removeFromCart(itemToDelete.id);
             setCart(response.data);
+            await refreshCart();
             setShowDeleteModal(false);
             setItemToDelete(null);
         } catch (err: unknown) {
@@ -132,6 +138,7 @@ const CartPage: React.FC = () => {
         try {
             await cartAPI.clearCart();
             setCart(null);
+            await refreshCart();
             setShowClearModal(false);
         } catch (err: unknown) {
             alert(getErrorMessage(err, t('cart.clearCartError')));
@@ -147,32 +154,32 @@ const CartPage: React.FC = () => {
     const total = cart?.total ?? 0;
 
     return (
-        <Container className="py-5">
-            <h1 className="mb-4">{t('cart.title')}</h1>
+        <Container className="py-4 py-lg-5">
+            <h1 className="section-title mb-4">{t('cart.title')}</h1>
 
             {isEmpty ? (
-                <Card className="text-center py-5">
+                <Card className="text-center py-5 border-0 surface-card">
                     <Card.Body>
                         <h3>{t('cart.emptyTitle')}</h3>
                         <p className="text-muted">{t('cart.emptySubtitle')}</p>
                         <Link to="/products">
-                            <Button variant="primary">{t('cart.browseProducts')}</Button>
+                            <Button variant="primary" className="rounded-3 px-4 fw-semibold">{t('cart.browseProducts')}</Button>
                         </Link>
                     </Card.Body>
                 </Card>
             ) : (
-                <Row>
+                <Row className="g-4">
                     <Col lg={8}>
-                        <Card className="mb-4">
+                        <Card className="mb-4 border-0 surface-card">
                             <Card.Body>
                                 <div className="d-flex justify-content-between align-items-center mb-3">
-                                    <h5>{t('cart.itemsTitle', { count: cart.items.length })}</h5>
-                                    <Button variant="outline-danger" size="sm" onClick={handleClearClick}>
+                                    <h5 className="mb-0 fw-semibold">{t('cart.itemsTitle', { count: cart.items.length })}</h5>
+                                    <Button variant="outline-danger" size="sm" className="rounded-3" onClick={handleClearClick}>
                                         {t('cart.clearCart')}
                                     </Button>
                                 </div>
 
-                                <Table responsive>
+                                <Table responsive className="align-middle cart-table mb-0">
                                     <thead>
                                         <tr>
                                             <th>{t('cart.table.product')}</th>
@@ -197,8 +204,7 @@ const CartPage: React.FC = () => {
                                                                 'https://via.placeholder.com/60x80?text=No+Cover'
                                                             }
                                                             alt={itemTitle}
-                                                            style={{ width: '60px', height: '80px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
-                                                            className="me-3 rounded"
+                                                            className="me-3 rounded cart-item-cover"
                                                         />
                                                         <div>
                                                             <Link to={`/products/${item.productId._id}`} className="text-decoration-none">
@@ -211,9 +217,9 @@ const CartPage: React.FC = () => {
                                                 </td>
                                                 <td className="align-middle">{formatMoney(item.price, 'VND')}</td>
                                                 <td className="align-middle">
-                                                    <div className="d-flex align-items-center">
+                                                    <div className="d-flex align-items-center cart-qty-group">
                                                         <Button
-                                                            className="d-flex align-items-center justify-content-center p-2"
+                                                            className="d-flex align-items-center justify-content-center"
                                                             variant="outline-secondary"
                                                             size="sm"
                                                             onClick={() => updateQuantity(item.productId._id, item.quantity - 1)}
@@ -221,9 +227,9 @@ const CartPage: React.FC = () => {
                                                         >
                                                             <FaMinus />
                                                         </Button>
-                                                        <span className="mx-3">{item.quantity}</span>
+                                                        <span className="mx-3 fw-semibold">{item.quantity}</span>
                                                         <Button
-                                                            className="d-flex align-items-center justify-content-center p-2"
+                                                            className="d-flex align-items-center justify-content-center"
                                                             variant="outline-secondary"
                                                             size="sm"
                                                             onClick={() => updateQuantity(item.productId._id, item.quantity + 1)}
@@ -255,17 +261,18 @@ const CartPage: React.FC = () => {
                     </Col>
 
                     <Col lg={4}>
-                        <Card>
+                        <Card className="border-0 surface-card cart-summary-card">
                             <Card.Body>
-                                <h5 className="mb-3">{t('cart.orderSummary')}</h5>
+                                <h5 className="mb-3 fw-semibold">{t('cart.orderSummary')}</h5>
 
                                 <div className="mb-3">
-                                    <Form.Label className="mb-2">{t('cart.coupon')}</Form.Label>
+                                    <Form.Label className="mb-2 text-muted small fw-semibold text-uppercase">{t('cart.coupon')}</Form.Label>
                                     <div className="d-flex flex-column gap-2">
                                         <Form.Select
                                             value={couponCode}
                                             disabled={applyingCoupon || loadingCoupons || availableCoupons.length === 0}
                                             onChange={(e) => setCouponCode(e.target.value)}
+                                            className="focus-ring"
                                         >
                                             <option value="">{loadingCoupons ? t('cart.loadingCoupons') : t('cart.selectCoupon')}</option>
                                             {availableCoupons.map((c) => (
@@ -285,12 +292,14 @@ const CartPage: React.FC = () => {
                                                 value={couponCode}
                                                 onChange={(e) => setCouponCode(e.target.value)}
                                                 disabled={applyingCoupon}
+                                                className="focus-ring"
                                             />
                                             {cart?.coupon?.code ? (
                                                 <Button
                                                     variant="outline-secondary"
                                                     onClick={removeCoupon}
                                                     disabled={applyingCoupon}
+                                                    className="rounded-3"
                                                 >
                                                     {t('cart.remove')}
                                                 </Button>
@@ -299,6 +308,7 @@ const CartPage: React.FC = () => {
                                                     variant="outline-primary"
                                                     onClick={applyCoupon}
                                                     disabled={applyingCoupon || !couponCode.trim()}
+                                                    className="rounded-3"
                                                 >
                                                     {t('cart.apply')}
                                                 </Button>
@@ -338,13 +348,13 @@ const CartPage: React.FC = () => {
                                 </div>
                                 <Button
                                     variant="primary"
-                                    className="w-100"
+                                    className="w-100 rounded-3 fw-semibold"
                                     onClick={() => navigate('/checkout')}
                                 >
                                     {t('cart.proceed')}
                                 </Button>
                                 <Link to="/products">
-                                    <Button variant="outline-secondary" className="w-100 mt-2">
+                                    <Button variant="outline-secondary" className="w-100 mt-2 rounded-3">
                                         {t('cart.continueShopping')}
                                     </Button>
                                 </Link>

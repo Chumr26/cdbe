@@ -94,12 +94,13 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <Container className="py-5">
+        <Container className="py-4 py-lg-5 auth-shell">
             <Row className="justify-content-center">
                 <Col md={6} lg={5}>
-                    <Card className="shadow">
+                    <Card className="border-0 surface-card auth-card">
                         <Card.Body className="p-4">
-                            <h2 className="text-center mb-4">{t('auth.login.title')}</h2>
+                            <h2 className="text-center mb-2 fw-bold">{t('auth.login.title')}</h2>
+                            <p className="text-center text-muted mb-4">Welcome back to your bookstore account</p>
                             {error && <Alert variant="danger">{error}</Alert>}
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3" controlId="email">
@@ -109,6 +110,7 @@ const LoginPage: React.FC = () => {
                                         placeholder={t('auth.login.emailPlaceholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        className="focus-ring"
                                         required
                                     />
                                 </Form.Group>
@@ -120,6 +122,7 @@ const LoginPage: React.FC = () => {
                                         placeholder={t('auth.login.passwordPlaceholder')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
+                                        className="focus-ring"
                                         required
                                     />
                                 </Form.Group>
@@ -134,7 +137,7 @@ const LoginPage: React.FC = () => {
                                     {/* Original Forgot password link removed as per instruction to move it */}
                                 </div>
 
-                                <Button variant="primary" type="submit" className="w-100 mb-3" disabled={loading}>
+                                <Button variant="primary" type="submit" className="w-100 mb-3 rounded-3 fw-semibold" disabled={loading}>
                                     {loading ? t('auth.login.submitting') : t('auth.login.submit')}
                                 </Button>
 
@@ -150,11 +153,12 @@ const LoginPage: React.FC = () => {
                             </p>
 
                             {/* Development Helper */}
-                            <div className="mt-4 p-3 bg-light rounded text-center">
+                            <div className="mt-4 p-3 bg-light rounded-3 text-center">
                                 <small className="text-muted d-block mb-2">{t('auth.login.devCredentials')}</small>
                                 <Form.Select
                                     size="sm"
                                     value={selectedDevEmail}
+                                    className="focus-ring"
                                     onChange={(e) => {
                                         const nextEmail = e.target.value;
                                         setSelectedDevEmail(nextEmail);

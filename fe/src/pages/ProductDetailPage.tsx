@@ -42,6 +42,7 @@ const ProductDetailPage: React.FC = () => {
     const [reviewsError, setReviewsError] = useState('');
 
     const [reviewRating, setReviewRating] = useState<number>(5);
+    const [hoverRating, setHoverRating] = useState<number>(0);
     const [reviewComment, setReviewComment] = useState('');
     const [reviewSubmitting, setReviewSubmitting] = useState(false);
     const [reviewActionError, setReviewActionError] = useState('');
@@ -239,29 +240,26 @@ const ProductDetailPage: React.FC = () => {
     const categoryLabel = getCategoryLabel(product.category, t, i18n);
 
     return (
-        <Container className="py-3">
-            {/* Breadcrumb Navigation */}
-            <Breadcrumb className="mb-2" style={{ fontSize: '0.9rem' }}>
+        <Container className="py-4 py-lg-5 product-detail-page">
+            <Breadcrumb className="mb-2 small">
                 <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/' }}>{t('nav.home')}</Breadcrumb.Item>
                 <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/products' }}>{t('nav.products')}</Breadcrumb.Item>
                 <Breadcrumb.Item active>{title}</Breadcrumb.Item>
             </Breadcrumb>
 
-            {/* Back Button */}
             <Button
                 variant="link"
                 size="sm"
-                className="mb-3 p-0 text-decoration-none"
+                className="mb-4 p-0 text-decoration-none product-back-link"
                 onClick={() => navigate('/products')}
             >
                 <FaArrowLeft className="me-1" />
                 {t('productDetail.backToProducts')}
             </Button>
 
-            <Row>
-                {/* Book Cover Image - Larger */}
+            <Row className="g-4">
                 <Col md={6} lg={5}>
-                    <div className="position-sticky" style={{ top: '20px' }}>
+                    <div className="position-sticky product-image-panel" style={{ top: '94px' }}>
                         <img
                             src={
                                 resolveAssetUrl(product.coverImage?.url) ||
@@ -269,26 +267,21 @@ const ProductDetailPage: React.FC = () => {
                                 'https://placehold.co/400x600?text=No+Cover'
                             }
                             alt={title}
-                            className="img-fluid rounded shadow"
-                            style={{ width: '100%', maxHeight: '700px', objectFit: 'contain' }}
+                            className="img-fluid rounded-4 product-detail-image"
                         />
                     </div>
                 </Col>
 
-                {/* Product Information - Compact */}
                 <Col md={6} lg={7}>
-                    {/* Category and Featured Badges */}
-                    <div className="mb-2">
-                        <Badge bg="secondary" className="me-2">{categoryLabel}</Badge>
-                        {product.featured && <Badge bg="warning" text="dark">{t('productDetail.featured')}</Badge>}
+                    <div className="mb-2 d-flex align-items-center gap-2 flex-wrap">
+                        <Badge bg="light" text="dark" className="border fw-semibold">{categoryLabel}</Badge>
+                        {product.featured && <Badge bg="warning" text="dark" className="fw-semibold">{t('productDetail.featured')}</Badge>}
                     </div>
 
-                    {/* Title and Author */}
-                    <h2 className="mb-1">{title}</h2>
-                    <p className="text-muted mb-2">{t('productDetail.by', { author: product.author })}</p>
+                    <h1 className="mb-1 product-detail-title">{title}</h1>
+                    <p className="text-muted mb-3">{t('productDetail.by', { author: product.author })}</p>
 
-                    {/* Rating - Compact */}
-                    <div className="mb-2 d-flex align-items-center">
+                    <div className="mb-3 d-flex align-items-center">
                         <div className="me-2">
                             {renderStars(product.rating)}
                         </div>
@@ -297,28 +290,26 @@ const ProductDetailPage: React.FC = () => {
                         </small>
                     </div>
 
-                    {/* Price and Stock - Inline and Compact */}
-                    <div className="d-flex align-items-center justify-content-between mb-3 py-2 px-3 bg-light rounded">
+                    <div className="d-flex align-items-center justify-content-between mb-3 py-3 px-3 rounded-4 product-price-strip">
                         <div>
-                            <h3 className="text-primary mb-0">{formatPrice(product)}</h3>
+                            <h3 className="text-primary mb-0 fw-bold">{formatPrice(product)}</h3>
                         </div>
                         <div>
                             {product.stock > 0 ? (
-                                <Badge bg="success" className="py-2 px-3">
+                                <Badge bg="success" className="py-2 px-3 fw-semibold">
                                     {t('productDetail.inStock', { count: product.stock })}
                                 </Badge>
                             ) : (
-                                <Badge bg="danger" className="py-2 px-3">{t('productDetail.outOfStock')}</Badge>
+                                <Badge bg="danger" className="py-2 px-3 fw-semibold">{t('productDetail.outOfStock')}</Badge>
                             )}
                         </div>
                     </div>
 
-                    {/* Add to Cart - Compact */}
                     {product.stock > 0 && (
                         <div className="mb-3">
                             <Button
                                 variant={inCart ? "secondary" : "primary"}
-                                className="w-100"
+                                className="w-100 rounded-3 fw-semibold py-2"
                                 onClick={handleAddToCart}
                                 disabled={adding || inCart}
                             >
@@ -328,11 +319,9 @@ const ProductDetailPage: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Tabbed Interface - Compact */}
-                    <Tabs defaultActiveKey="description" className="mb-3">
-                        {/* Description Tab */}
+                    <Tabs defaultActiveKey="description" className="mb-3 detail-tabs">
                         <Tab eventKey="description" title={t('productDetail.descriptionTab')}>
-                            <div className="py-2">
+                            <div className="py-3 px-1">
                                 {description ? (
                                     <p className="mb-0">{description}</p>
                                 ) : (
@@ -341,9 +330,8 @@ const ProductDetailPage: React.FC = () => {
                             </div>
                         </Tab>
 
-                        {/* Details Tab */}
                         <Tab eventKey="details" title={t('productDetail.detailsTab')}>
-                            <div className="py-2">
+                            <div className="py-3 px-1">
                                 <dl className="row mb-0 small">
                                     {product.isbn && (
                                         <>
@@ -406,10 +394,9 @@ const ProductDetailPage: React.FC = () => {
                             </div>
                         </Tab>
 
-                        {/* Reviews Tab */}
                         <Tab eventKey="reviews" title={t('productDetail.reviewsTab')}>
-                            <div className="py-2">
-                                <div className="text-center py-2">
+                            <div className="py-3 px-1">
+                                <div className="text-center py-2 surface-card">
                                     <h6 className="mb-2">{t('productDetail.customerReviews')}</h6>
                                     <div className="mb-1">{renderStars(product.rating)}</div>
                                     <p className="text-muted small mb-0">
@@ -429,27 +416,46 @@ const ProductDetailPage: React.FC = () => {
                                 )}
 
                                 {isAuthenticated ? (
-                                    <div className="mb-3">
+                                    <div className="mb-3 mt-3 surface-card p-3 p-lg-4">
                                         <h6 className="mb-2">{myReview ? t('productDetail.editYourReview') : t('productDetail.writeReview')}</h6>
                                         <Form onSubmit={handleSubmitReview}>
                                             <Row className="g-2 align-items-end">
-                                                <Col xs={12} md={4}>
+                                                <Col xs={12}>
                                                     <Form.Group controlId="reviewRating">
                                                         <Form.Label className="small text-muted">{t('productDetail.ratingLabel')}</Form.Label>
-                                                        <Form.Select
-                                                            value={reviewRating}
-                                                            onChange={(e) => setReviewRating(Number(e.target.value))}
-                                                            disabled={reviewSubmitting}
+                                                        <div
+                                                            className="review-star-picker"
+                                                            onMouseLeave={() => setHoverRating(0)}
+                                                            role="radiogroup"
+                                                            aria-label={t('productDetail.ratingLabel')}
                                                         >
-                                                            {[5, 4, 3, 2, 1].map((val) => (
-                                                                <option key={val} value={val}>
-                                                                    {val}
-                                                                </option>
-                                                            ))}
-                                                        </Form.Select>
+                                                            {[1, 2, 3, 4, 5].map((val) => {
+                                                                const active = val <= (hoverRating || reviewRating);
+                                                                return (
+                                                                    <button
+                                                                        key={val}
+                                                                        type="button"
+                                                                        className={`review-star-btn ${active ? 'active' : ''}`}
+                                                                        onMouseEnter={() => setHoverRating(val)}
+                                                                        onFocus={() => setHoverRating(val)}
+                                                                        onClick={() => {
+                                                                            setReviewRating(val);
+                                                                            setHoverRating(0);
+                                                                        }}
+                                                                        aria-label={`${val} / 5`}
+                                                                        aria-checked={reviewRating === val}
+                                                                        role="radio"
+                                                                        disabled={reviewSubmitting}
+                                                                    >
+                                                                        <FaStar />
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                            <span className="review-star-value ms-2">{reviewRating}/5</span>
+                                                        </div>
                                                     </Form.Group>
                                                 </Col>
-                                                <Col xs={12} md={8}>
+                                                <Col xs={12}>
                                                     <Form.Group controlId="reviewComment">
                                                         <Form.Label className="small text-muted">{t('productDetail.commentOptional')}</Form.Label>
                                                         <Form.Control
@@ -459,6 +465,7 @@ const ProductDetailPage: React.FC = () => {
                                                             onChange={(e) => setReviewComment(e.target.value)}
                                                             disabled={reviewSubmitting}
                                                             placeholder={t('productDetail.commentPlaceholder')}
+                                                            className="focus-ring"
                                                         />
                                                     </Form.Group>
                                                 </Col>
@@ -487,7 +494,7 @@ const ProductDetailPage: React.FC = () => {
                                         </Form>
                                     </div>
                                 ) : (
-                                    <Alert variant="info" className="py-2">
+                                    <Alert variant="info" className="py-2 mt-3">
                                         <Link to="/login">{t('nav.login')}</Link> {t('productDetail.loginToWriteReviewSuffix')}
                                     </Alert>
                                 )}
@@ -514,7 +521,7 @@ const ProductDetailPage: React.FC = () => {
                                             const isMine = user ? getReviewUserId(review) === user._id : false;
 
                                             return (
-                                                <div key={review._id} className="border rounded p-2">
+                                                <div key={review._id} className="border rounded-3 p-3 bg-white">
                                                     <div className="d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <div className="fw-semibold small">
@@ -540,13 +547,12 @@ const ProductDetailPage: React.FC = () => {
                 </Col>
             </Row>
 
-            {/* Related Books Section */}
             {relatedProducts.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="mb-3">{t('productDetail.relatedTitle', { category: categoryLabel })}</h4>
-                    <Row>
+                <div className="mt-5">
+                    <h4 className="section-title mb-3">{t('productDetail.relatedTitle', { category: categoryLabel })}</h4>
+                    <Row className="g-4">
                         {relatedProducts.map((relatedProduct) => (
-                            <Col key={relatedProduct._id} xs={12} sm={6} md={4} lg={3} className="mb-3">
+                            <Col key={relatedProduct._id} xs={12} sm={6} md={4} lg={3}>
                                 <ProductCard product={relatedProduct} />
                             </Col>
                         ))}

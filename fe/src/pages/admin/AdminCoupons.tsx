@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Card, Table, Button, Modal, Form, Pagination, Alert, Badge } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { Table, Button, Modal, Form, Alert, Badge } from 'react-bootstrap';
+import { FaTrash, FaPlus } from 'react-icons/fa';
 import { adminAPI } from '../../api/admin.api';
 import type { Coupon } from '../../api/admin.api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { formatMoney } from '../../utils/currency';
+import { useTranslation } from 'react-i18next';
+import AdminPageHeader from '../../components/admin/AdminPageHeader';
+import AdminDataSection from '../../components/admin/AdminDataSection';
+import AdminPagination from '../../components/admin/AdminPagination';
+import AdminToolbar from '../../components/admin/AdminToolbar';
 
 type CouponFormState = {
   code: string;
@@ -22,6 +27,7 @@ type CouponFormState = {
 };
 
 const AdminCoupons: React.FC = () => {
+  const { t } = useTranslation();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,7 +42,7 @@ const AdminCoupons: React.FC = () => {
   const [modalError, setModalError] = useState('');
 
   const [showDisableModal, setShowDisableModal] = useState(false);
-  const [couponToDisable, setCouponToDisable] = useState<Coupon | null>(null);
+  const [selectedCouponIds, setSelectedCouponIds] = useState<string[]>([]);
 
   const toDateInputValue = (value?: string) => {
     if (!value) return '';
@@ -91,8 +97,9 @@ const AdminCoupons: React.FC = () => {
       setTotalPages(response.pages);
       setTotalItems(response.total);
       setCurrentPage(response.page);
+      setSelectedCouponIds([]);
     } catch {
-      setError('Failed to load coupons');
+      setError(t('admin.coupons.loadError'));
     } finally {
       setLoading(false);
     }
@@ -100,6 +107,7 @@ const AdminCoupons: React.FC = () => {
 
   useEffect(() => {
     fetchCoupons(currentPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const formatPrice = (price: number) => formatMoney(price, 'VND');
@@ -169,190 +177,277 @@ const AdminCoupons: React.FC = () => {
     } catch (err: unknown) {
       type AxiosLikeError = { response?: { data?: { message?: string } }; message?: string };
       const e = err as AxiosLikeError;
-      setModalError(e?.response?.data?.message || e?.message || 'Failed to save coupon');
+      setModalError(e?.response?.data?.message || e?.message || t('admin.coupons.saveError'));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleShowDisable = (coupon: Coupon) => {
-    setCouponToDisable(coupon);
+  const handleShowDisableSelected = () => {
+    if (!selectedCouponIds.length) return;
     setShowDisableModal(true);
   };
 
+  const toggleCouponSelection = (couponId: string) => {
+    setSelectedCouponIds((prev) =>
+      prev.includes(couponId)
+        ? prev.filter((id) => id !== couponId)
+        : [...prev, couponId],
+    );
+  };
+
+  const toggleSelectAllVisible = () => {
+    const visibleIds = coupons.map((coupon) => coupon._id);
+    const allSelected =
+      visibleIds.length > 0 &&
+      visibleIds.every((id) => selectedCouponIds.includes(id));
+
+    setSelectedCouponIds((prev) => {
+      if (allSelected) {
+        return prev.filter((id) => !visibleIds.includes(id));
+      }
+      const next = new Set([...prev, ...visibleIds]);
+      return Array.from(next);
+    });
+  };
+
   const handleDisable = async () => {
-    if (!couponToDisable) return;
+    if (!selectedCouponIds.length) return;
     try {
-      await adminAPI.disableCoupon(couponToDisable._id);
+      await Promise.all(
+        selectedCouponIds.map((couponId) => adminAPI.disableCoupon(couponId)),
+      );
       await fetchCoupons(currentPage);
       setShowDisableModal(false);
-      setCouponToDisable(null);
+      setSelectedCouponIds([]);
     } catch {
-      setError('Failed to disable coupon');
+      setError(t('admin.coupons.disableError'));
     }
   };
 
   const isFormDirty = JSON.stringify(form) !== JSON.stringify(initialForm);
+  const allVisibleSelected =
+    coupons.length > 0 &&
+    coupons.every((coupon) => selectedCouponIds.includes(coupon._id));
 
   if (loading && !coupons.length) return <LoadingSpinner fullPage />;
 
   return (
-    <Container className="py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Coupon Management</h2>
-        <Button variant="primary" onClick={() => handleShowModal()}>
-          <FaPlus className="me-2" /> Add New Coupon
-        </Button>
-      </div>
+    <div className="admin-page">
+      <AdminPageHeader title={t('admin.coupons.title')} />
+
+      <AdminToolbar
+        left={
+          selectedCouponIds.length > 0 ? (
+            <Button
+              variant="outline-danger"
+              className="rounded-3 fw-semibold"
+              onClick={handleShowDisableSelected}
+            >
+              <FaTrash className="me-2" />
+              {t('admin.coupons.disable.selected', { count: selectedCouponIds.length })}
+            </Button>
+          ) : null
+        }
+        right={
+          <Button variant="primary" className="rounded-3 fw-semibold" onClick={() => handleShowModal()}>
+            <FaPlus className="me-2" /> {t('admin.coupons.addNew')}
+          </Button>
+        }
+      />
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <Card className="shadow-sm">
-        <Card.Body className="p-0">
-          <Table responsive hover className="align-middle mb-0">
-            <thead className="bg-light">
+      <AdminDataSection
+        desktop={
+          <Table responsive hover className="align-middle mb-0 admin-table">
+            <thead>
               <tr>
-                <th>Code</th>
-                <th>Type</th>
-                <th>Value</th>
-                <th>Min Subtotal</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th className="admin-table__checkbox-cell">
+                  <Form.Check
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAllVisible}
+                    onClick={(event) => event.stopPropagation()}
+                    aria-label={t('admin.coupons.table.selectAll')}
+                  />
+                </th>
+                <th>{t('admin.coupons.table.code')}</th>
+                <th>{t('admin.coupons.table.type')}</th>
+                <th>{t('admin.coupons.table.value')}</th>
+                <th>{t('admin.coupons.table.minSubtotal')}</th>
+                <th>{t('admin.coupons.table.status')}</th>
               </tr>
             </thead>
             <tbody>
               {coupons.length > 0 ? (
                 coupons.map((c) => (
-                  <tr key={c._id}>
+                  <tr
+                    key={c._id}
+                    className={`admin-table__row--selectable ${selectedCouponIds.includes(c._id) ? 'admin-table__row--selected' : ''}`}
+                    onClick={() => handleShowModal(c)}
+                  >
+                    <td
+                      className="admin-table__checkbox-cell"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <Form.Check
+                        type="checkbox"
+                        checked={selectedCouponIds.includes(c._id)}
+                        onChange={() => toggleCouponSelection(c._id)}
+                        aria-label={t('admin.coupons.table.selectCoupon')}
+                      />
+                    </td>
                     <td>
                       <strong>{c.code}</strong>
                       {c.name ? <div className="text-muted" style={{ fontSize: '0.9rem' }}>{c.name}</div> : null}
                     </td>
-                    <td>{c.type === 'percent' ? 'Percent' : 'Fixed'}</td>
+                    <td>{c.type === 'percent' ? t('admin.coupons.type.percent') : t('admin.coupons.type.fixed')}</td>
                     <td>
                       {c.type === 'percent' ? `${c.value}%` : formatPrice(c.value)}
                       {c.type === 'percent' && typeof c.maxDiscountAmount === 'number'
-                        ? <div className="text-muted" style={{ fontSize: '0.9rem' }}>Max: {formatPrice(c.maxDiscountAmount)}</div>
+                        ? <div className="text-muted" style={{ fontSize: '0.9rem' }}>{t('admin.coupons.max', { amount: formatPrice(c.maxDiscountAmount) })}</div>
                         : null}
                     </td>
                     <td>{typeof c.minSubtotal === 'number' ? formatPrice(c.minSubtotal) : '-'}</td>
                     <td>
                       <Badge bg={c.isActive ? 'success' : 'secondary'}>
-                        {c.isActive ? 'ACTIVE' : 'INACTIVE'}
+                        {c.isActive ? t('admin.coupons.status.active') : t('admin.coupons.status.inactive')}
                       </Badge>
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleShowModal(c)}
-                      >
-                        <FaEdit />
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleShowDisable(c)}
-                        disabled={!c.isActive}
-                      >
-                        <FaTrash />
-                      </Button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">No coupons found</td>
+                  <td colSpan={6} className="text-center py-4">{t('admin.coupons.table.empty')}</td>
                 </tr>
               )}
             </tbody>
           </Table>
-        </Card.Body>
-        <Card.Footer className="d-flex justify-content-between align-items-center">
-          <div>Showing {coupons.length} of {totalItems} coupons</div>
-          {totalPages > 1 && (
-            <Pagination className="mb-0">
-              <Pagination.Prev
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              />
-              {[...Array(totalPages)].map((_, i) => (
-                <Pagination.Item
-                  key={i + 1}
-                  active={i + 1 === currentPage}
-                  onClick={() => setCurrentPage(i + 1)}
+        }
+        mobile={
+          coupons.length > 0 ? (
+            coupons.map((c) => (
+                <div
+                  key={c._id}
+                  className={`admin-mobile-card admin-mobile-card--selectable ${selectedCouponIds.includes(c._id) ? 'admin-mobile-card--selected' : ''}`}
+                  onClick={() => handleShowModal(c)}
                 >
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              />
-            </Pagination>
-          )}
-        </Card.Footer>
-      </Card>
+                  <div
+                    className="admin-mobile-card__row"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <span className="admin-mobile-card__label">{t('admin.coupons.table.select')}</span>
+                    <span className="admin-mobile-card__value">
+                      <Form.Check
+                        type="checkbox"
+                        checked={selectedCouponIds.includes(c._id)}
+                        onChange={() => toggleCouponSelection(c._id)}
+                        aria-label={t('admin.coupons.table.selectCoupon')}
+                      />
+                    </span>
+                  </div>
+                <div className="admin-mobile-card__row">
+                  <span className="admin-mobile-card__label">{t('admin.coupons.table.code')}</span>
+                  <span className="admin-mobile-card__value">{c.code}</span>
+                </div>
+                <div className="admin-mobile-card__row">
+                  <span className="admin-mobile-card__label">{t('admin.coupons.table.type')}</span>
+                  <span className="admin-mobile-card__value">{c.type === 'percent' ? t('admin.coupons.type.percent') : t('admin.coupons.type.fixed')}</span>
+                </div>
+                <div className="admin-mobile-card__row">
+                  <span className="admin-mobile-card__label">{t('admin.coupons.table.value')}</span>
+                  <span className="admin-mobile-card__value">
+                    {c.type === 'percent' ? `${c.value}%` : formatPrice(c.value)}
+                  </span>
+                </div>
+                <div className="admin-mobile-card__row">
+                  <span className="admin-mobile-card__label">{t('admin.coupons.table.status')}</span>
+                  <span className="admin-mobile-card__value">
+                    <Badge bg={c.isActive ? 'success' : 'secondary'}>
+                      {c.isActive ? t('admin.coupons.status.active') : t('admin.coupons.status.inactive')}
+                    </Badge>
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-4">{t('admin.coupons.table.empty')}</div>
+          )
+        }
+        footer={
+          <>
+            <div>{t('admin.coupons.pagination', { shown: coupons.length, total: totalItems })}</div>
+            <AdminPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        }
+      />
 
       {/* Create/Edit Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered dialogClassName="admin-modal">
         <Form onSubmit={handleSave}>
           <Modal.Header closeButton>
-            <Modal.Title>{editingCoupon ? 'Edit Coupon' : 'Create Coupon'}</Modal.Title>
+            <Modal.Title>{editingCoupon ? t('admin.coupons.modal.editTitle') : t('admin.coupons.modal.createTitle')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {modalError && <Alert variant="danger">{modalError}</Alert>}
 
             <Form.Group className="mb-3">
-              <Form.Label>Code</Form.Label>
+              <Form.Label>{t('admin.coupons.modal.code')}</Form.Label>
               <Form.Control
                 name="code"
                 value={form.code}
                 onChange={handleChange}
-                placeholder="WELCOME10"
+                placeholder={t('admin.coupons.modal.codePlaceholder')}
                 required
                 disabled={saving}
+                className="focus-ring"
               />
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>{t('admin.coupons.modal.name')}</Form.Label>
               <Form.Control
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Optional display name"
+                placeholder={t('admin.coupons.modal.namePlaceholder')}
                 disabled={saving}
+                className="focus-ring"
               />
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{t('admin.coupons.modal.description')}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={2}
                 name="description"
                 value={form.description}
                 onChange={handleChange}
-                placeholder="Optional description"
+                placeholder={t('admin.coupons.modal.descriptionPlaceholder')}
                 disabled={saving}
+                className="focus-ring"
               />
             </Form.Group>
 
             <div className="row g-3">
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Type</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.type')}</Form.Label>
                   <Form.Select name="type" value={form.type} onChange={handleChange} disabled={saving}>
-                    <option value="percent">Percent</option>
-                    <option value="fixed">Fixed</option>
+                    <option value="percent">{t('admin.coupons.type.percent')}</option>
+                    <option value="fixed">{t('admin.coupons.type.fixed')}</option>
                   </Form.Select>
                 </Form.Group>
               </div>
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Value</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.value')}</Form.Label>
                   <Form.Control
                     type="number"
                     step="0.01"
@@ -361,6 +456,7 @@ const AdminCoupons: React.FC = () => {
                     onChange={handleChange}
                     required
                     disabled={saving}
+                    className="focus-ring"
                   />
                 </Form.Group>
               </div>
@@ -369,7 +465,7 @@ const AdminCoupons: React.FC = () => {
             <div className="row g-3 mt-1">
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Max Discount Amount (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.maxDiscountAmount')}</Form.Label>
                   <Form.Control
                     type="number"
                     step="0.01"
@@ -382,7 +478,7 @@ const AdminCoupons: React.FC = () => {
               </div>
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Min Subtotal (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.minSubtotal')}</Form.Label>
                   <Form.Control
                     type="number"
                     step="0.01"
@@ -398,7 +494,7 @@ const AdminCoupons: React.FC = () => {
             <div className="row g-3 mt-1">
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Starts At (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.startsAt')}</Form.Label>
                   <Form.Control
                     type="date"
                     name="startsAt"
@@ -410,7 +506,7 @@ const AdminCoupons: React.FC = () => {
               </div>
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Ends At (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.endsAt')}</Form.Label>
                   <Form.Control
                     type="date"
                     name="endsAt"
@@ -425,7 +521,7 @@ const AdminCoupons: React.FC = () => {
             <div className="row g-3 mt-1">
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Usage Limit Total (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.usageLimitTotal')}</Form.Label>
                   <Form.Control
                     type="number"
                     name="usageLimitTotal"
@@ -437,7 +533,7 @@ const AdminCoupons: React.FC = () => {
               </div>
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Usage Limit Per User (optional)</Form.Label>
+                  <Form.Label>{t('admin.coupons.modal.usageLimitPerUser')}</Form.Label>
                   <Form.Control
                     type="number"
                     name="usageLimitPerUser"
@@ -453,7 +549,7 @@ const AdminCoupons: React.FC = () => {
               <Form.Check
                 type="checkbox"
                 name="isActive"
-                label="Active"
+                label={t('admin.coupons.modal.active')}
                 checked={form.isActive}
                 onChange={handleChange}
                 disabled={saving}
@@ -462,33 +558,33 @@ const AdminCoupons: React.FC = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleResetModal} disabled={saving || !isFormDirty}>
-              Cancel
+              {t('admin.coupons.modal.cancel')}
             </Button>
             <Button type="submit" variant="primary" disabled={saving || !isFormDirty}>
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? t('admin.coupons.modal.saving') : t('admin.coupons.modal.save')}
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
 
       {/* Disable Confirmation Modal */}
-      <Modal show={showDisableModal} onHide={() => setShowDisableModal(false)}>
+      <Modal show={showDisableModal} onHide={() => setShowDisableModal(false)} dialogClassName="admin-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Disable Coupon</Modal.Title>
+          <Modal.Title>{t('admin.coupons.disable.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Disable coupon <strong>{couponToDisable?.code}</strong>? Customers will no longer be able to apply it.
+          {t('admin.coupons.disable.bodySelected', { count: selectedCouponIds.length })}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDisableModal(false)}>
-            Cancel
+            {t('admin.coupons.disable.cancel')}
           </Button>
           <Button variant="danger" onClick={handleDisable}>
-            Disable
+            {t('admin.coupons.disable.confirmSelected')}
           </Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
 };
 

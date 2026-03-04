@@ -80,13 +80,13 @@ const ProfilePage: React.FC = () => {
     );
 
     return (
-        <Container className="py-5">
-            <h1 className="mb-4">{t('profile.title')}</h1>
-            <Row>
+        <Container className="py-4 py-lg-5">
+            <h1 className="section-title mb-4">{t('profile.title')}</h1>
+            <Row className="g-4">
                 <Col md={8}>
-                    <Card className="shadow-sm">
+                    <Card className="border-0 surface-card">
                         <Card.Body>
-                            <h4 className="mb-4">{t('profile.personalInfo')}</h4>
+                            <h4 className="mb-4 fw-semibold">{t('profile.personalInfo')}</h4>
                             {error && <Alert variant="danger">{error}</Alert>}
                             {success && <Alert variant="success">{success}</Alert>}
 
@@ -100,6 +100,7 @@ const ProfilePage: React.FC = () => {
                                                 name="firstName"
                                                 value={formData.firstName}
                                                 onChange={handleChange}
+                                                className="focus-ring"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -111,6 +112,7 @@ const ProfilePage: React.FC = () => {
                                                 name="lastName"
                                                 value={formData.lastName}
                                                 onChange={handleChange}
+                                                className="focus-ring"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -122,7 +124,7 @@ const ProfilePage: React.FC = () => {
                                         type="email"
                                         value={formData.email}
                                         disabled
-                                        className="bg-light"
+                                            className="bg-light"
                                     />
                                     <Form.Text className="text-muted">
                                         {t('profile.emailNote')}
@@ -136,11 +138,12 @@ const ProfilePage: React.FC = () => {
                                         name="phoneNumber"
                                         value={formData.phoneNumber}
                                         onChange={handleChange}
+                                        className="focus-ring"
                                     />
                                 </Form.Group>
 
                                 <div className="d-flex justify-content-end">
-                                    <Button variant="primary" type="submit" disabled={loading}>
+                                    <Button variant="primary" type="submit" disabled={loading} className="rounded-3 fw-semibold px-4">
                                         {loading ? t('profile.saving') : t('profile.save')}
                                     </Button>
                                 </div>
@@ -149,9 +152,9 @@ const ProfilePage: React.FC = () => {
                     </Card>
                 </Col>
                 <Col md={4}>
-                    <Card className="shadow-sm mb-4">
+                    <Card className="border-0 surface-card mb-4">
                         <Card.Body>
-                            <h4 className="mb-3">{t('profile.accountSummary')}</h4>
+                            <h4 className="mb-3 fw-semibold">{t('profile.accountSummary')}</h4>
                             <div className="mb-2">
                                 <strong>{t('profile.role')}</strong> {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                             </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { FaCheckCircle } from 'react-icons/fa';
 import axios from 'axios';
 import api from '../api/axios';
 import { ordersAPI } from '../api/orders.api';
@@ -289,17 +290,17 @@ const CheckoutPage: React.FC = () => {
     const total = cart.total;
 
     return (
-        <Container className="py-5">
-            <h1 className="mb-4">{t('checkout.title')}</h1>
+        <Container className="py-4 py-lg-5">
+            <h1 className="section-title mb-4">{t('checkout.title')}</h1>
             {error && <ErrorMessage message={error} />}
 
-            <Row>
+            <Row className="g-4">
                 <Col lg={8}>
-                    <Card className="mb-4">
+                    <Card className="mb-4 border-0 surface-card">
                         <Card.Body>
-                            <h5 className="mb-3">{t('checkout.paymentMethod')}</h5>
+                            <h5 className="mb-3 fw-semibold">{t('checkout.paymentMethod')}</h5>
                             <Form.Group className="mb-4">
-                                <div className="d-flex gap-3">
+                                <div className="d-flex gap-3 flex-wrap checkout-payment-options">
                                     <Form.Check
                                         type="radio"
                                         id="cod"
@@ -308,6 +309,7 @@ const CheckoutPage: React.FC = () => {
                                         value="cod"
                                         checked={paymentMethod === 'cod'}
                                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                                        className="surface-card px-3 py-2 m-0"
                                     />
                                     <Form.Check
                                         type="radio"
@@ -317,10 +319,11 @@ const CheckoutPage: React.FC = () => {
                                         value="payos"
                                         checked={paymentMethod === 'payos'}
                                         onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                                        className="surface-card px-3 py-2 m-0"
                                     />
                                 </div>
                             </Form.Group>
-                            <h5 className="mb-3">{t('checkout.shippingAddress')}</h5>
+                            <h5 className="mb-3 fw-semibold">{t('checkout.shippingAddress')}</h5>
                             <Form noValidate onSubmit={handleSubmit}>
                                 <Row>
                                     <Col md={6}>
@@ -332,6 +335,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.firstName}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.firstName}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -348,6 +352,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.lastName}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.lastName}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -365,6 +370,7 @@ const CheckoutPage: React.FC = () => {
                                         value={shippingAddress.street}
                                         onChange={handleChange}
                                         isInvalid={!!fieldErrors.street}
+                                        className="focus-ring"
                                         required
                                     />
                                     <Form.Control.Feedback type="invalid">
@@ -382,6 +388,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.city}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.city}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -398,6 +405,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.state}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.state}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -414,6 +422,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.zipCode}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.zipCode}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -433,6 +442,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.country}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.country}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -449,6 +459,7 @@ const CheckoutPage: React.FC = () => {
                                                 value={shippingAddress.phoneNumber}
                                                 onChange={handleChange}
                                                 isInvalid={!!fieldErrors.phoneNumber}
+                                                className="focus-ring"
                                                 required
                                             />
                                             <Form.Control.Feedback type="invalid">
@@ -458,7 +469,7 @@ const CheckoutPage: React.FC = () => {
                                     </Col>
                                 </Row>
 
-                                <Button type="submit" variant="primary" size="lg" className="w-100" disabled={submitting}>
+                                <Button type="submit" variant="primary" size="lg" className="w-100 rounded-3 fw-semibold" disabled={submitting}>
                                     {submitting ? t('checkout.placing') : t('checkout.place')}
                                 </Button>
                             </Form>
@@ -466,9 +477,9 @@ const CheckoutPage: React.FC = () => {
                     </Card>
                 </Col>
                 <Col lg={4}>
-                    <Card className="mb-4">
+                    <Card className="mb-4 border-0 surface-card checkout-summary-card">
                         <Card.Body>
-                            <h5 className="mb-3">{t('checkout.orderSummary')}</h5>
+                            <h5 className="mb-3 fw-semibold">{t('checkout.orderSummary')}</h5>
                             <div className="d-flex justify-content-between mb-2">
                                 <span>{t('checkout.subtotal')}</span>
                                 <strong>{formatMoney(subtotal, 'VND')}</strong>
@@ -499,7 +510,7 @@ const CheckoutPage: React.FC = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="text-center py-3">
-                        <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
+                        <FaCheckCircle className="text-success" size={52} />
                         <h4 className="mt-3">{t('checkout.thankYou')}</h4>
                         <p className="text-muted">
                             {t('checkout.orderPlaced')}
